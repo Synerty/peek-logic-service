@@ -1,7 +1,7 @@
 
 
 
-class PlatformApi:
+class ServerPlatformApi:
     @property
     def dbConnectString(self):
         from peek_server.PeekServerConfig import peekServerConfig
