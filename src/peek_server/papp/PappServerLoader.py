@@ -4,6 +4,7 @@ from _collections import defaultdict
 
 import os
 
+from peek_server.papp.PappLoaderBase import PappLoaderBase
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
 from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths
 from rapui.vortex.PayloadIO import PayloadIO
@@ -11,42 +12,29 @@ from rapui.vortex.Tuple import removeTuplesForTupleNames, \
     registeredTupleNames, tupleForTupleName
 
 
-class PappLoader():
+class PappServerLoader(PappLoaderBase):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
-        assert cls._instance is None, "PappLoader is a singleton, don't construct it"
+        assert cls._instance is None, "PappServerLoader is a singleton, don't construct it"
         cls._instance = cls()
         return cls._instance
 
     def __init__(self):
+        PappLoaderBase.__init__(self)
+
         from peek_server.PeekServerConfig import peekServerConfig
         self._pappPath = peekServerConfig.pappSoftwarePath
-
-        self._loadedPapps = {}
 
         self._rapuiEndpointInstancesByPappName = defaultdict(list)
         self._rapuiResourcePathsByPappName = defaultdict(list)
         self._rapuiTupleNamesByPappName = defaultdict(list)
 
-    def listPapps(self):
-        def pappTest(name):
-            if not name.startswith("papp_"):
-                return False
-            return os.path.isdir(os.path.join(self._pappPath, name))
-
-        papps = os.listdir(self._pappPath)
-        papps = filter(pappTest, papps)
-        return papps
-
-    def loadAllPapps(self):
-        for pappName in self.listPapps():
-            self.loadPapp(pappName)
 
     def unloadPapp(self, pappName):
-        oldPapClient = self._loadedPapps.get(pappName)
+        oldLoadedPapp = self._loadedPapps.get(pappName)
 
-        if not oldPapClient:
+        if not oldLoadedPapp:
             return
 
         # Remove the registered endpoints
@@ -62,21 +50,8 @@ class PappLoader():
         removeTuplesForTupleNames(self._rapuiTupleNamesByPappName[pappName])
         del self._rapuiTupleNamesByPappName[pappName]
 
-        # Stop and remove the Papp
-        del self._loadedPapps[pappName]
-        oldPapClient.stop()
-        oldPapClient.unload()
-        self.unloadPapp(pappName)
+        self._unloadPappPackage(pappName, oldLoadedPapp)
 
-        # Unload the packages
-        loadedSubmodules = [modName
-                            for modName in sys.modules.keys()
-                            if modName.startswith('%s.' % pappName)]
-
-        for modName in loadedSubmodules:
-            del sys.modules[modName]
-
-        del sys.modules[pappName]
 
     def loadPapp(self, pappName):
         self.unloadPapp(pappName)
@@ -86,8 +61,6 @@ class PappLoader():
         resourcePathsBefore = set(registeredResourcePaths())
         tupleNamesBefore = set(registeredTupleNames())
 
-        print tupleNamesBefore
-
         # Everyone gets their own instance of the platform API
         serverPlatformApi = ServerPlatformApi()
 
@@ -96,9 +69,6 @@ class PappLoader():
         peekClient = PappServerMainMod.PappServerMain(serverPlatformApi)
 
         sys.path.append(os.path.join(self._pappPath, pappName))
-        # pappPackage = __import__(peekAppName, fromlist=[])
-        #
-        # peekClient = pappPackage.makeClient(self)
 
         self._loadedPapps[pappName] = peekClient
         peekClient.start()
@@ -114,9 +84,9 @@ class PappLoader():
         self._rapuiTupleNamesByPappName[pappName] = list(
             set(registeredTupleNames()) - tupleNamesBefore)
 
-        self.sanityCheckPapp(pappName)
+        self.sanityCheckServerPapp(pappName)
 
-    def sanityCheckPapp(self, pappName):
+    def sanityCheckServerPapp(self, pappName):
         ''' Sanity Check Papp
 
         This method ensures that all the things registed for this papp are
@@ -144,4 +114,4 @@ class PappLoader():
                                 % (pappName, tupleName, TupleCls.__name__))
 
 
-pappLoader = PappLoader()
+pappLoader = PappServerLoader()

@@ -5,7 +5,7 @@ from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.trial import unittest
 
-from PappLoader import pappLoader
+from PappServerLoader import pappLoader
 
 logger = logging.getLogger(__name__)
 
