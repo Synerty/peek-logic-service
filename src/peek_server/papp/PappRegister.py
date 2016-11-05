@@ -2,6 +2,7 @@ import os
 import sys
 
 from peek_server.papp.PlatformApi import PlatformApi
+from rapui.vortex.Tuple import TUPLE_TYPES, removeTuplesForPackage
 
 PAPP_CLIENTS = {}
 
@@ -25,28 +26,37 @@ class PappRegister():
         for pappName in self.listPapps():
             self.register(pappName)
 
-    def register(self, peekAppName):
-        oldPapClient = PAPP_CLIENTS.get(peekAppName)
+    def unloadPapp(self, pappName):
+        for modName in [x for x in sys.modules.keys() if x.startswith('%s.' % pappName)]:
+            del sys.modules[modName]
+        del sys.modules[pappName]
+        removeTuplesForPackage(pappName)
+
+    def register(self, pappName):
+        oldPapClient = PAPP_CLIENTS.get(pappName)
         if oldPapClient:
-            del PAPP_CLIENTS[peekAppName]
+            del PAPP_CLIENTS[pappName]
             oldPapClient.stop()
+            oldPapClient.unload()
+            self.unloadPapp(pappName)
 
         platformApi = PlatformApi()
 
         import imp
 
-        modPath = os.path.join(self._pappPath, peekAppName, peekAppName, "PappMain.py")
-        PappMainMod = imp.load_source('%s.PappMain' % peekAppName,modPath)
-        peekClient = PappMainMod.PappMain(platformApi)
+        modPath = os.path.join(self._pappPath, pappName, pappName, "PappServerMain.py")
+        PappServerMainMod = imp.load_source('%s.PappServerMain' % pappName, modPath)
+        peekClient = PappServerMainMod.PappServerMain(platformApi)
 
-        sys.path.append(os.path.join(self._pappPath, peekAppName))
+        sys.path.append(os.path.join(self._pappPath, pappName))
         # pappPackage = __import__(peekAppName, fromlist=[])
         #
         # peekClient = pappPackage.makeClient(self)
 
-        PAPP_CLIENTS[peekAppName] = peekClient
+        PAPP_CLIENTS[pappName] = peekClient
         peekClient.start()
         sys.path.pop()
+
 
 
 pappRegister = PappRegister()

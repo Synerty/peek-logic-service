@@ -12,9 +12,6 @@ logger = logging.getLogger(__name__)
 
 class PappRegisterTest(unittest.TestCase):
     def testRegister(self):
-        # pappRegister._pappPath = '/home/peek/project/papp_base'
-        # pappRegister.register('src', 'papp_base')
-        # pappRegister.register('src', 'papp_base')
         pappRegister.registerAll()
         pappRegister.registerAll()
 
