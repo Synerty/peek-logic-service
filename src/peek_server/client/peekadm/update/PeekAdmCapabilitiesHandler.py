@@ -5,7 +5,7 @@ Created on 09/07/2014
 '''
 from peek_server.client.peekadm.navbar.PeekAdmNavbarHandler import navbarDataHandler
 from rapui.vortex.DataWrapTuple import DataWrapTuple
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 from rapui.vortex.Payload import Payload
 from rapui.vortex.PayloadEndpoint import PayloadEndpoint
 
@@ -26,7 +26,7 @@ class __CrudHandler():
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
 
         result = None
-        session = getNovaOrmSession()
+        session = getPeekServerOrmSession()
 
         # Force reload on page load
         peekServerConfig._capabilities = None

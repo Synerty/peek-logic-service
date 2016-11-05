@@ -7,13 +7,13 @@ from sqlalchemy.sql.functions import count
 
 # from peek_server.server.live_db.LiveDb import liveDb
 # from peek_server.server.orm.LiveDb import LiveDbKey
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 # from peek_server.server.orm.AgentData import AgentImportDispGridInfo
 # from peek_server.server.orm.Display import DispBase
 # from peek_server.server.orm.GridKeyIndex import GridKeyCompilerQueue, DispIndexerQueue
 from rapui.handler.ModelHandler import ModelHandlerInThread
 
-executeListDataKey = {'platform': 'platform',
+executeListDataKey = {'papp': 'papp',
                       'key': "peakadm.dashboard.list.data"}
 
 
@@ -24,7 +24,7 @@ class DashboardListHandler(ModelHandlerInThread):
     def buildModel(self, payloadFilt, **kwargs):
         qryItems = []
 
-        session = getNovaOrmSession()
+        session = getPeekServerOrmSession()
 
         def rowsQuick(Declarative):
             sql = '''

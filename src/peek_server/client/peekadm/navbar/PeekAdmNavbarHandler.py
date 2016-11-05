@@ -9,7 +9,7 @@ from rapui.vortex.Payload import Payload
 from rapui.vortex.Vortex import vortexSendPayload
 
 navbarDataFiltKey = {
-    'platform': 'platform',
+    'papp': 'papp',
     'key': "peekadm.navbar.data"
 }
 

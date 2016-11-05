@@ -3,7 +3,7 @@ import json
 
 from sqlalchemy.orm.exc import NoResultFound
 
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 # from peek_server.storage.AgentData import AgentUpdateInfo
 from rapui.vortex.Payload import Payload
 from rapui.vortex.PayloadEndpoint import PayloadEndpoint
@@ -34,7 +34,7 @@ class AgentSwUpdateHandler(object):
     def _process(self, payload, vortexUuid, **kwargs):
         name = payload.filt["name"]
 
-        session = getNovaOrmSession()
+        session = getPeekServerOrmSession()
         version = None
         try:
             versionRow = (session

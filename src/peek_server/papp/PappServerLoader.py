@@ -5,8 +5,10 @@ from _collections import defaultdict
 
 import os
 
-from peek_server.platform.PappLoaderBase import PappLoaderBase
-from peek_server.platform.ServerPlatformApi import ServerPlatformApi
+from peek_server.papp.PappInfoUtil import getLatestPappVersionInfos
+from peek_server.papp.PappLoaderBase import PappLoaderBase
+from peek_server.papp.ServerPlatformApi import ServerPlatformApi
+from peek_server.storage import getPeekServerOrmSession
 from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths
 from rapui.vortex.PayloadIO import PayloadIO
 from rapui.vortex.Tuple import removeTuplesForTupleNames, \
@@ -58,25 +60,40 @@ class PappServerLoader(PappLoaderBase):
     def loadPapp(self, pappName):
         self.unloadPapp(pappName)
 
-        # Make note of the initial registrations for this platform
+        pappVersionInfo = getLatestPappVersionInfos(name=pappName)
+        if not pappVersionInfo:
+            logger.warning("Papp version infor for %s is missing, loading skipped",
+                           pappName)
+            return
+
+        pappVersionInfo = pappVersionInfo[0]
+
+        # Make note of the initial registrations for this papp
         endpointInstancesBefore = set(PayloadIO().endpoints)
         resourcePathsBefore = set(registeredResourcePaths())
         tupleNamesBefore = set(registeredTupleNames())
 
-        # Everyone gets their own instance of the platform API
+        # Everyone gets their own instance of the papp API
         serverPlatformApi = ServerPlatformApi()
 
-        modPath = os.path.join(self._pappPath, pappName, pappName, "PappServerMain.py")
-        PappServerMainMod = imp.load_source('%s.PappServerMain' % pappName, modPath)
+        srcDir = os.path.join(self._pappPath, pappVersionInfo.dirName)
+        modPath = os.path.join(srcDir, pappName, "PappServerMain.py")
+        if not os.path.exists(modPath) and os.path.exists(modPath + u"c"): # .pyc
+            PappServerMainMod = imp.load_compiled('%s.PappServerMain' % pappName,
+                                                modPath + u'c')
+        else:
+            PappServerMainMod = imp.load_source('%s.PappServerMain' % pappName,
+                                                modPath)
+
         peekClient = PappServerMainMod.PappServerMain(serverPlatformApi)
 
-        sys.path.append(os.path.join(self._pappPath, pappName))
+        sys.path.append(srcDir)
 
         self._loadedPapps[pappName] = peekClient
         peekClient.start()
         sys.path.pop()
 
-        # Make note of the final registrations for this platform
+        # Make note of the final registrations for this papp
         self._rapuiEndpointInstancesByPappName[pappName] = list(
             set(PayloadIO().endpoints) - endpointInstancesBefore)
 
@@ -91,15 +108,15 @@ class PappServerLoader(PappLoaderBase):
     def sanityCheckServerPapp(self, pappName):
         ''' Sanity Check Papp
 
-        This method ensures that all the things registed for this platform are
+        This method ensures that all the things registed for this papp are
         prefixed by it's pappName, EG papp_noop
         '''
 
-        # All endpoint filters must have the 'platform' : 'papp_name' in them
+        # All endpoint filters must have the 'papp' : 'papp_name' in them
         for endpoint in self._rapuiEndpointInstancesByPappName[pappName]:
             filt = endpoint.filt
-            if 'platform' not in filt and filt['platform'] != pappName:
-                raise Exception("Payload endpoint does not contan 'platform':'%s'\n%s"
+            if 'papp' not in filt and filt['papp'] != pappName:
+                raise Exception("Payload endpoint does not contan 'papp':'%s'\n%s"
                                 % (pappName, filt))
 
         # all resource paths must start with their pappName

@@ -31,11 +31,11 @@ class SynSqlaConn(object):
 
 
 def closeAllSessions():
-    getNovaOrmSession()  # Ensure we have a session maker
+    getPeekServerOrmSession()  # Ensure we have a session maker
     SynSqlaConn.ScopedSession.close_all()
 
 
-def getNovaOrmSession():
+def getPeekServerOrmSession():
     if SynSqlaConn.ScopedSession:
         return SynSqlaConn.ScopedSession()
 
@@ -75,7 +75,7 @@ def getPgSequenceGenerator(Declarative, count, session=None):
     if not count:
         return
 
-    session = session if session else getNovaOrmSession()
+    session = session if session else getPeekServerOrmSession()
     session.commit()
 
     while not sequenceMutex.testandset():

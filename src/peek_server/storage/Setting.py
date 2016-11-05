@@ -17,7 +17,7 @@ from sqlalchemy.sql.expression import cast, null, case
 from sqlalchemy.sql.schema import Index
 from sqlalchemy.types import Integer, String, Boolean
 
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.DeclarativeBase import DeclarativeBase
 from rapui.vortex.Tuple import Tuple, addTupleType
 
@@ -221,7 +221,7 @@ class PropertyKey(object):
 
 
 def _getSetting(name, propertyDict, key=None, value=None):
-    session = getNovaOrmSession()
+    session = getPeekServerOrmSession()
     all = session.query(Setting).filter(Setting.name == name).all()
 
     if all:

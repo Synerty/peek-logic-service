@@ -230,7 +230,7 @@ class PeekServerConfig(object):
 
         self._capabilities['upd'] = "01-Jan-2018" # DEBUG
 
-        from peek_server.storage import getNovaOrmSession
+        from peek_server.storage import getPeekServerOrmSession
 
         lic = self._capabilities
         # session = getNovaOrmSession()

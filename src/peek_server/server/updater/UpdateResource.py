@@ -65,7 +65,7 @@ class SoftwareUpdateResource(RapuiResource):
             logger.info("Finished updating %s updater" % self._desc)
 
         def bad(failure):
-            request.write(json.dumps({'error': str(failure.value.message)}))
+            request.write(json.dumps({'error': str(failure.value)}))
             request.finish()
             return failure
 

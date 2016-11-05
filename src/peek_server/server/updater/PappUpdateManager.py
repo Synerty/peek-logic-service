@@ -4,8 +4,8 @@ import tarfile
 import os
 
 from peek_server.PeekServerConfig import peekServerConfig
-from peek_server.platform.PappServerLoader import pappServerLoader
-from peek_server.storage import getNovaOrmSession
+from peek_server.papp.PappServerLoader import pappServerLoader
+from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
 from rapui.DeferUtil import deferToThreadWrap
 from rapui.util.Directory import Directory
@@ -60,6 +60,7 @@ class PappUpdateManager(object):
 
         peekAppInfo = PeekAppInfo()
         peekAppInfo.fileName = "%s.tar.bz2" % dirName
+        peekAppInfo.dirName = dirName
 
         with pappVersion.open() as f:
             peekAppInfo.title = f.readline().strip()
@@ -70,7 +71,7 @@ class PappUpdateManager(object):
             peekAppInfo.buildNumber = f.readline().strip()
             peekAppInfo.buildDate = f.readline().strip()
 
-        if peekAppInfo.name != dirName:
+        if not dirName.startswith(peekAppInfo.name):
             raise Exception("Peek app name '%s' does not match peek root dir name '%s"
                             % (peekAppInfo.name, dirName))
 
@@ -83,11 +84,11 @@ class PappUpdateManager(object):
                 os.remove(newPath)
 
         with tarfile.open(newSoftware.name) as tar:
-            tar.extractall(newPath)
+            tar.extractall(peekServerConfig.pappSoftwarePath)
 
         newSoftware.delete = False
 
-        session = getNovaOrmSession()
+        session = getPeekServerOrmSession()
         existing = (session.query(PeekAppInfo)
                     .filter(PeekAppInfo.name == peekAppInfo.name,
                             PeekAppInfo.version == peekAppInfo.version)
@@ -102,7 +103,7 @@ class PappUpdateManager(object):
 
         session.commit()
 
-        # Tell the server platform loader that there is an update
+        # Tell the server papp loader that there is an update
         pappServerLoader.notifyOfPappVersionUpdate(peekAppInfo.name, peekAppInfo.version)
 
         session.expunge_all()

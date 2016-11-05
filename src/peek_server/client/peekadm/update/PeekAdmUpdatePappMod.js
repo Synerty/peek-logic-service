@@ -18,7 +18,7 @@ define([
                     self.loader = new AngFormLoadController($scope,
                             {
                                 papp: 'platform',
-                                key: "peekadm.papp.update.info"
+                                key: "peekadm.papp.version.info"
                             }, {
                                 objName: 'pappVersions',
                                 dataIsArray: true

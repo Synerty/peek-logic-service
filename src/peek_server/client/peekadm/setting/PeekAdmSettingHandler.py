@@ -6,10 +6,10 @@ Created on 09/07/2014
 from peek_server.storage.Setting import globalSetting
 
 import rapui
-from peek_server.storage import getNovaOrmSession, Setting
+from peek_server.storage import getPeekServerOrmSession, Setting
 from rapui.handler.OrmCrudHandler import OrmCrudHandler
 
-scheduleDataFiltKey = {"platform": "platform",
+scheduleDataFiltKey = {"papp": "papp",
                        "key": "peekadm.setting.data"}
 
 
@@ -25,4 +25,4 @@ class __CrudHandler(OrmCrudHandler):
             rapui.TITLE = settings[Setting.SYSTEM_NAME]
 
 
-__ormCrudHandler = __CrudHandler(getNovaOrmSession, Setting, scheduleDataFiltKey)
+__ormCrudHandler = __CrudHandler(getPeekServerOrmSession, Setting, scheduleDataFiltKey)

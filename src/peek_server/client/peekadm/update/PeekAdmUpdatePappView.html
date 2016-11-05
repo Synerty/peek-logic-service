@@ -33,6 +33,7 @@
             <thead>
             <tr>
                 <th>App</th>
+                <th>Name</th>
                 <th>Creator</th>
                 <th>Website</th>
                 <th>Version</th>
@@ -41,6 +42,7 @@
             </thead>
             <tbody>
             <tr ng-repeat="ver in pappVersions">
+                <td>{{ver.title}}</td>
                 <td>{{ver.name}}</td>
                 <td>{{ver.creator}}</td>
                 <td><a ng-href="https://{{ver.website}}">{{ver.website}}</a></td>

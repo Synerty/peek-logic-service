@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 # Set the parallelism of the database and reactor
 
 from peek_server import storage
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 
 reactor.suggestThreadPoolSize(10)
 storage.SynSqlaConn.dbEngineArgs = {
@@ -69,7 +69,7 @@ def main():
     logging.root.setLevel(peekServerConfig.loggingLevel)
 
     # Force model migration
-    session = getNovaOrmSession()
+    session = getPeekServerOrmSession()
     session.close()
 
 

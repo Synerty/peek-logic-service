@@ -15,7 +15,7 @@ import os
 from sqlalchemy.orm.exc import NoResultFound
 from twisted.web.server import NOT_DONE_YET
 
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 # from peek_server.storage.AgentData import AgentUpdateInfo
 from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFile, \
     addResourceCreator
@@ -41,7 +41,7 @@ class AgentSwUpdateResource(RapuiResource):
         logger.debug("Agent Download Resource GET, name=%s, version=%s",
                      name, version)
 
-        session = getNovaOrmSession()
+        session = getPeekServerOrmSession()
         qry = session.query(AgentUpdateInfo).filter(AgentUpdateInfo.name == name)
         if version:
             qry = qry.filter(AgentUpdateInfo.version == version)

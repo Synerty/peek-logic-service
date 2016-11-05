@@ -1,13 +1,13 @@
 from sqlalchemy.sql.functions import func
 
-from peek_server.storage import getNovaOrmSession
+from peek_server.storage import getPeekServerOrmSession
 # from peek_server.storage.AgentData import AgentUpdateInfo
 
 
 def getLatestAgentUpdateInfos(name=None, session=None):
     closeSession = session == None
 
-    session = session if session else getNovaOrmSession()
+    session = session if session else getPeekServerOrmSession()
 
     maxGroupedIds = (session
                      .query(func.max(AgentUpdateInfo.id).label('maxId'))

@@ -29,7 +29,7 @@ class PeekAppInfo(Tuple, DeclarativeBase):
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server.platform.info'
+    __tupleType__ = 'peek_server.papp.info'
     __tablename__ = 'PeekAppInfo'
 
     id = Column(Integer, primary_key=True)
@@ -40,6 +40,10 @@ class PeekAppInfo(Tuple, DeclarativeBase):
     website = Column(String, nullable=True)
     buildNumber = Column(String, nullable=True)
     buildDate = Column(String, nullable=True)
+
+    # File location columns
+    fileName = Column(String, nullable=False)
+    dirName = Column(String, nullable=False)
 
     __table_args__ = (
         Index("idx_PeekAppInfo_NameVersion",
