@@ -9,7 +9,7 @@ import rapui
 from peek_server.storage import getNovaOrmSession, Setting
 from rapui.handler.OrmCrudHandler import OrmCrudHandler
 
-scheduleDataFiltKey = {"papp": "platform",
+scheduleDataFiltKey = {"platform": "platform",
                        "key": "peekadm.setting.data"}
 
 

@@ -8,7 +8,7 @@ from rapui.handler.ModelHandler import ModelHandlerInThread
 
 # HANDLER
 agentUpdateInfoHandlerKey = {
-    'papp': 'platform',
+    'platform': 'platform',
     'key': "peekadm.agent.update.info"}
 
 

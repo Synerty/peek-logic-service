@@ -13,7 +13,7 @@ from peek_server.storage import getNovaOrmSession
 # from peek_server.server.orm.GridKeyIndex import GridKeyCompilerQueue, DispIndexerQueue
 from rapui.handler.ModelHandler import ModelHandlerInThread
 
-executeListDataKey = {'papp': 'platform',
+executeListDataKey = {'platform': 'platform',
                       'key': "peakadm.dashboard.list.data"}
 
 

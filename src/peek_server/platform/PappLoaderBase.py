@@ -3,7 +3,7 @@ import sys
 
 import os
 
-from peek_server.papp.ServerPlatformApi import ServerPlatformApi
+from peek_server.platform.ServerPlatformApi import ServerPlatformApi
 
 
 class PappLoaderBase():

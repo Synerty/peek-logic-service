@@ -1,16 +1,18 @@
 import imp
+import logging
 import sys
 from _collections import defaultdict
 
 import os
 
-from peek_server.papp.PappLoaderBase import PappLoaderBase
-from peek_server.papp.ServerPlatformApi import ServerPlatformApi
+from peek_server.platform.PappLoaderBase import PappLoaderBase
+from peek_server.platform.ServerPlatformApi import ServerPlatformApi
 from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths
 from rapui.vortex.PayloadIO import PayloadIO
 from rapui.vortex.Tuple import removeTuplesForTupleNames, \
     registeredTupleNames, tupleForTupleName
 
+logger = logging.getLogger(__name__)
 
 class PappServerLoader(PappLoaderBase):
     _instance = None
@@ -56,7 +58,7 @@ class PappServerLoader(PappLoaderBase):
     def loadPapp(self, pappName):
         self.unloadPapp(pappName)
 
-        # Make note of the initial registrations for this papp
+        # Make note of the initial registrations for this platform
         endpointInstancesBefore = set(PayloadIO().endpoints)
         resourcePathsBefore = set(registeredResourcePaths())
         tupleNamesBefore = set(registeredTupleNames())
@@ -74,7 +76,7 @@ class PappServerLoader(PappLoaderBase):
         peekClient.start()
         sys.path.pop()
 
-        # Make note of the final registrations for this papp
+        # Make note of the final registrations for this platform
         self._rapuiEndpointInstancesByPappName[pappName] = list(
             set(PayloadIO().endpoints) - endpointInstancesBefore)
 
@@ -89,15 +91,15 @@ class PappServerLoader(PappLoaderBase):
     def sanityCheckServerPapp(self, pappName):
         ''' Sanity Check Papp
 
-        This method ensures that all the things registed for this papp are
+        This method ensures that all the things registed for this platform are
         prefixed by it's pappName, EG papp_noop
         '''
 
-        # All endpoint filters must have the 'papp' : 'papp_name' in them
+        # All endpoint filters must have the 'platform' : 'papp_name' in them
         for endpoint in self._rapuiEndpointInstancesByPappName[pappName]:
             filt = endpoint.filt
-            if 'papp' not in filt and filt['papp'] != pappName:
-                raise Exception("Payload endpoint does not contan 'papp':'%s'\n%s"
+            if 'platform' not in filt and filt['platform'] != pappName:
+                raise Exception("Payload endpoint does not contan 'platform':'%s'\n%s"
                                 % (pappName, filt))
 
         # all resource paths must start with their pappName
@@ -113,5 +115,9 @@ class PappServerLoader(PappLoaderBase):
                 raise Exception("Tuple name does not start with '%s', %s (%s)"
                                 % (pappName, tupleName, TupleCls.__name__))
 
+    def notifyOfPappVersionUpdate(self, pappName, pappVersion):
+        logger.info("Received PAPP update for %s version %s", pappName, pappVersion)
+        self.loadPapp(pappName)
 
-pappLoader = PappServerLoader()
+
+pappServerLoader = PappServerLoader()

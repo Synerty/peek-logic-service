@@ -3,7 +3,10 @@ import tarfile
 
 import os
 
+from peek_server.PeekServerConfig import peekServerConfig
+from peek_server.platform.PappServerLoader import pappServerLoader
 from peek_server.storage import getNovaOrmSession
+from peek_server.storage.PeekAppInfo import PeekAppInfo
 from rapui.DeferUtil import deferToThreadWrap
 from rapui.util.Directory import Directory
 
@@ -11,6 +14,8 @@ __author__ = 'synerty'
 
 
 class PappUpdateManager(object):
+    PAPP_VERSION_TXT = "papp_version.txt"
+
     def __init__(self):
         pass
 
@@ -28,22 +33,24 @@ class PappUpdateManager(object):
         dirName = tarfile.open(newSoftware.name).getnames()[0]
         directory = Directory()
         try:
-            tarfile.open(newSoftware.name).extract(dirName + "/papp_version.txt",
-                                                   directory.path)
+            with tarfile.open(newSoftware.name) as tar:
+                tar.extract("%s/%s" % (dirName, self.PAPP_VERSION_TXT), directory.path)
+
         except KeyError as e:
-            raise Exception("Uploaded archive does not contain Peek Agent updater, %s"
+            raise Exception("Uploaded archive does not contain a Peek App updater, %s"
                             % e.message)
         directory.scan()
 
-        agentVersion = directory.getFile(path=dirName, name='papp_version.txt')
+        pappVersion = directory.getFile(path=dirName, name=self.PAPP_VERSION_TXT)
 
-        if '/' in agentVersion.path:
-            raise Exception("Expected papp_version.txt to be one level down, it's at %s"
-                            % agentVersion.path)
+        if '/' in pappVersion.path:
+            raise Exception("Expected %s to be one level down, it's at %s"
+                            % (self.PAPP_VERSION_TXT, pappVersion.path))
 
         # Example
         """
-        Peek PoF Agent
+        Peek App - Noop
+        papp_noop
         Synerty Pty Ltd
         www.synerty.com
         #PPA_VER#
@@ -51,18 +58,23 @@ class PappUpdateManager(object):
         #BUILD_DATE#
         """
 
-        agentUpdateInfo = AgentUpdateInfo()
-        agentUpdateInfo.fileName = "%s.tar.bz2" % dirName
+        peekAppInfo = PeekAppInfo()
+        peekAppInfo.fileName = "%s.tar.bz2" % dirName
 
-        with agentVersion.open() as f:
-            agentUpdateInfo.name = f.readline().strip()
-            agentUpdateInfo.creator = f.readline().strip()
-            agentUpdateInfo.website = f.readline().strip()
-            agentUpdateInfo.version = f.readline().strip()
-            agentUpdateInfo.buildNumber = f.readline().strip()
-            agentUpdateInfo.buildDate = f.readline().strip()
+        with pappVersion.open() as f:
+            peekAppInfo.title = f.readline().strip()
+            peekAppInfo.name = f.readline().strip()
+            peekAppInfo.creator = f.readline().strip()
+            peekAppInfo.website = f.readline().strip()
+            peekAppInfo.version = f.readline().strip()
+            peekAppInfo.buildNumber = f.readline().strip()
+            peekAppInfo.buildDate = f.readline().strip()
 
-        newPath = os.path.join(appConfig.platformSoftwarePath, agentUpdateInfo.fileName)
+        if peekAppInfo.name != dirName:
+            raise Exception("Peek app name '%s' does not match peek root dir name '%s"
+                            % (peekAppInfo.name, dirName))
+
+        newPath = os.path.join(peekServerConfig.pappSoftwarePath, dirName)
 
         if os.path.exists(newPath):
             if os.path.isdir(newPath):
@@ -70,28 +82,28 @@ class PappUpdateManager(object):
             else:
                 os.remove(newPath)
 
-        shutil.move(newSoftware.name, newPath)
+        with tarfile.open(newSoftware.name) as tar:
+            tar.extractall(newPath)
+
         newSoftware.delete = False
 
         session = getNovaOrmSession()
-        existing = (session.query(AgentUpdateInfo)
-                    .filter(AgentUpdateInfo.name == agentUpdateInfo.name,
-                            AgentUpdateInfo.version == agentUpdateInfo.version)
+        existing = (session.query(PeekAppInfo)
+                    .filter(PeekAppInfo.name == peekAppInfo.name,
+                            PeekAppInfo.version == peekAppInfo.version)
                     .all())
         if existing:
-            agentUpdateInfo.id = existing[0].id
-            session.merge(agentUpdateInfo)
+            peekAppInfo.id = existing[0].id
+            session.merge(peekAppInfo)
         else:
-            session.add(agentUpdateInfo)
+            session.add(peekAppInfo)
 
-        returnedVersion = "%s, %s" % (agentUpdateInfo.name, agentUpdateInfo.version)
+        returnedVersion = "%s, %s" % (peekAppInfo.name, peekAppInfo.version)
 
         session.commit()
 
-        # Tell the agent we have an update
-        from peek_server.api.agent.sw_update.AgentSwUpdateHandler import agentSwUpdateHandler
-        agentSwUpdateHandler.notifyOfVersion(agentUpdateInfo.name,
-                                             agentUpdateInfo.version)
+        # Tell the server platform loader that there is an update
+        pappServerLoader.notifyOfPappVersionUpdate(peekAppInfo.name, peekAppInfo.version)
 
         session.expunge_all()
         session.close()

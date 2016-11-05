@@ -81,9 +81,9 @@ class SoftwareUpdateResource(RapuiResource):
 
 
 @addResourceCreator('/peek_server.update.platform', useLargeRequest=True)
-def createPeekUpdateResource(*args):
+def createPlatformUpdateResource(*args):
     return SoftwareUpdateResource(SoftwareUpdateResource.UPDATE_TYPE_PLATFORM, *args)
 
 @addResourceCreator('/peek_server.update.papp', useLargeRequest=True)
-def createAgentUpdateResource(*args):
+def createPappUpdateResource(*args):
     return SoftwareUpdateResource(SoftwareUpdateResource.UPDATE_TYPE_PAPP, *args)

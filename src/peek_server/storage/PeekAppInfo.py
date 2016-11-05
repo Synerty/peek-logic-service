@@ -29,7 +29,7 @@ class PeekAppInfo(Tuple, DeclarativeBase):
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server.papp.info'
+    __tupleType__ = 'peek_server.platform.info'
     __tablename__ = 'PeekAppInfo'
 
     id = Column(Integer, primary_key=True)
