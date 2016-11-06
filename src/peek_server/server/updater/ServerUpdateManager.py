@@ -14,7 +14,7 @@ from rapui.util.Directory import Directory
 __author__ = 'synerty'
 
 
-class PlatformUpdateManager(object):
+class ServerUpdateManager(object):
     PEEK_PLATFORM_VERSION_JSON = 'peek_platform_version.json'
 
     def __init__(self):
@@ -54,23 +54,6 @@ class PlatformUpdateManager(object):
 
         newVersionDir = platformVersionFile.path
 
-        serverTarFile = newVersionDir.replace('_platform_', '_server_') + '.tar.bz2'
-        agentTarFile = newVersionDir.replace('_platform_', '_agent_') + '.tar.bz2'
-        workerTarFile = newVersionDir.replace('_platform_', '_worker_') + '.tar.bz2'
-
-
-        if not directory.getFile(path=newVersionDir, name=serverTarFile):
-            raise Exception("Peek server software is missing from the platform update."
-                            " %s is missing." % serverTarFile)
-
-        if not directory.getFile(path=newVersionDir, name=agentTarFile):
-            raise Exception("Peek server agent is missing from the platform update."
-                            " %s is missing." % agentTarFile)
-
-        if not directory.getFile(path=newVersionDir, name=workerTarFile):
-            raise Exception("Peek server worker is missing from the platform update."
-                            " %s is missing." % workerTarFile)
-
         from peek_server.PeekServerConfig import peekServerConfig
 
 
@@ -83,5 +66,65 @@ class PlatformUpdateManager(object):
 
         shutil.move(os.path.join(directory.path, newVersionDir), newPath)
 
+    def updatePeekServer(self, newVersionDir):
 
-        # TODO, Restart server
+        home = expanduser("~")
+        newPath = os.path.join(home, newVersionDir)
+
+        oldPath = os.path.dirname(os.path.dirname(run_peek_server.__file__))
+
+        if os.path.exists(newPath):
+            oldPath = tempfile.mkdtemp(dir=home, prefix=newVersionDir)
+            shutil.move(newPath, oldPath)
+
+        shutil.move(os.path.join(directory.path, newVersionDir), newPath)
+
+        self._synlinkTo(home, newPath)
+
+        from peek_server.server import orm
+        from peek_server.server.orm import getNovaOrmSession
+        from peek_server.server.queue_processesors.DispQueueIndexer import dispQueueCompiler
+        from peek_server.server.queue_processesors.GridKeyQueueCompiler import gridKeyQueueCompiler
+
+        try:
+            try:
+                dispQueueCompiler.stop()
+            except AssertionError as e:
+                if "not running" not in str(e):
+                    raise
+
+            try:
+                gridKeyQueueCompiler.stop()
+            except AssertionError as e:
+                if "not running" not in str(e):
+                    raise
+
+            closeAllSessions()
+            orm.doMigration(orm.SynSqlaConn.dbEngine)
+            getNovaOrmSession()
+
+        except:
+            self._synlinkTo(home, oldPath)
+            dispQueueCompiler.start()
+            gridKeyQueueCompiler.start()
+            raise
+
+
+        reactor.callLater(1.0, self.restartAttune)
+
+        return newVersionDir
+
+    def _synlinkTo(self, home, newPath):
+        symLink = os.path.join(home, 'peek_server')
+        if os.path.exists(symLink):
+            os.remove(symLink)
+        os.symlink(newPath, symLink)
+
+    def restartAttune(self):
+        """Restarts the current program.
+        Note: this function does not return. Any cleanup action (like
+        saving data) must be done before calling this function."""
+        python = sys.executable
+        argv = list(sys.argv)
+        argv.insert(0,"-u")
+        os.execl(python, python, *argv)

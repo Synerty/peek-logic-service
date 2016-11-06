@@ -1,3 +1,4 @@
+import json
 import shutil
 import tarfile
 
@@ -14,7 +15,7 @@ __author__ = 'synerty'
 
 
 class PappUpdateManager(object):
-    PAPP_VERSION_TXT = "papp_version.txt"
+    PAPP_VERSION_JSON = "papp_version.json"
 
     def __init__(self):
         pass
@@ -34,28 +35,30 @@ class PappUpdateManager(object):
         directory = Directory()
         try:
             with tarfile.open(newSoftware.name) as tar:
-                tar.extract("%s/%s" % (dirName, self.PAPP_VERSION_TXT), directory.path)
+                tar.extract("%s/%s" % (dirName, self.PAPP_VERSION_JSON), directory.path)
 
         except KeyError as e:
             raise Exception("Uploaded archive does not contain a Peek App updater, %s"
                             % e.message)
         directory.scan()
 
-        pappVersion = directory.getFile(path=dirName, name=self.PAPP_VERSION_TXT)
+        pappVersion = directory.getFile(path=dirName, name=self.PAPP_VERSION_JSON)
 
         if '/' in pappVersion.path:
             raise Exception("Expected %s to be one level down, it's at %s"
-                            % (self.PAPP_VERSION_TXT, pappVersion.path))
+                            % (self.PAPP_VERSION_JSON, pappVersion.path))
 
         # Example
         """
-        Peek App - Noop
-        papp_noop
-        Synerty Pty Ltd
-        www.synerty.com
-        #PPA_VER#
-        #PPA_BUILD#
-        #BUILD_DATE#
+        {
+          "title": "Peek App - Noop",
+          "name": "papp_noop",
+          "company": "Synerty Pty Ltd",
+          "website": "www.synerty.com",
+          "version": "#PAPP_VER#",
+          "buildNumber": "#PAPP_BUILD#",
+          "buildDate": "#BUILD_DATE#"
+        }
         """
 
         peekAppInfo = PeekAppInfo()
@@ -63,13 +66,15 @@ class PappUpdateManager(object):
         peekAppInfo.dirName = dirName
 
         with pappVersion.open() as f:
-            peekAppInfo.title = f.readline().strip()
-            peekAppInfo.name = f.readline().strip()
-            peekAppInfo.creator = f.readline().strip()
-            peekAppInfo.website = f.readline().strip()
-            peekAppInfo.version = f.readline().strip()
-            peekAppInfo.buildNumber = f.readline().strip()
-            peekAppInfo.buildDate = f.readline().strip()
+            versionJson = json.load(f)
+
+        peekAppInfo.title = versionJson["title"]
+        peekAppInfo.name = versionJson["name"]
+        peekAppInfo.creator = versionJson["creator"]
+        peekAppInfo.website = versionJson["website"]
+        peekAppInfo.version = versionJson["version"]
+        peekAppInfo.buildNumber = versionJson["buildNumber"]
+        peekAppInfo.buildDate = versionJson["buildDate"]
 
         if not dirName.startswith(peekAppInfo.name):
             raise Exception("Peek app name '%s' does not match peek root dir name '%s"

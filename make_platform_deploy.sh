@@ -15,6 +15,10 @@ fi
 echo "New version is $VER"
 echo "New build is $BUILD"
 
+
+cp -p peek_server/peek_platform_changelog.json deploy
+cp -p peek_server/peek_platform_version.json deploy
+
 PLAT_DIR="peek_platform_$VER#$BUILD"
 mv deploy $PLAT_DIR
 
