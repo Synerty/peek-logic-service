@@ -13,7 +13,7 @@
 # Change the next 3 lines to suit where you install your script and what you want to call it
 HOME=/home/peek
 DIR=${HOME}/peek
-DAEMON="$DIR/peek_server.pyc"
+DAEMON="$DIR/run_peek_server.pyc"
 DAEMON_NAME=peek
 
 # This next line determines what user the script runs as.

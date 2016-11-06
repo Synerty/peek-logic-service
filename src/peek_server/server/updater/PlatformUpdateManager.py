@@ -31,8 +31,24 @@ class PlatformUpdateManager(object):
         if not tarfile.is_tarfile(newSoftware.name):
             raise Exception("Uploaded archive is not a tar file")
 
+        newVersion = self.updateToTarFile(newSoftware.name)
+
+        # Tell the peek server to install and restart
+        reactor.callLater(1.0, serverUpdateManager.notifyOfPlatformVersionUpdate,
+                          newVersion)
+
+        return newVersion
+
+    def updateToTarFile(self, newSoftwareTar):
+        ''' Update To Tar File
+
+        This method inspects the tar file and finally extracts it to the platform
+        path.
+
+        '''
+
         directory = Directory()
-        tarfile.open(newSoftware.name).extractall(directory.path)
+        tarfile.open(newSoftwareTar).extractall(directory.path)
         directory.scan()
 
         platformVersionFile = filter(lambda f: f.name == self.PEEK_PLATFORM_VERSION_JSON,
@@ -77,11 +93,5 @@ class PlatformUpdateManager(object):
             shutil.rmtree(newPath)
 
         shutil.move(os.path.join(directory.path, newVersionDir), newPath)
-
-        # TODO, Restart server, agents and workers
-
-        # Tell the server papp loader that there is an update
-        reactor.callLater(1.0, serverUpdateManager.notifyOfPlatformVersionUpdate,
-                          newVersion)
 
         return newVersion

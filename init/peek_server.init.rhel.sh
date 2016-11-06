@@ -23,7 +23,7 @@
 
 HOME=/home/peek
 DIR=${HOME}/peek
-DAEMON="$DIR/peek_server.pyc"
+DAEMON="$DIR/run_peek_server.pyc"
 DAEMON_NAME=peek
 DAEMON_USER=peek
 PYTHON=${HOME}/python/bin/python

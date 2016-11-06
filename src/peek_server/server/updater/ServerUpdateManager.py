@@ -23,6 +23,9 @@ class ServerUpdateManager(object):
         pass
 
     def notifyOfPlatformVersionUpdate(self, newVersion):
+        self.installAndRestart(newVersion)
+
+    def installAndRestart(self, newVersion):
 
         from peek_server.PeekServerConfig import peekServerConfig
 
