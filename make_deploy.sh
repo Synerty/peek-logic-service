@@ -23,7 +23,7 @@ mkdir -p $DIR
 
 # Source
 cp -pr rapui/src/rapui $DIR
-cp -pr peek_server/src/peek $DIR
+cp -pr peek_server/src/peek_server $DIR
 
 find $DIR -iname .git -exec rm -rf {} \; || true
 find $DIR -iname "test" -exec rm -rf {} \; 2> /dev/null || true
