@@ -8,6 +8,8 @@ from os.path import expanduser
 from twisted.internet import defer, reactor
 
 import run_peek_server
+from peek_server import storage
+from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage import closeAllSessions
 from rapui.util.Directory import Directory
 
@@ -15,58 +17,40 @@ __author__ = 'synerty'
 
 
 class ServerUpdateManager(object):
-    PEEK_PLATFORM_VERSION_JSON = 'peek_platform_version.json'
+    RUN_PEEK_SERVER_PY = 'run_peek_server.pyc'
 
     def __init__(self):
         pass
 
-    def processUpdate(self, namedTempFiles):
-        d = defer.succeed(namedTempFiles)
-        d.addCallback(self._processUpdate)
-        return d
-
-    def _processUpdate(self, namedTempFiles):
-        if len(namedTempFiles) != 1:
-            raise Exception("Expected 1 Peek Platform update, received %s"
-                            % len(namedTempFiles))
-
-        newSoftware = namedTempFiles[0]
-
-        if not tarfile.is_tarfile(newSoftware.name):
-            raise Exception("Uploaded archive is not a tar file")
-
-        directory = Directory()
-        tarfile.open(newSoftware.name).extractall(directory.path)
-        directory.scan()
-
-        platformVersionFile = filter(lambda f: f.name == self.PEEK_PLATFORM_VERSION_JSON,
-                        directory.files)
-        if len(platformVersionFile) != 1:
-            raise Exception("Uploaded archive does not contain a Peek Platform update"
-                            ", Expected 1 %s, got %s"
-                            % (self.PEEK_PLATFORM_VERSION_JSON, len(platformVersionFile)))
-
-        platformVersionFile = platformVersionFile[0]
-
-        if '/' in platformVersionFile.path:
-            raise Exception("Expected %s to be one level down, it's at %s"
-                            % (self.PEEK_PLATFORM_VERSION_JSON, platformVersionFile.path))
-
-        newVersionDir = platformVersionFile.path
+    def notifyOfPlatformVersionUpdate(self, newVersion):
 
         from peek_server.PeekServerConfig import peekServerConfig
 
+        newSoftwareTar = os.path.join(peekServerConfig.platformSoftwarePath,
+                                      'peek_platform_%s' % newVersion,
+                                      'peek_server_%s.tar.bz2' % newVersion)
 
-        newPath = os.path.join(peekServerConfig.platformSoftwarePath,
-                               newVersionDir)
+        if not tarfile.is_tarfile(newSoftwareTar):
+            raise Exception("Uploaded archive is not a tar file")
 
-        # Do we really need to keep the old version if it's the same build?
-        if os.path.exists(newPath):
-            shutil.rmtree(newPath)
+        directory = Directory()
+        tarfile.open(newSoftwareTar).extractall(directory.path)
+        directory.scan()
 
-        shutil.move(os.path.join(directory.path, newVersionDir), newPath)
+        runPeekServerPy = filter(lambda f: f.name == self.RUN_PEEK_SERVER_PY,
+                                 directory.files)
+        if len(runPeekServerPy) != 1:
+            raise Exception("Uploaded archive does not contain a Peek Server update"
+                            ", Expected 1 %s, got %s"
+                            % (self.RUN_PEEK_SERVER_PY, len(runPeekServerPy)))
 
-    def updatePeekServer(self, newVersionDir):
+        runPeekServerPy = runPeekServerPy[0]
+
+        if '/' in runPeekServerPy.path:
+            raise Exception("Expected %s to be one level down, it's at %s"
+                            % (self.RUN_PEEK_SERVER_PY, runPeekServerPy.path))
+
+        newVersionDir = runPeekServerPy.path
 
         home = expanduser("~")
         newPath = os.path.join(home, newVersionDir)
@@ -81,36 +65,16 @@ class ServerUpdateManager(object):
 
         self._synlinkTo(home, newPath)
 
-        from peek_server.server import orm
-        from peek_server.server.orm import getNovaOrmSession
-        from peek_server.server.queue_processesors.DispQueueIndexer import dispQueueCompiler
-        from peek_server.server.queue_processesors.GridKeyQueueCompiler import gridKeyQueueCompiler
-
         try:
-            try:
-                dispQueueCompiler.stop()
-            except AssertionError as e:
-                if "not running" not in str(e):
-                    raise
-
-            try:
-                gridKeyQueueCompiler.stop()
-            except AssertionError as e:
-                if "not running" not in str(e):
-                    raise
-
             closeAllSessions()
-            orm.doMigration(orm.SynSqlaConn.dbEngine)
-            getNovaOrmSession()
+            storage.doMigration(storage.SynSqlaConn.dbEngine)
+            getPeekServerOrmSession()
 
         except:
             self._synlinkTo(home, oldPath)
-            dispQueueCompiler.start()
-            gridKeyQueueCompiler.start()
             raise
 
-
-        reactor.callLater(1.0, self.restartAttune)
+        reactor.callLater(1.0, self._restartPeek)
 
         return newVersionDir
 
@@ -120,11 +84,14 @@ class ServerUpdateManager(object):
             os.remove(symLink)
         os.symlink(newPath, symLink)
 
-    def restartAttune(self):
+    def _restartPeek(self):
         """Restarts the current program.
         Note: this function does not return. Any cleanup action (like
         saving data) must be done before calling this function."""
         python = sys.executable
         argv = list(sys.argv)
-        argv.insert(0,"-u")
+        argv.insert(0, "-u")
         os.execl(python, python, *argv)
+
+
+serverUpdateManager = ServerUpdateManager()

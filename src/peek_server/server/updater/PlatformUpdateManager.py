@@ -1,14 +1,10 @@
 import shutil
-import sys
 import tarfile
-import tempfile
 
 import os
-from os.path import expanduser
 from twisted.internet import defer, reactor
 
-import run_peek_server
-from peek_server.storage import closeAllSessions
+from peek_server.server.updater.ServerUpdateManager import serverUpdateManager
 from rapui.util.Directory import Directory
 
 __author__ = 'synerty'
@@ -40,7 +36,7 @@ class PlatformUpdateManager(object):
         directory.scan()
 
         platformVersionFile = filter(lambda f: f.name == self.PEEK_PLATFORM_VERSION_JSON,
-                        directory.files)
+                                     directory.files)
         if len(platformVersionFile) != 1:
             raise Exception("Uploaded archive does not contain a Peek Platform update"
                             ", Expected 1 %s, got %s"
@@ -53,11 +49,11 @@ class PlatformUpdateManager(object):
                             % (self.PEEK_PLATFORM_VERSION_JSON, platformVersionFile.path))
 
         newVersionDir = platformVersionFile.path
+        newVersion = newVersionDir.replace("peek_platform_", "")
 
         serverTarFile = newVersionDir.replace('_platform_', '_server_') + '.tar.bz2'
         agentTarFile = newVersionDir.replace('_platform_', '_agent_') + '.tar.bz2'
         workerTarFile = newVersionDir.replace('_platform_', '_worker_') + '.tar.bz2'
-
 
         if not directory.getFile(path=newVersionDir, name=serverTarFile):
             raise Exception("Peek server software is missing from the platform update."
@@ -73,7 +69,6 @@ class PlatformUpdateManager(object):
 
         from peek_server.PeekServerConfig import peekServerConfig
 
-
         newPath = os.path.join(peekServerConfig.platformSoftwarePath,
                                newVersionDir)
 
@@ -83,5 +78,10 @@ class PlatformUpdateManager(object):
 
         shutil.move(os.path.join(directory.path, newVersionDir), newPath)
 
+        # TODO, Restart server, agents and workers
 
-        # TODO, Restart server
+        # Tell the server papp loader that there is an update
+        reactor.callLater(1.0, serverUpdateManager.notifyOfPlatformVersionUpdate,
+                          newVersion)
+
+        return newVersion
