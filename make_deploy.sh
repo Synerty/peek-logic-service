@@ -36,7 +36,7 @@ find $DIR -iname ".idea" -exec rm -rf {} \; || true
 
 
 # DB Upgrade
-cp -p peek_server/alembic.ini $DIR
+ln -s /home/peek/peek.home/config.cfg $DIR/alembic.ini
 cp -pr peek_server/alembic $DIR
 
 # Init scripts, etc
