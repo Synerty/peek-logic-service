@@ -5,7 +5,7 @@ from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.trial import unittest
 
-from PappServerLoader import pappLoader
+from PappServerLoader import pappServerLoader
 
 logger = logging.getLogger(__name__)
 
@@ -14,11 +14,11 @@ PAPP_NOOP = "papp_noop"
 
 class PappLoaderTest(unittest.TestCase):
     def testLoadAll(self):
-        pappLoader.loadAllPapps()
+        pappServerLoader.loadAllPapps()
 
-        logger.info(pappLoader.listPapps())
+        logger.info(pappServerLoader.listPapps())
 
-        for papp in pappLoader._loadedPapps.values():
+        for papp in pappServerLoader._loadedPapps.values():
             logger.info("configUrl = %s", papp.configUrl())
 
         d = Deferred()
@@ -28,10 +28,10 @@ class PappLoaderTest(unittest.TestCase):
     def testUnregister(self):
         loadedModuleBefore = set(sys.modules)
 
-        pappLoader.loadPapp(PAPP_NOOP)
+        pappServerLoader.loadPapp(PAPP_NOOP)
         self.assertTrue(PAPP_NOOP in sys.modules)
 
-        pappLoader.unloadPapp(PAPP_NOOP)
+        pappServerLoader.unloadPapp(PAPP_NOOP)
 
         loadedModuleNow = set(sys.modules) - loadedModuleBefore
 
@@ -40,10 +40,10 @@ class PappLoaderTest(unittest.TestCase):
             self.assertFalse(PAPP_NOOP in modName)
 
     def testReRegister(self):
-        pappLoader.loadPapp(PAPP_NOOP)
-        pappLoader.loadPapp(PAPP_NOOP)
+        pappServerLoader.loadPapp(PAPP_NOOP)
+        pappServerLoader.loadPapp(PAPP_NOOP)
 
-        for papp in pappLoader._loadedPapps.values():
+        for papp in pappServerLoader._loadedPapps.values():
             logger.info("configUrl = %s", papp.configUrl())
 
         d = Deferred()
