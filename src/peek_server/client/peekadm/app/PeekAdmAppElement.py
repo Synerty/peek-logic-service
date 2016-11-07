@@ -10,5 +10,6 @@ from rapui.site.ElementUtil import RapuiElement, addPageElement
 @addPageElement('peekadm')
 @addPageElement('peekadm/setting')
 @addPageElement('peekadm/update')
+@addPageElement('peekadm/env')
 class ContentElement(RapuiElement):
     xmlFileName = 'PeekAdmAppTemplate.xml'

@@ -5,7 +5,7 @@
 var peekAdmConfigDashboardPath = '/peekadm';
 var peekAdmConfigSettingPath = '/peekadm/setting';
 var peekAdmConfigUpdatePath = '/peekadm/update';
-var peekAdmConfigCoordSetPath = '/peekadm/coordset';
+var peekAdmConfigEnvPath = '/peekadm/env';
 
 define([
             // Main app requirements
@@ -14,7 +14,7 @@ define([
             "angular-route", "angular-bootstrap",
             // Admin interface modules
             "PeekAdmUpdateMod", "PeekAdmSettingMod", "PeekAdmNavbarMod",
-            "PeekAdmDashboardMod"
+            "PeekAdmDashboardMod", "PeekAdmEnvMod"
         ],
         function () {
 
@@ -24,7 +24,9 @@ define([
             var peekAdminApp = angular.module('peekAdminApp', ['rapuiMod', 'ngRoute',
                 'ui.bootstrap',
                 'peekAdmAppCtrlMod', 'peekAdmDashboardMod', 'peekAdmNavbarMod',
-                'peekAdmUpdateMod', 'peekAdmSettingMod']);
+                'peekAdmUpdateMod', 'peekAdmSettingMod',
+                'peekAdmEnvMod'
+            ]);
 
             // --------------------- Angular Application----------------------------
 
@@ -39,7 +41,7 @@ define([
                 $rootScope.peekAdmConfigDashboardPath = peekAdmConfigDashboardPath;
                 $rootScope.peekAdmConfigSettingPath = peekAdmConfigSettingPath;
                 $rootScope.peekAdmConfigUpdatePath = peekAdmConfigUpdatePath;
-                $rootScope.peekAdmConfigCoordSetPath = peekAdmConfigCoordSetPath;
+                $rootScope.peekAdmConfigEnvPath = peekAdmConfigEnvPath;
             });
 
 
@@ -58,8 +60,8 @@ define([
                 caseInsensitiveMatch: true
             };
 
-            var peekAdmCoordSetRoute = {
-                templateUrl: 'view/PeekAdmCoordSet.html',
+            var peekAdmEnvRoute = {
+                templateUrl: 'view/PeekAdmEnv.html',
                 caseInsensitiveMatch: true
             };
 
@@ -72,7 +74,7 @@ define([
                             .when(peekAdmConfigDashboardPath, peekAdmDashboardRoute)
                             .when(peekAdmConfigSettingPath, peekAdmSettingRoute)
                             .when(peekAdmConfigUpdatePath, peekAdmUpdateRoute)
-                            .when(peekAdmConfigCoordSetPath, peekAdmCoordSetRoute)
+                            .when(peekAdmConfigEnvPath, peekAdmEnvRoute)
                             .otherwise({
                                 redirectTo: peekAdmConfigDashboardPath
                             })

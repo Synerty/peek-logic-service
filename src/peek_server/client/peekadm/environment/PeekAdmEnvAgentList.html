@@ -1,0 +1,50 @@
+<div ng-controller="PeekAdmEnvAgentListCtrl as agentListC">
+    <h3>Peek Agents</h3>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>IP</th>
+            <th>Description</th>
+            <th>Server</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr ng-repeat="item in workers">
+            <td><input type="text" ng-model="item.name"
+                       class="form-control"/></td>
+            <td><input type="text" ng-model="item.ip"
+                       class="form-control"/></td>
+            <td><input type="text" ng-model="item.description"
+                       class="form-control"/></td>
+            <td><select  ng-model="item.serverId"
+                       class="form-control"/></td>
+            <!--
+            <td>
+                <button ng-click="item.enabled = !item.enabled"
+                        type="button"
+                        class="form-control btn btn-default"
+                        ng-class="{active:item.enabled}">
+                    <span ng-show="item.enabled">Enabled</span>
+                    <span ng-hide="item.enabled">Disabled</span>
+                </button>
+            </td>
+            -->
+        </tr>
+
+        </tbody>
+    </table>
+    <div class="btn-toolbar">
+        <div class="btn-group">
+            <div class="btn btn-default" ng-click='saveEnvs()'>
+                Save
+            </div>
+            <div class="btn btn-default" ng-click='loadEnvs()'>
+                Reset
+            </div>
+
+        </div>
+    </div>
+    <br/>
+</div>
