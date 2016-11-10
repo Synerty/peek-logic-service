@@ -28,6 +28,7 @@ class SynSqlaConn(object):
     ScopedSession = None
 
     dbEngineArgs = {}
+    sqlaConnectUrl = None
 
 
 def closeAllSessions():
@@ -39,10 +40,8 @@ def getPeekServerOrmSession():
     if SynSqlaConn.ScopedSession:
         return SynSqlaConn.ScopedSession()
 
-    from peek_server.PeekServerConfig import peekServerConfig
-
     SynSqlaConn.dbEngine = create_engine(
-        peekServerConfig.dbConnectString,
+        SynSqlaConn.sqlaConnectUrl,
         echo=False,
         **SynSqlaConn.dbEngineArgs
     )
@@ -58,14 +57,14 @@ def getPeekServerOrmSession():
     return SynSqlaConn.ScopedSession()
 
 
-def checkForeignKeys(engine):
-    from DeclarativeBase import DeclarativeBase
-    missing = sqlalchemy_utils.functions.non_indexed_foreign_keys(
-        DeclarativeBase.metadata,
-        engine=engine)
-    for table, keys in missing.items():
-        for key in keys:
-            logger.warning("Missing index on ForeignKey %s" % key.columns)
+# def checkForeignKeys(engine):
+#     from DeclarativeBase import DeclarativeBase
+#     missing = sqlalchemy_utils.functions.non_indexed_foreign_keys(
+#         DeclarativeBase.metadata,
+#         engine=engine)
+#     for table, keys in missing.items():
+#         for key in keys:
+#             logger.warning("Missing index on ForeignKey %s" % key.columns)
 
 
 sequenceMutex = mutex()

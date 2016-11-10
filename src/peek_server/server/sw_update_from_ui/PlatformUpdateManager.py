@@ -4,7 +4,7 @@ import tarfile
 import os
 from twisted.internet import defer, reactor
 
-from peek_server.server.updater.ServerUpdateManager import serverUpdateManager
+from peek_server.server.sw_update_from_ui.ServerUpdateManager import serverUpdateManager
 from rapui.util.Directory import Directory
 
 __author__ = 'synerty'
@@ -76,7 +76,7 @@ class PlatformUpdateManager(object):
                             " %s is missing." % serverTarFile)
 
         if not directory.getFile(path=newVersionDir, name=agentTarFile):
-            raise Exception("Peek server agent is missing from the platform update."
+            raise Exception("Peek server platform is missing from the platform update."
                             " %s is missing." % agentTarFile)
 
         if not directory.getFile(path=newVersionDir, name=workerTarFile):

@@ -17,8 +17,8 @@ from twisted.internet import reactor
 from twisted.python.failure import Failure
 from twisted.web.server import NOT_DONE_YET
 
-from peek_server.server.updater.PlatformUpdateManager import PlatformUpdateManager
-from peek_server.server.updater.PappUpdateManager import PappUpdateManager
+from peek_server.server.sw_update_from_ui.PlatformUpdateManager import PlatformUpdateManager
+from peek_server.server.sw_update_from_ui.PappUpdateManager import PappUpdateManager
 from rapui.site.ResourceUtil import RapuiResource, addResourceCreator
 
 logger = logging.getLogger(name=__name__)
@@ -40,12 +40,12 @@ class SoftwareUpdateResource(RapuiResource):
                       }[self._updateType]
 
     def render_GET(self, request):
-        # TODO, This is where the agent gets it's lates download from
+        # TODO, This is where the platform gets it's lates download from
         raise Exception("Updates must be done via the UI")
 
     def render_POST(self, request):
         request.responseHeaders.setRawHeaders('content-type', ['text/plain'])
-        logger.info("received %s updater update request" % self._desc)
+        logger.info("received %s sw_update_from_ui update request" % self._desc)
 
         try:
             from peek_server.PeekServerConfig import peekServerConfig
@@ -62,7 +62,7 @@ class SoftwareUpdateResource(RapuiResource):
         def good(data):
             request.write(json.dumps({'message': str(data)}))
             request.finish()
-            logger.info("Finished updating %s updater" % self._desc)
+            logger.info("Finished updating %s sw_update_from_ui" % self._desc)
 
         def bad(failure):
             request.write(json.dumps({'error': str(failure.value)}))

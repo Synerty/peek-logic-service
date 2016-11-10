@@ -13,58 +13,71 @@ import logging
 
 import os
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.sql.expression import desc
 from twisted.web.server import NOT_DONE_YET
 
 from peek_server.storage import getPeekServerOrmSession
 # from peek_server.storage.AgentData import AgentUpdateInfo
+from peek_server.storage.PeekAppInfo import PeekAppInfo
 from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFile, \
     addResourceCreator
 
 logger = logging.getLogger(__name__)
 
-class AgentSwUpdateResource(RapuiResource):
+
+class PappUpdateDownloadResource(RapuiResource):
     isLeaf = True
     isGzipped = True
+
+    AGENT = 1
+    WORKER = 2
+
+    def __init__(self, userAccess, component):
+        RapuiResource.__init__(self, userAccess)
+        self._component = component
 
     def render_GET(self, request):
         name = request.args.get('name', [None])[0]
         version = request.args.get('version', [None])[0]
 
         if not name and not version:
-            msg = "Download requires agent name and version, Name=%s, Version=%s"
-            msg %= (name, version)
+            msg = "Download requires peek app name, Name=%s" % name
             logger.error(msg)
             request.write(msg)
             request.finish()
             return NOT_DONE_YET
 
-        logger.debug("Agent Download Resource GET, name=%s, version=%s",
-                     name, version)
+        logger.debug("Papp Download Resource GET, name=%s, version=%s",
+                      name, version)
 
         session = getPeekServerOrmSession()
-        qry = session.query(AgentUpdateInfo).filter(AgentUpdateInfo.name == name)
-        if version:
-            qry = qry.filter(AgentUpdateInfo.version == version)
+        qry = session.query(PeekAppInfo).filter(PeekAppInfo.name == name)
 
         try:
-            agentInfo = qry.one()
+            if version:
+                pappInfo = qry.filter(PeekAppInfo.version == version).one()
+            else:
+                # Choose the latest
+                pappInfo = qry.order_by(desc(PeekAppInfo.id)).first()
+
 
         except NoResultFound as e:
-            logger.warning("There are no agent builds for agent %s, version %s",
+            logger.warning("There are no builds for papp %s, version %s",
                            name, version)
             request.finish()
             return NOT_DONE_YET
 
-        from peek_server.AppConfig import appConfig
-        appConfig.platformSoftwarePath
+        from peek_server.PeekServerConfig import peekServerConfig
 
-        fillFilePath = os.path.join(appConfig.platformSoftwarePath, agentInfo.fileName)
+
+        newSoftwareTar = os.path.join(peekServerConfig.pappSoftwarePath, pappInfo.fileName)
 
         request.responseHeaders.setRawHeaders('content-type',
                                               ['application/octet-stream'])
-        return resourceCacheAndServeStaticFile(request, fillFilePath)
+
+        return resourceCacheAndServeStaticFile(request, newSoftwareTar)
 
 
-@addResourceCreator('/peek_server.agent.sw_update.download')
-def _creator(userAccess):
-    return AgentSwUpdateResource(userAccess)
+@addResourceCreator('/peek_server.sw_update_client.papp.download')
+def _creatorWorker(userAccess):
+    return PappUpdateDownloadResource(userAccess)

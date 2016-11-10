@@ -51,7 +51,7 @@ define([
                     var self = this;
 
                     self.loader = new AngFormLoadController($scope,
-                            {key: "peakadm.env.agent.list.data"}, {
+                            {key: "peakadm.env.platform.list.data"}, {
                                 objName: 'agents',
                                 dataIsArray: true,
                                 actionPostfix: 'Agents'

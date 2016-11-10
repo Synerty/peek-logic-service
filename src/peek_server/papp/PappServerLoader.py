@@ -4,11 +4,10 @@ import sys
 from _collections import defaultdict
 
 import os
-
-from peek_server.papp.PappInfoUtil import getLatestPappVersionInfos
 from peek_server.papp.PappLoaderBase import PappLoaderBase
+
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
-from peek_server.storage import getPeekServerOrmSession
+from peek_server.server.sw_update_server.PappInfoUtil import getLatestPappVersionInfos
 from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths
 from rapui.vortex.PayloadIO import PayloadIO
 from rapui.vortex.Tuple import removeTuplesForTupleNames, \

@@ -65,7 +65,7 @@ class _EnvWorkerListHandlerExtension(OrmCrudHandlerExtension):
 # agents
 agentListDataKey = {
     'papp': 'peek_server',
-    'key': "peakadm.env.agent.list.data"
+    'key': "peakadm.env.platform.list.data"
 }
 
 

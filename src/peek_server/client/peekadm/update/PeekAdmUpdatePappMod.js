@@ -10,7 +10,7 @@ define([
         ], function (AngFormLoadController) {
             var peekAdmUpdatePappMod = angular.module('peekAdmUpdatePappMod', ['ngFileUpload']);
 
-// ------------- Controller for updating updater
+// ------------- Controller for updating sw_update_from_ui
             peekAdmUpdatePappMod.controller('PeekAdmUpdatePappCtrl', ['$scope', 'Upload',
                 function ($scope, Upload) {
                     var self = this;

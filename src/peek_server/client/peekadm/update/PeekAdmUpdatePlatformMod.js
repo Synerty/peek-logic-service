@@ -13,7 +13,7 @@ define([
                     ['ngFileUpload']);
 
 
-            // ------------- Controller for updating updater
+            // ------------- Controller for updating sw_update_from_ui
             peekAdmUpdatePlatformMod.controller('PeekAdmUpdatePlatformCtrl', [
                 '$scope', 'Upload',
                 function ($scope, Upload) {

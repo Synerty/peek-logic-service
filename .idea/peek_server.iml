@@ -8,6 +8,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="rapui" />
     <orderEntry type="module" module-name="papp_base" />
+    <orderEntry type="module" module-name="peek_platform" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />

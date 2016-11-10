@@ -68,7 +68,7 @@ class PeekEnvAgents(Tuple, DeclarativeBase):
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server.env.agent'
+    __tupleType__ = 'peek_server.env.platform'
     __tablename__ = 'PeekEnvAgents'
 
     id = Column(Integer, primary_key=True)

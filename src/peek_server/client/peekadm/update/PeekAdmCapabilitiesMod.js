@@ -10,7 +10,7 @@ define([
         ], function (PayloadEndpoint, Tuple) {
             var peekAdmCapabilitiesMod = angular.module('peekAdmCapabilitiesMod', []);
 
-            // ------------- Controller for licensing updater
+            // ------------- Controller for licensing sw_update_from_ui
             peekAdmCapabilitiesMod.controller('PeekAdmCapabilitiesSoftwareCtrl', ['$scope',
                 function ($scope) {
                     var self = this;

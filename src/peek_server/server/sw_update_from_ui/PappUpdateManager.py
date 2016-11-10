@@ -23,7 +23,7 @@ class PappUpdateManager(object):
     @deferToThreadWrap
     def processUpdate(self, namedTempFiles):
         if len(namedTempFiles) != 1:
-            raise Exception("Expected 1 agent update archive, received %s"
+            raise Exception("Expected 1 platform update archive, received %s"
                             % len(namedTempFiles))
 
         newSoftware = namedTempFiles[0]
@@ -38,7 +38,7 @@ class PappUpdateManager(object):
                 tar.extract("%s/%s" % (dirName, self.PAPP_VERSION_JSON), directory.path)
 
         except KeyError as e:
-            raise Exception("Uploaded archive does not contain a Peek App updater, %s"
+            raise Exception("Uploaded archive does not contain a Peek App sw_update_from_ui, %s"
                             % e.message)
         directory.scan()
 
@@ -119,6 +119,6 @@ class PappUpdateManager(object):
     def restartAgent(self, agentUpdateInfo):
         """ Restart Agent
 
-        Send a message to the agent to restart, it should auto update
+        Send a message to the platform to restart, it should auto update
         """
         pass

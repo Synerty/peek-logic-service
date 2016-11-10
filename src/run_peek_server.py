@@ -4,10 +4,10 @@
  *
  *  Copyright Synerty Pty Ltd 2013
  *
- *  This updater is proprietary, you are not free to copy
+ *  This sw_update_from_ui is proprietary, you are not free to copy
  *  or redistribute this code in any format.
  *
- *  All rights to this updater are reserved by
+ *  All rights to this sw_update_from_ui are reserved by
  *  Synerty Pty Ltd
  *
 """
@@ -39,17 +39,7 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------
 # Set the parallelism of the database and reactor
 
-from peek_server import storage
-from peek_server.storage import getPeekServerOrmSession
-
 reactor.suggestThreadPoolSize(10)
-storage.SynSqlaConn.dbEngineArgs = {
-    'pool_size': 20,  # Number of connections to keep open
-    'max_overflow': 50,  # Number that the pool size can exceed when required
-    'pool_timeout': 60,  # Timeout for getting conn from pool
-    'pool_recycle': 600  # Reconnect?? after 10 minutes
-}
-
 defer.setDebugging(True)
 
 
@@ -59,21 +49,32 @@ def main():
     # import pydevd
     # pydevd.settrace(suspend=False)
 
+    from peek_platform import PeekPlatformConfig
+    PeekPlatformConfig.componentName = "peek_server"
+
+    # The config depends on the componentName, order is important
     from peek_server.PeekServerConfig import peekServerConfig
+    PeekPlatformConfig.config = peekServerConfig
 
     # Set paths for the Directory object
-    DirSettings.defaultDirChmod = peekServerConfig.defaultDirChmod
+    DirSettings.defaultDirChmod = peekServerConfig.DEFAULT_DIR_CHMOD
     DirSettings.tmpDirPath = peekServerConfig.tmpPath
 
     # Set default logging level
     logging.root.setLevel(peekServerConfig.loggingLevel)
 
+    # Configure sql alchemy
+    from peek_server import storage
+    storage.SynSqlaConn.dbEngineArgs = peekServerConfig.sqlaEngineArgs
+    storage.SynSqlaConn.sqlaConnectUrl = peekServerConfig.sqlaConnectUrl
+
     # Force model migration
+    from peek_server.storage import getPeekServerOrmSession
     session = getPeekServerOrmSession()
     session.close()
 
 
-    sitePort = 8000
+    sitePort = peekServerConfig.sitePort
     setupSite(sitePort, debug=True)
     # setupSite(8000, debug=True, protectedResource=AuthSessionWrapper())
 

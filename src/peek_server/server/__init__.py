@@ -1,3 +1,3 @@
 __author__ = 'synerty'
 
-import updater
+import sw_update_from_ui
