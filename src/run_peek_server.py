@@ -11,13 +11,14 @@
  *  Synerty Pty Ltd
  *
 """
-
+from peek_server import importPackages
 from rapui import LoggingSetup
 from rapui.util.Directory import DirSettings
 
 LoggingSetup.setup()
 
 import logging
+import os
 
 from twisted.internet import reactor, defer
 
@@ -41,6 +42,18 @@ logger = logging.getLogger(__name__)
 
 reactor.suggestThreadPoolSize(10)
 defer.setDebugging(True)
+
+
+def getAlembicDir():
+    p = os.path
+    pappDir = p.dirname(__file__)
+
+    if p.isdir(p.join(pappDir, "alembic")):
+        # Deployed
+        return p.join(pappDir, "alembic")
+    else:
+        # Checked out code
+        return p.join(p.dirname(pappDir), "alembic")
 
 
 def main():
@@ -67,12 +80,15 @@ def main():
     from peek_server import storage
     storage.SynSqlaConn.dbEngineArgs = peekServerConfig.sqlaEngineArgs
     storage.SynSqlaConn.sqlaConnectUrl = peekServerConfig.sqlaConnectUrl
+    storage.SynSqlaConn.alembicDir = getAlembicDir()
 
     # Force model migration
     from peek_server.storage import getPeekServerOrmSession
     session = getPeekServerOrmSession()
     session.close()
 
+    # Import remaining components
+    importPackages()
 
     sitePort = peekServerConfig.sitePort
     setupSite(sitePort, debug=True)

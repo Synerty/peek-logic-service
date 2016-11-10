@@ -29,13 +29,6 @@ class PappUpdateDownloadResource(RapuiResource):
     isLeaf = True
     isGzipped = True
 
-    AGENT = 1
-    WORKER = 2
-
-    def __init__(self, userAccess, component):
-        RapuiResource.__init__(self, userAccess)
-        self._component = component
-
     def render_GET(self, request):
         name = request.args.get('name', [None])[0]
         version = request.args.get('version', [None])[0]

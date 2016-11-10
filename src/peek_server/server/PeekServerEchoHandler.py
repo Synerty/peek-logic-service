@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 # The filter we listen on
 peekServerEchoFilt = {
-    'papp': 'peek_server',
-    'key': "peek_server.sw_update_server.echo"
+    'papp' : 'peek_platform',
+    'key': "peek_platform.echo"
 }  # LISTEN / SEND
 
 

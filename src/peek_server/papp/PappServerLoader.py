@@ -4,8 +4,8 @@ import sys
 from _collections import defaultdict
 
 import os
-from peek_server.papp.PappLoaderBase import PappLoaderBase
 
+from peek_platform.papp.PappLoaderBase import PappLoaderBase
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
 from peek_server.server.sw_update_server.PappInfoUtil import getLatestPappVersionInfos
 from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths

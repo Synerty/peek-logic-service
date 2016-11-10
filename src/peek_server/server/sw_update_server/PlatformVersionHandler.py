@@ -33,14 +33,14 @@ class PeekServerVersionHandler(object):
                                            version=pappVersionInfo.version))
 
         vortexSendTuple(filt=peekPlatformVersionFilt,
-                        tuples=data,
+                        tuple_=data,
                         vortexUuid=vortexUuid)
 
     def notifyOfVersion(self, name, version, vortexUuid=None):
         data = [PeekSwVersionTuple(name=name, version=version)]
 
         vortexSendTuple(filt=peekPlatformVersionFilt,
-                        tuples=data,
+                        tuple_=data,
                         vortexUuid=vortexUuid)
 
 

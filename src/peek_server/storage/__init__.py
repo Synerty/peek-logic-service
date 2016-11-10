@@ -12,6 +12,7 @@
 """
 import logging
 from mutex import mutex
+from tempfile import NamedTemporaryFile
 from time import sleep
 
 import os
@@ -19,6 +20,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.schema import Sequence
+import sqlalchemy_utils
+from textwrap import dedent
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +32,7 @@ class SynSqlaConn(object):
 
     dbEngineArgs = {}
     sqlaConnectUrl = None
+    alembicDir = None
 
 
 def closeAllSessions():
@@ -47,16 +51,16 @@ def getPeekServerOrmSession():
     )
 
     # Always required as we need to install geoalchemy
-    doMigration(SynSqlaConn.dbEngine)
+    doMigration()
 
-    # checkForeignKeys(engine=SqlaConn.dbEngine)
+    # checkForeignKeys(engine=SynSqlaConn.dbEngine)
 
     SynSqlaConn.ScopedSession = scoped_session(
         sessionmaker(bind=SynSqlaConn.dbEngine))
 
     return SynSqlaConn.ScopedSession()
 
-
+#
 # def checkForeignKeys(engine):
 #     from DeclarativeBase import DeclarativeBase
 #     missing = sqlalchemy_utils.functions.non_indexed_foreign_keys(
@@ -97,32 +101,43 @@ def getPgSequenceGenerator(Declarative, count, session=None):
         startId += 1
 
 
-def _runAlembicCommand(command, *args):
-    from peek_server.PeekServerConfig import peekServerConfig
+def doMigration():
+    from alembic import command
+    _runAlembicCommand(command.upgrade, "head")
 
-    curdir = os.getcwd()
-    os.chdir(os.path.dirname(peekServerConfig.alembicIniPath))
+
+def _runAlembicCommand(command, *args):
+    configFile = _writeAlembicIni()
 
     # then, load the Alembic configuration and generate the
     # version table, "stamping" it with the most recent rev:
     from alembic.config import Config
-    alembic_cfg = Config(peekServerConfig.alembicIniPath)
+    alembic_cfg = Config(configFile.name)
     command(alembic_cfg, *args)
 
-    os.chdir(curdir)
 
+def _writeAlembicIni():
+    cfg = '''
+    [alembic]
+    script_location = %(alembicDir)s
+    sourceless = true
+    sqlalchemy.url = %(url)s
 
-def doCreateAll(engine):
-    from DeclarativeBase import DeclarativeBase
-    DeclarativeBase.metadata.create_all(SynSqlaConn.dbEngine)
+    [alembic:exclude]
+    tables = spatial_ref_sys
 
-    from alembic import command
-    _runAlembicCommand(command.stamp, "head")
+    [logging]
+    default_level = INFO
+    '''
+    cfg = dedent(cfg)
 
+    cfg %= {'alembicDir': SynSqlaConn.alembicDir,
+            'url': SynSqlaConn.sqlaConnectUrl}
 
-def doMigration(engine):
-    from alembic import command
-    _runAlembicCommand(command.upgrade, "head")
+    tempFile = NamedTemporaryFile()
+    tempFile.write(cfg)
+    tempFile.flush()
+    return tempFile
 
 
 import PeekAppInfo
