@@ -79,7 +79,7 @@ def main():
     # Configure sql alchemy
     from peek_server import storage
     storage.SynSqlaConn.dbEngineArgs = peekServerConfig.sqlaEngineArgs
-    storage.SynSqlaConn.sqlaConnectUrl = peekServerConfig.sqlaConnectUrl
+    storage.SynSqlaConn.dbConnectString = peekServerConfig.dbConnectString
     storage.SynSqlaConn.alembicDir = getAlembicDir()
 
     # Force model migration

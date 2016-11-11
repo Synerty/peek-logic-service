@@ -31,7 +31,7 @@ class SynSqlaConn(object):
     ScopedSession = None
 
     dbEngineArgs = {}
-    sqlaConnectUrl = None
+    dbConnectString = None
     alembicDir = None
 
 
@@ -45,7 +45,7 @@ def getPeekServerOrmSession():
         return SynSqlaConn.ScopedSession()
 
     SynSqlaConn.dbEngine = create_engine(
-        SynSqlaConn.sqlaConnectUrl,
+        SynSqlaConn.dbConnectString,
         echo=False,
         **SynSqlaConn.dbEngineArgs
     )
@@ -132,7 +132,7 @@ def _writeAlembicIni():
     cfg = dedent(cfg)
 
     cfg %= {'alembicDir': SynSqlaConn.alembicDir,
-            'url': SynSqlaConn.sqlaConnectUrl}
+            'url': SynSqlaConn.dbConnectString}
 
     tempFile = NamedTemporaryFile()
     tempFile.write(cfg)
