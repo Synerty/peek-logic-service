@@ -63,16 +63,16 @@ class PappSwUploadManager(object):
 
         # Example
         """
-                {
-                  "title": "Peek App - Noop",
-                  "name": "papp_noop",
-                  "company": "Synerty Pty Ltd",
-                  "website": "www.synerty.com",
-                  "version": "#PAPP_VER#",
-                  "buildNumber": "#PAPP_BUILD#",
-                  "buildDate": "#BUILD_DATE#"
-                }
-                """
+        {
+          "title": "Peek App - Noop",
+          "name": "papp_noop",
+          "company": "Synerty Pty Ltd",
+          "website": "www.synerty.com",
+          "version": "#PAPP_VER#",
+          "buildNumber": "#PAPP_BUILD#",
+          "buildDate": "#BUILD_DATE#"
+        }
+        """
 
         peekAppInfo = PeekAppInfo()
         peekAppInfo.fileName = "%s.tar.bz2" % dirName
@@ -97,20 +97,9 @@ class PappSwUploadManager(object):
 
         newPath = os.path.join(peekServerConfig.pappSoftwarePath, dirName)
 
-        # Move the old extracted directory asside
-        if os.path.exists(newPath):
-            if os.path.isdir(newPath):
-                shutil.rmtree(newPath)
-            else:
-                os.remove(newPath)
-
-        # Extract the TAR file ????????!!!!! NOOOO
-        with tarfile.open(newSoftwareTar.name) as tar:
-            tar.extractall(peekServerConfig.pappSoftwarePath)
-
         # Install the TAR file
         newSoftwareTar.delete = False
-        fullNewTarPath = os.path.join(newPath, peekAppInfo.fileName)
+        fullNewTarPath = os.path.join(peekServerConfig.pappSoftwarePath, peekAppInfo.fileName)
         shutil.move(newSoftwareTar.name, fullNewTarPath)
 
         session = getPeekServerOrmSession()
