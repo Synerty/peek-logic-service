@@ -70,12 +70,14 @@ class ServerUpdateManager(object):
 
         try:
             closeAllSessions()
-            storage.doMigration(storage.SynSqlaConn.dbEngine)
+            storage.doMigration()
             getPeekServerOrmSession()
 
         except:
             self._synlinkTo(home, oldPath)
             raise
+
+        peekServerConfig.platformVersion = newVersion
 
         reactor.callLater(1.0, self._restartPeek)
 

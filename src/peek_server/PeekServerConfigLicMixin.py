@@ -26,6 +26,10 @@ class PeekServerConfigLicMixin:
         from peek_server.server.auth import AuthValue
         from peek_server.storage.Setting import globalSetting, SYSTEM_NAME
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
+
+        if not hasattr(self, '_capabilities'):
+            self._capabilities = None
+
         if not self._capabilities:
             data = internalSetting()[CAPABILITIES_KEY]
             AuthValue.loadCapabilities(self, data)

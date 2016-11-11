@@ -54,6 +54,6 @@ class PlatformUpdateDownloadResource(RapuiResource):
         return resourceCacheAndServeStaticFile(request, newSoftwareTar)
 
 
-@addResourceCreator('/peek_server.sw_update_client.download')
+@addResourceCreator('/peek_server.sw_update_client.platform.download')
 def _creatorAgent(userAccess):
     return PlatformUpdateDownloadResource(userAccess)

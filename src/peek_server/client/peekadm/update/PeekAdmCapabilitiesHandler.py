@@ -28,7 +28,7 @@ class __CrudHandler():
         result = None
         session = getPeekServerOrmSession()
 
-        # Force reload on page load
+        # Force capabilities reload on page load
         peekServerConfig._capabilities = None
 
         # This is an update
