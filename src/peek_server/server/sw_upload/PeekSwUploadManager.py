@@ -33,7 +33,7 @@ class PeekSwUploadManager(object):
 
         # Tell the peek server to install and restart
 
-        reactor.callLater(0, peekSwInstallManager.installAndReload, newVersion)
+        reactor.callLater(0, peekSwInstallManager.installAndRestart, newVersion)
 
         return newVersion
 
