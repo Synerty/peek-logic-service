@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 PAPP_NOOP = "papp_noop"
 
 
-class PappLoaderTest(unittest.TestCase):
+class PappServerLoaderTest(unittest.TestCase):
     def testLoadAll(self):
         pappServerLoader.loadAllPapps()
 

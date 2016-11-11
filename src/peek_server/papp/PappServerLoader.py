@@ -7,7 +7,7 @@ import os
 
 from peek_platform.papp.PappLoaderBase import PappLoaderBase
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
-from peek_server.server.sw_update_server.PappInfoUtil import getLatestPappVersionInfos
+from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
 from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths
 from rapui.vortex.PayloadIO import PayloadIO
 from rapui.vortex.Tuple import removeTuplesForTupleNames, \
@@ -61,7 +61,7 @@ class PappServerLoader(PappLoaderBase):
 
         pappVersionInfo = getLatestPappVersionInfos(name=pappName)
         if not pappVersionInfo:
-            logger.warning("Papp version infor for %s is missing, loading skipped",
+            logger.warning("Papp version info for %s is missing, loading skipped",
                            pappName)
             return
 
@@ -133,7 +133,7 @@ class PappServerLoader(PappLoaderBase):
 
     def notifyOfPappVersionUpdate(self, pappName, pappVersion):
         logger.info("Received PAPP update for %s version %s", pappName, pappVersion)
-        self.loadPapp(pappName)
+        return self.loadPapp(pappName)
 
 
 pappServerLoader = PappServerLoader()

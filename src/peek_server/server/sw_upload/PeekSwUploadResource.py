@@ -13,18 +13,16 @@
 import json
 import logging
 
-from twisted.internet import reactor
-from twisted.python.failure import Failure
 from twisted.web.server import NOT_DONE_YET
 
-from peek_server.server.sw_update_from_ui.PlatformUpdateManager import PlatformUpdateManager
-from peek_server.server.sw_update_from_ui.PappUpdateManager import PappUpdateManager
+from peek_server.server.sw_upload.PappSwUploadManager import PappSwUploadManager
+from peek_server.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
 from rapui.site.ResourceUtil import RapuiResource, addResourceCreator
 
 logger = logging.getLogger(name=__name__)
 
 
-class SoftwareUpdateResource(RapuiResource):
+class PeekSwUploadResource(RapuiResource):
     isLeaf = True
     useLargeRequest = True
 
@@ -45,7 +43,7 @@ class SoftwareUpdateResource(RapuiResource):
 
     def render_POST(self, request):
         request.responseHeaders.setRawHeaders('content-type', ['text/plain'])
-        logger.info("received %s sw_update_from_ui update request" % self._desc)
+        logger.info("received %s sw_upload update request" % self._desc)
 
         try:
             from peek_server.PeekServerConfig import peekServerConfig
@@ -55,14 +53,14 @@ class SoftwareUpdateResource(RapuiResource):
         except Exception as e:
             return json.dumps({'error': str(e.message)})
 
-        updateManager = {self.UPDATE_TYPE_PLATFORM: PlatformUpdateManager,
-                         self.UPDATE_TYPE_PAPP: PappUpdateManager,
+        updateManager = {self.UPDATE_TYPE_PLATFORM: PeekSwUploadManager,
+                         self.UPDATE_TYPE_PAPP: PappSwUploadManager,
                          }[self._updateType]()
 
         def good(data):
             request.write(json.dumps({'message': str(data)}))
             request.finish()
-            logger.info("Finished updating %s sw_update_from_ui" % self._desc)
+            logger.info("Finished updating %s sw_upload" % self._desc)
 
         def bad(failure):
             request.write(json.dumps({'error': str(failure.value)}))
@@ -82,8 +80,8 @@ class SoftwareUpdateResource(RapuiResource):
 
 @addResourceCreator('/peek_server.update.platform', useLargeRequest=True)
 def createPlatformUpdateResource(*args):
-    return SoftwareUpdateResource(SoftwareUpdateResource.UPDATE_TYPE_PLATFORM, *args)
+    return PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM, *args)
 
 @addResourceCreator('/peek_server.update.papp', useLargeRequest=True)
 def createPappUpdateResource(*args):
-    return SoftwareUpdateResource(SoftwareUpdateResource.UPDATE_TYPE_PAPP, *args)
+    return PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PAPP, *args)

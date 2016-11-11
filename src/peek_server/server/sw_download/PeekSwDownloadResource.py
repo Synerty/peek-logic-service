@@ -17,13 +17,14 @@ from twisted.web.server import NOT_DONE_YET
 
 from peek_server.storage import getPeekServerOrmSession
 # from peek_server.storage.AgentData import AgentUpdateInfo
+from peek_platform import PeekPlatformConfig
 from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFile, \
     addResourceCreator
 
 logger = logging.getLogger(__name__)
 
 
-class PlatformUpdateDownloadResource(RapuiResource):
+class PeekSwUpdateDownloadResource(RapuiResource):
     isLeaf = True
     isGzipped = True
 
@@ -42,9 +43,7 @@ class PlatformUpdateDownloadResource(RapuiResource):
         logger.debug("Peek Platform Download Resource GET, name=%s, version=%s",
                      componentName, version)
 
-        from peek_server.PeekServerConfig import peekServerConfig
-
-        newSoftwareTar = os.path.join(peekServerConfig.platformSoftwarePath,
+        newSoftwareTar = os.path.join(PeekPlatformConfig.config.platformSoftwarePath,
                                       'peek_platform_%s' % version,
                                       '%s_%s.tar.bz2' % (componentName, version))
 
@@ -54,6 +53,6 @@ class PlatformUpdateDownloadResource(RapuiResource):
         return resourceCacheAndServeStaticFile(request, newSoftwareTar)
 
 
-@addResourceCreator('/peek_server.sw_update_client.platform.download')
+@addResourceCreator('/peek_server.sw_install.platform.download')
 def _creatorAgent(userAccess):
-    return PlatformUpdateDownloadResource(userAccess)
+    return PeekSwUpdateDownloadResource(userAccess)

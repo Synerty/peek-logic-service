@@ -1,9 +1,9 @@
 import logging
 
-from peek_platform.sw_update_client.PeekSwUpdateHandler import peekPlatformVersionFilt
-from peek_platform.sw_update_client.PeekSwVersionTuple import PeekSwVersionTuple
-from peek_server.PeekServerConfig import peekServerConfig
-from peek_server.server.sw_update_server.PappInfoUtil import getLatestPappVersionInfos
+from peek_platform import PeekPlatformConfig
+from peek_platform.sw_version.PeekSwVersionPollHandler import peekPlatformVersionFilt
+from peek_platform.sw_version.PeekSwVersionTuple import PeekSwVersionTuple
+from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
 from rapui.vortex.PayloadEndpoint import PayloadEndpoint
 from rapui.vortex.Vortex import vortexSendTuple
 
@@ -15,18 +15,16 @@ logger = logging.getLogger(__name__)
 
 # The filter we listen on
 
-class PeekServerVersionHandler(object):
+class PeekSwVersionDataHandler(object):
     def __init__(self, payloadFilter):
         self._ep = PayloadEndpoint(payloadFilter, self._process)
-
-        self.platformVersion = None
 
     def _process(self, payload, vortexUuid, **kwargs):
         data = list()
 
         # First, name the platform version
         data.append(PeekSwVersionTuple(name="peek_platform",
-                                       version=peekServerConfig.platformVersion))
+                                       version=PeekPlatformConfig.config.platformVersion))
 
         for pappVersionInfo in getLatestPappVersionInfos():
             data.append(PeekSwVersionTuple(name=pappVersionInfo.name,
@@ -44,4 +42,4 @@ class PeekServerVersionHandler(object):
                         vortexUuid=vortexUuid)
 
 
-peekServerVersionHandler = PeekServerVersionHandler(peekPlatformVersionFilt)
+peekSwVersionDataHandler = PeekSwVersionDataHandler(peekPlatformVersionFilt)

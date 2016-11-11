@@ -4,24 +4,22 @@ import tarfile
 import os
 from twisted.internet import defer, reactor
 
-from peek_server.server.sw_update_from_ui.ServerUpdateManager import serverUpdateManager
+from peek_platform import PeekPlatformConfig
+from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
+from rapui.DeferUtil import deferToThreadWrap
 from rapui.util.Directory import Directory
 
 __author__ = 'synerty'
 
 
-class PlatformUpdateManager(object):
+class PeekSwUploadManager(object):
     PEEK_PLATFORM_VERSION_JSON = 'peek_platform_version.json'
 
     def __init__(self):
         pass
 
+    @deferToThreadWrap
     def processUpdate(self, namedTempFiles):
-        d = defer.succeed(namedTempFiles)
-        d.addCallback(self._processUpdate)
-        return d
-
-    def _processUpdate(self, namedTempFiles):
         if len(namedTempFiles) != 1:
             raise Exception("Expected 1 Peek Platform update, received %s"
                             % len(namedTempFiles))
@@ -34,8 +32,8 @@ class PlatformUpdateManager(object):
         newVersion = self.updateToTarFile(newSoftware.name)
 
         # Tell the peek server to install and restart
-        reactor.callLater(1.0, serverUpdateManager.notifyOfPlatformVersionUpdate,
-                          newVersion)
+
+        reactor.callLater(0, peekSwInstallManager.installAndReload, newVersion)
 
         return newVersion
 
@@ -83,9 +81,7 @@ class PlatformUpdateManager(object):
             raise Exception("Peek server worker is missing from the platform update."
                             " %s is missing." % workerTarFile)
 
-        from peek_server.PeekServerConfig import peekServerConfig
-
-        newPath = os.path.join(peekServerConfig.platformSoftwarePath,
+        newPath = os.path.join(PeekPlatformConfig.config.platformSoftwarePath,
                                newVersionDir)
 
         # Do we really need to keep the old version if it's the same build?

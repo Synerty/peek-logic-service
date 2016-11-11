@@ -4,10 +4,10 @@
  *
  *  Copyright Synerty Pty Ltd 2013
  *
- *  This sw_update_from_ui is proprietary, you are not free to copy
+ *  This sw_upload is proprietary, you are not free to copy
  *  or redistribute this code in any format.
  *
- *  All rights to this sw_update_from_ui are reserved by
+ *  All rights to this sw_upload are reserved by
  *  Synerty Pty Ltd
  *
 """
@@ -89,6 +89,10 @@ def main():
 
     # Import remaining components
     importPackages()
+
+    # Load all papps
+    from peek_server.papp.PappServerLoader import pappServerLoader
+    pappServerLoader.loadAllPapps()
 
     sitePort = peekServerConfig.sitePort
     setupSite(sitePort, debug=True)

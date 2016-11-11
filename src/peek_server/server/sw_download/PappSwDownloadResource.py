@@ -16,8 +16,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from twisted.web.server import NOT_DONE_YET
 
+from peek_platform import PeekPlatformConfig
 from peek_server.storage import getPeekServerOrmSession
-# from peek_server.storage.AgentData import AgentUpdateInfo
 from peek_server.storage.PeekAppInfo import PeekAppInfo
 from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFile, \
     addResourceCreator
@@ -25,7 +25,7 @@ from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFi
 logger = logging.getLogger(__name__)
 
 
-class PappUpdateDownloadResource(RapuiResource):
+class PappSwDownloadResource(RapuiResource):
     isLeaf = True
     isGzipped = True
 
@@ -60,10 +60,8 @@ class PappUpdateDownloadResource(RapuiResource):
             request.finish()
             return NOT_DONE_YET
 
-        from peek_server.PeekServerConfig import peekServerConfig
 
-
-        newSoftwareTar = os.path.join(peekServerConfig.pappSoftwarePath, pappInfo.fileName)
+        newSoftwareTar = os.path.join(PeekPlatformConfig.config.pappSoftwarePath, pappInfo.fileName)
 
         request.responseHeaders.setRawHeaders('content-type',
                                               ['application/octet-stream'])
@@ -71,6 +69,6 @@ class PappUpdateDownloadResource(RapuiResource):
         return resourceCacheAndServeStaticFile(request, newSoftwareTar)
 
 
-@addResourceCreator('/peek_server.sw_update_client.papp.download')
+@addResourceCreator('/peek_server.sw_install.papp.download')
 def _creatorWorker(userAccess):
-    return PappUpdateDownloadResource(userAccess)
+    return PappSwDownloadResource(userAccess)
