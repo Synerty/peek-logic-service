@@ -69,6 +69,10 @@ def main():
     from peek_server.server.sw_install.PappSwInstallManager import pappSwInstallManager
     PeekPlatformConfig.pappSwInstallManager = pappSwInstallManager
 
+    # Tell the platform classes about our instance of the PeekSwInstallManager
+    from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
+    PeekPlatformConfig.peekSwInstallManager = peekSwInstallManager
+
     # The config depends on the componentName, order is important
     from peek_server.PeekServerConfig import peekServerConfig
     PeekPlatformConfig.config = peekServerConfig
