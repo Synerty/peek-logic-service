@@ -75,7 +75,7 @@ class PappServerLoader(PappLoaderBase):
         # Everyone gets their own instance of the papp API
         serverPlatformApi = ServerPlatformApi()
 
-        srcDir = os.path.join(self._pappPath, pappVersionInfo.dirName)
+        srcDir = os.path.join(self._pappPath, pappVersionInfo.dirName, 'cpython')
         modPath = os.path.join(srcDir, pappName, "PappServerMain.py")
         if not os.path.exists(modPath) and os.path.exists(modPath + u"c"): # .pyc
             PappServerMainMod = imp.load_compiled('%s.PappServerMain' % pappName,
