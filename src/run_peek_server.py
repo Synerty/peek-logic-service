@@ -73,6 +73,10 @@ def main():
     from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
     PeekPlatformConfig.peekSwInstallManager = peekSwInstallManager
 
+    # Tell the platform classes about our instance of the PeekLoaderBase
+    from peek_server.papp.PappServerLoader import pappServerLoader
+    PeekPlatformConfig.pappLoader = pappServerLoader
+
     # The config depends on the componentName, order is important
     from peek_server.PeekServerConfig import peekServerConfig
     PeekPlatformConfig.config = peekServerConfig
