@@ -84,12 +84,19 @@ class PappServerLoader(PappLoaderBase):
             PappServerMainMod = imp.load_source('%s.PappServerMain' % pappName,
                                                 modPath)
 
-        peekClient = PappServerMainMod.PappServerMain(serverPlatformApi)
+        pappMain = PappServerMainMod.PappServerMain(serverPlatformApi)
 
         sys.path.append(srcDir)
 
-        self._loadedPapps[pappName] = peekClient
-        peekClient.start()
+        self._loadedPapps[pappName] = pappMain
+
+        # Configure the celery app in the worker
+        # This is not the worker that will be started, it allows the worker to queue tasks
+
+        from peek_platform.CeleryApp import configureCeleryApp
+        configureCeleryApp(pappMain.celeryApp)
+
+        pappMain.start()
         sys.path.pop()
 
         # Make note of the final registrations for this papp
