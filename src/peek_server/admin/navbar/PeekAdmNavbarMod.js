@@ -6,9 +6,12 @@ define([
     // Named Dependencies
     "AngFormLoadController",
     // Unnamed Dependencies
+    "PeekAdmNavbarPappMenuMod",
     "angular", "jquery"], function (AngFormLoadController) {
 // -------------------------- Navbar Module -----------------------
-    var peekAdmNavbarMod = angular.module('peekAdmNavbarMod', []);
+    var peekAdmNavbarMod = angular.module('peekAdmNavbarMod', [
+            'peekAdmNavbarPappMenuMod'
+    ]);
 
 // ------ BuildNavbarCtrl
     peekAdmNavbarMod.controller('PeekAdmNavbarCtrl', [
@@ -26,7 +29,7 @@ define([
             new AngFormLoadController($scope,
                     {
                         papp: 'platform',
-                        key: "peekadm.navbar.data"
+                        key: "admin.navbar.data"
                     }, {
                         objName: "navData"
                     }

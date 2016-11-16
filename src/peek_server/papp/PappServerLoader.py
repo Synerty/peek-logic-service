@@ -8,12 +8,15 @@ import os
 from peek_platform.papp.PappLoaderBase import PappLoaderBase
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
 from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
-from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths
+from rapui.site.ElementUtil import addPageElement
+from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths, \
+    addResourceCreator
 from rapui.vortex.PayloadIO import PayloadIO
 from rapui.vortex.Tuple import removeTuplesForTupleNames, \
     registeredTupleNames, tupleForTupleName
 
 logger = logging.getLogger(__name__)
+
 
 class PappServerLoader(PappLoaderBase):
     _instance = None
@@ -33,12 +36,18 @@ class PappServerLoader(PappLoaderBase):
         self._rapuiResourcePathsByPappName = defaultdict(list)
         self._rapuiTupleNamesByPappName = defaultdict(list)
 
-
     def unloadPapp(self, pappName):
         oldLoadedPapp = self._loadedPapps.get(pappName)
 
         if not oldLoadedPapp:
             return
+
+        # Remove the Papp resource creator
+        removeResourcePaths(pappName)
+
+        # Remove the admin page element
+        from peek_server.admin.app.PeekAdmAppElement import removePappAdminPage
+        removePappAdminPage(pappName)
 
         # Remove the registered endpoints
         for endpoint in self._rapuiEndpointInstancesByPappName[pappName]:
@@ -54,7 +63,6 @@ class PappServerLoader(PappLoaderBase):
         del self._rapuiTupleNamesByPappName[pappName]
 
         self._unloadPappPackage(pappName, oldLoadedPapp)
-
 
     def _loadPappThrows(self, pappName):
         self.unloadPapp(pappName)
@@ -76,17 +84,17 @@ class PappServerLoader(PappLoaderBase):
         serverPlatformApi = ServerPlatformApi()
 
         srcDir = os.path.join(self._pappPath, pappVersionInfo.dirName, 'cpython')
+        sys.path.append(srcDir)
+
         modPath = os.path.join(srcDir, pappName, "PappServerMain.py")
-        if not os.path.exists(modPath) and os.path.exists(modPath + u"c"): # .pyc
+        if not os.path.exists(modPath) and os.path.exists(modPath + u"c"):  # .pyc
             PappServerMainMod = imp.load_compiled('%s.PappServerMain' % pappName,
-                                                modPath + u'c')
+                                                  modPath + u'c')
         else:
             PappServerMainMod = imp.load_source('%s.PappServerMain' % pappName,
                                                 modPath)
 
         pappMain = PappServerMainMod.PappServerMain(serverPlatformApi)
-
-        sys.path.append(srcDir)
 
         self._loadedPapps[pappName] = pappMain
 
@@ -98,6 +106,15 @@ class PappServerLoader(PappLoaderBase):
 
         pappMain.start()
         sys.path.pop()
+
+        # Add all the resources required to serve the admin site
+        # And all the papp custom resources it may create
+        addResourceCreator(pappName)(
+            serverPlatformApi._PappPlatformApiResourceBase__createPappRootResource)
+
+        # Add the page element, for angular routing for the papp_xxx page
+        from peek_server.admin.app.PeekAdmAppElement import addPappAdminPage
+        addPappAdminPage(pappName)
 
         # Make note of the final registrations for this papp
         self._rapuiEndpointInstancesByPappName[pappName] = list(
@@ -141,6 +158,17 @@ class PappServerLoader(PappLoaderBase):
     def notifyOfPappVersionUpdate(self, pappName, pappVersion):
         logger.info("Received PAPP update for %s version %s", pappName, pappVersion)
         return self.loadPapp(pappName)
+
+    def pappAdminTitleUrls(self):
+        """ Papp Admin Name Urls
+
+        @:returns a list of tuples (pappName, pappTitle, pappUrl)
+        """
+        data = []
+        for pappName, papp in self._loadedPapps.items():
+            data.append((pappName, papp.title, "/%s" % pappName))
+
+        return data
 
 
 pappServerLoader = PappServerLoader()

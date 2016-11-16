@@ -10,7 +10,7 @@ from rapui.handler.ModelHandler import ModelHandlerInThread
 # HANDLER
 pappVersionInfoHandlerKey = {
     'papp': 'platform',
-    'key': "peekadm.papp.version.info"}
+    'key': "admin.papp.version.info"}
 
 
 class __PappVersionInfoHandler(ModelHandlerInThread):

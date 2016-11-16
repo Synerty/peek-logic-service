@@ -3,7 +3,7 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-from peek_server.client.peekadm.navbar.PeekAdmNavbarHandler import navbarDataHandler
+from peek_server.admin.navbar.PeekAdmNavbarHandler import navbarDataHandler
 from rapui.vortex.DataWrapTuple import DataWrapTuple
 from peek_server.storage import getPeekServerOrmSession
 from rapui.vortex.Payload import Payload
@@ -11,7 +11,7 @@ from rapui.vortex.PayloadEndpoint import PayloadEndpoint
 
 from rapui.vortex.Vortex import vortexSendPayload
 
-capabilitiesDataFiltKey = {"key": "peekadm.capabilities.data"}
+capabilitiesDataFiltKey = {"key": "admin.capabilities.data"}
 
 
 # HANDLER

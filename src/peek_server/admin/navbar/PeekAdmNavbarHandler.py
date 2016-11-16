@@ -3,14 +3,13 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-from peek_server.client.peekadm.navbar.PeekAdmNavbarTuple import PeekAdmNavbarTuple
+from peek_server.admin.navbar.PeekAdmNavbarTuple import PeekAdmNavbarTuple
+
 from rapui.handler.ModelHandler import ModelHandler
-from rapui.vortex.Payload import Payload
-from rapui.vortex.Vortex import vortexSendPayload
 
 navbarDataFiltKey = {
     'papp': 'papp',
-    'key': "peekadm.navbar.data"
+    'key': "admin.navbar.data"
 }
 
 

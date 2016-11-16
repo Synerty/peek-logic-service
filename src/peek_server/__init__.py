@@ -2,6 +2,6 @@ __author__ = 'synerty'
 
 
 def importPackages():
-    import client
+    import admin
     import papp
     import server

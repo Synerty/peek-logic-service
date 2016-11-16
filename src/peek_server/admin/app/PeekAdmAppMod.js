@@ -2,12 +2,14 @@
 
 // --------------------- Angular Application----------------------------
 
-var peekAdmConfigDashboardPath = '/peekadm';
-var peekAdmConfigSettingPath = '/peekadm/setting';
-var peekAdmConfigUpdatePath = '/peekadm/update';
-var peekAdmConfigEnvPath = '/peekadm/env';
+var peekAdmConfigDashboardPath = '/';
+var peekAdmConfigSettingPath = '/setting';
+var peekAdmConfigUpdatePath = '/update';
+var peekAdmConfigEnvPath = '/env';
 
 define([
+            // Named dependencies
+            "AngFormLoadController",
             // Main app requirements
             "angular", "jquery", "bootstrap",
             // Angular mod requirements
@@ -16,7 +18,7 @@ define([
             "PeekAdmUpdateMod", "PeekAdmSettingMod", "PeekAdmNavbarMod",
             "PeekAdmDashboardMod", "PeekAdmEnvMod"
         ],
-        function () {
+        function (AngFormLoadController) {
 
 
             var peekAdmAppCtrlMod = angular.module('peekAdmAppCtrlMod', []);
@@ -67,7 +69,15 @@ define([
 
             // Add in our admin routes, The main application configures the rest
             peekAdminApp.config(['$routeProvider', '$locationProvider',
+
                 function ($routeProvider, $locationProvider) {
+                    var self = this;
+
+                    var $scope = {
+                        $on: function () {
+                        }
+                    };
+
                     $locationProvider.html5Mode(true);
 
                     $routeProvider
@@ -79,6 +89,57 @@ define([
                                 redirectTo: peekAdmConfigDashboardPath
                             })
                     ;
+
+
+                    var loader = new AngFormLoadController($scope,
+                            {
+                                papp: "peek_server",
+                                key: "nav.adm.papp.list"
+                            }, {
+                                loadOnInit: false,
+                                objName: 'pappsMenuData',
+                                dataIsArray: true
+                            });
+
+
+                    loader.loadCallback.add(function () {
+                        // For simplicity's sake we assume that:
+                        //  1. `path` has no trailing `/`
+                        //  2. the route associated with `path` has a `templateUrl`
+                        //  3. everything exists, so we don't check for empty values
+                        // function removeRoute(path) {
+                        //     var route1 = $route.routes[path];
+                        //     var route2 = $route.routes[path + '/'];
+                        //     var tmplUrl = $route.routes[path].templateUrl;
+                        //
+                        //     $templateCache.remove(tmplUrl);
+                        //     delete $route.routes[path];
+                        //     delete $route.routes[path + '/'];
+                        // }
+                        //
+                        // var routeNames = dictKeysFromObject($route.routes);
+                        var i;
+                        //
+                        // // Remove existing PAPP routes
+                        // for (i = 0; i < routeNames.length; i++) {
+                        //     var routePath = routeNames[i];
+                        //     var lastChar = routePath[routePath.length - 1];
+                        //     if (routePath.indexOf("/papp_") == 0 && lastChar != '/') {
+                        //         removeRoute(routePath);
+                        //     }
+                        //
+                        // }
+
+                        for (i = 0; i < $scope.pappsMenuData.length; i++) {
+                            var pappMenu = $scope.pappsMenuData[i];
+                            $routeProvider.when(pappMenu.url, {
+                                templateUrl: pappMenu.templateUrl,
+                                caseInsensitiveMatch: true
+                            });
+                        }
+
+                    });
+
 
                 }]);
 

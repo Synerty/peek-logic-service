@@ -41,16 +41,7 @@
                     </li>
                     -->
 
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                           role="button" aria-haspopup="true" aria-expanded="false">
-                            Peek Apps Config</a>
-                        <ul class="dropdown-menu">
-                            <li ng-repeat="papp in papps | orderBy:'name' ">
-                                <a ng-href="{{papp.url}}">{{papp.name}}</a>
-                            </li>
-                        </ul>
-                    </li>
+                    <peek-adm-navbar-papp-menu></peek-adm-navbar-papp-menu>
 
 
                 </ul>

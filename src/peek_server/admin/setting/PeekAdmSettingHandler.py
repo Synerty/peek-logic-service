@@ -10,7 +10,7 @@ from peek_server.storage import getPeekServerOrmSession, Setting
 from rapui.handler.OrmCrudHandler import OrmCrudHandler
 
 scheduleDataFiltKey = {"papp": "papp",
-                       "key": "peekadm.setting.data"}
+                       "key": "admin.setting.data"}
 
 
 # HANDLER

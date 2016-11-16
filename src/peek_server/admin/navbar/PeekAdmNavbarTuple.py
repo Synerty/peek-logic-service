@@ -9,7 +9,7 @@ from rapui.vortex.Tuple import addTupleType, Tuple, TupleField
 
 @addTupleType
 class PeekAdmNavbarTuple(Tuple):
-    __tupleType__ = 'peekadm.navbar'
+    __tupleType__ = 'admin.navbar'
 
     supportExceeded = TupleField(False)
     demoExceeded = TupleField(False)

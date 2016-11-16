@@ -31,7 +31,7 @@ define([
                     self.loader = new AngFormLoadController($scope,
                             {
                                 papp: "platform",
-                                key: "peekadm.setting.data"
+                                key: "admin.setting.data"
                             }, {
                                 dataIsArray: true,
                                 actionPostfix: "Settings"

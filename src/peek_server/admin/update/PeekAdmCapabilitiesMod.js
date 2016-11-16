@@ -20,7 +20,7 @@ define([
 
                     $scope.data = {};
 
-                    var payloadFilt = {key: "peekadm.capabilities.data"};
+                    var payloadFilt = {key: "admin.capabilities.data"};
 
                     self.processPayload = function (payload) {
                         if (payload.result) {
