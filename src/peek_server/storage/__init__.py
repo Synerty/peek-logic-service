@@ -140,5 +140,5 @@ def _writeAlembicIni():
     return tempFile
 
 
-import PeekAppInfo
-import Setting
+from . import PeekAppInfo
+from . import Setting

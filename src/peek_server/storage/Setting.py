@@ -201,7 +201,7 @@ def on_new_class(mapper, cls_):
     info_dict[type(None)] = (None, 'none')
     info_dict['none'] = (None, 'none')
 
-    for k in mapper.c.keys():
+    for k in list(mapper.c.keys()):
         col = mapper.c[k]
         if 'type' in col.info:
             python_type, discriminator = col.info['type']
@@ -232,7 +232,7 @@ def _getSetting(name, propertyDict, key=None, value=None):
         session.add(setting)
 
     needsCommit = False
-    for prop in propertyDict.values():
+    for prop in list(propertyDict.values()):
         if not prop.name in setting:
             setting[prop.name] = prop.defaultValue
             needsCommit = True

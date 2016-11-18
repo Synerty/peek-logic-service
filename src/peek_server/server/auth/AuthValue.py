@@ -25,7 +25,7 @@ def authKey():
     stderr = '\n'.join([l for l in stderr.splitlines() if not 'resolve host' in l])
 
     if 'sudo: ' in stderr:
-        print stderr
+        print(stderr)
         return "Could not generate Server ID"
 
     return makeFingerPrint(stdout)

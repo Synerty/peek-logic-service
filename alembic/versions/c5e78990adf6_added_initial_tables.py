@@ -46,7 +46,7 @@ def upgrade():
     sa.Column('int_value', sa.Integer(), nullable=True),
     sa.Column('char_value', sa.String(), nullable=True),
     sa.Column('boolean_value', sa.Boolean(), nullable=True),
-    sa.ForeignKeyConstraint(['settingId'], [u'peek_server.Setting.id'], ),
+    sa.ForeignKeyConstraint(['settingId'], ['peek_server.Setting.id'], ),
     sa.PrimaryKeyConstraint('id', 'settingId', 'key'),
     schema='peek_server'
     )

@@ -1,7 +1,7 @@
 from twisted.web._auth.wrapper import UnauthorizedResource
 from twisted.web.resource import IResource, ErrorPage
 from twisted.web.util import DeferredResource
-from AuthResource import LoginResource, LoginSucceededResource
+from .AuthResource import LoginResource, LoginSucceededResource
 from rapui.auth.UserAccess import UserAccess
 from rapui.site.Root import createRootResource
 from zope.interface import Interface, Attribute, implements
@@ -57,7 +57,7 @@ class AuthSessionWrapper(object):
       except error.LoginFailed:
         return LoginResource()
       except:
-        print "Unexpected failure from credentials factory"
+        print("Unexpected failure from credentials factory")
         return ErrorPage(500, None, None)
       else:
         return DeferredResource(self._login(credentials))
@@ -114,13 +114,13 @@ class AuthSessionWrapper(object):
     return d
 
 
-  def _loginSucceeded(self, (interface, avatar, logout)):
+  def _loginSucceeded(self, xxx_todo_changeme):
     """
     Handle login success by wrapping the resulting L{IResource} avatar
     so that the C{logout} callback will be invoked when rendering is
     complete.
     """
-
+    (interface, avatar, logout) = xxx_todo_changeme
     class ResourceWrapper(proxyForInterface(IResource, 'resource')):
       """
       Wrap an L{IResource} so that whenever it or a child of it
@@ -161,7 +161,7 @@ class AuthSessionWrapper(object):
     if result.check(error.Unauthorized, error.LoginFailed):
       return UnauthorizedResource(self._credentialFactories)
     else:
-      print
+      print()
       result,
       "HTTPAuthSessionWrapper.getChildWithDefault encountered "
       "unexpected error"

@@ -1,9 +1,9 @@
 from rapui.Util import filterModules
 
-for mod in filterModules(__file__):
+for mod in filterModules(__name__, __file__):
     __import__(mod, locals(), globals())
 
-import sw_download
-import sw_install
-import sw_upload
-import sw_version
+from . import sw_download
+from . import sw_install
+from . import sw_upload
+from . import sw_version

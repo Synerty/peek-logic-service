@@ -87,9 +87,9 @@ class PappServerLoader(PappLoaderBase):
         sys.path.append(srcDir)
 
         modPath = os.path.join(srcDir, pappName, "PappServerMain.py")
-        if not os.path.exists(modPath) and os.path.exists(modPath + u"c"):  # .pyc
+        if not os.path.exists(modPath) and os.path.exists(modPath + "c"):  # .pyc
             PappServerMainMod = imp.load_compiled('%s.PappServerMain' % pappName,
-                                                  modPath + u'c')
+                                                  modPath + 'c')
         else:
             PappServerMainMod = imp.load_source('%s.PappServerMain' % pappName,
                                                 modPath)
@@ -165,7 +165,7 @@ class PappServerLoader(PappLoaderBase):
         @:returns a list of tuples (pappName, pappTitle, pappUrl)
         """
         data = []
-        for pappName, papp in self._loadedPapps.items():
+        for pappName, papp in list(self._loadedPapps.items()):
             data.append((pappName, papp.title, "/%s" % pappName))
 
         return data

@@ -49,8 +49,7 @@ class PeekSwUploadManager(object):
         tarfile.open(newSoftwareTar).extractall(directory.path)
         directory.scan()
 
-        platformVersionFile = filter(lambda f: f.name == self.PEEK_PLATFORM_VERSION_JSON,
-                                     directory.files)
+        platformVersionFile = [f for f in directory.files if f.name == self.PEEK_PLATFORM_VERSION_JSON]
         if len(platformVersionFile) != 1:
             raise Exception("Uploaded archive does not contain a Peek Platform update"
                             ", Expected 1 %s, got %s"
