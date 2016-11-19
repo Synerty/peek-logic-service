@@ -16,7 +16,7 @@ from rapui import addStaticResourceDir
 from rapui.Util import filterModules
 
 __modPath = p.dirname(__file__)
-addStaticResourceDir(__modPath, autoloadjs=False)
+addStaticResourceDir(__modPath)
 
 for mod in filterModules(__name__, __file__):
     __import__(mod, locals(), globals())

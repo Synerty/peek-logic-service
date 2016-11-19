@@ -9,6 +9,7 @@
     <orderEntry type="module" module-name="rapui" />
     <orderEntry type="module" module-name="papp_base" />
     <orderEntry type="module" module-name="peek_platform" />
+    <orderEntry type="module" module-name="txCelery" />
   </component>
   <component name="TestRunnerService">
     <option name="PROJECT_TEST_RUNNER" value="Unittests" />
