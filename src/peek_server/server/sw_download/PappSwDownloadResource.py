@@ -69,6 +69,6 @@ class PappSwDownloadResource(RapuiResource):
         return resourceCacheAndServeStaticFile(request, newSoftwareTar)
 
 
-@addResourceCreator('/peek_server.sw_install.papp.download')
+@addResourceCreator(b'/peek_server.sw_install.papp.download')
 def _creatorWorker(userAccess):
     return PappSwDownloadResource(userAccess)

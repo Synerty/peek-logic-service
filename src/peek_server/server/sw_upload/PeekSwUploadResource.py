@@ -78,10 +78,10 @@ class PeekSwUploadResource(RapuiResource):
         return NOT_DONE_YET
 
 
-@addResourceCreator('/peek_server.update.platform', useLargeRequest=True)
+@addResourceCreator(b'/peek_server.update.platform', useLargeRequest=True)
 def createPlatformUpdateResource(*args):
     return PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM, *args)
 
-@addResourceCreator('/peek_server.update.papp', useLargeRequest=True)
+@addResourceCreator(b'/peek_server.update.papp', useLargeRequest=True)
 def createPappUpdateResource(*args):
     return PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PAPP, *args)

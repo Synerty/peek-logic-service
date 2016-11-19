@@ -11,17 +11,14 @@
  *
 """
 import logging
-from mutex import mutex
 from tempfile import NamedTemporaryFile
-from time import sleep
+from textwrap import dedent
+from threading import Lock
 
-import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.schema import Sequence
-import sqlalchemy_utils
-from textwrap import dedent
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +68,7 @@ def getPeekServerOrmSession():
 #             logger.warning("Missing index on ForeignKey %s" % key.columns)
 
 
-sequenceMutex = mutex()
+sequenceMutex = Lock()
 
 
 def getPgSequenceGenerator(Declarative, count, session=None):
@@ -81,8 +78,7 @@ def getPgSequenceGenerator(Declarative, count, session=None):
     session = session if session else getPeekServerOrmSession()
     session.commit()
 
-    while not sequenceMutex.testandset():
-        sleep(0.001)
+    sequenceMutex.aquire()
 
     # Something about the backend not updating curval/nextval causes issues when
     #
@@ -94,7 +90,7 @@ def getPgSequenceGenerator(Declarative, count, session=None):
                     % (sequence.name, endId + 1))
     session.commit()
 
-    sequenceMutex.unlock()
+    sequenceMutex.release()
 
     while startId < endId:
         yield startId
@@ -134,7 +130,7 @@ def _writeAlembicIni():
     cfg %= {'alembicDir': SynSqlaConn.alembicDir,
             'url': SynSqlaConn.dbConnectString}
 
-    tempFile = NamedTemporaryFile()
+    tempFile = NamedTemporaryFile('w+t')
     tempFile.write(cfg)
     tempFile.flush()
     return tempFile

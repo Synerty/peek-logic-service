@@ -23,7 +23,7 @@ class PappServerLoader(PappLoaderBase):
 
     def __new__(cls, *args, **kwargs):
         assert cls._instance is None, "PappServerLoader is a singleton, don't construct it"
-        cls._instance = cls()
+        cls._instance = PappLoaderBase.__new__(cls)
         return cls._instance
 
     def __init__(self):
@@ -109,7 +109,7 @@ class PappServerLoader(PappLoaderBase):
 
         # Add all the resources required to serve the admin site
         # And all the papp custom resources it may create
-        addResourceCreator(pappName)(
+        addResourceCreator(pappName.encode("UTF-8"))(
             serverPlatformApi._PappPlatformApiResourceBase__createPappRootResource)
 
         # Add the page element, for angular routing for the papp_xxx page
@@ -144,7 +144,7 @@ class PappServerLoader(PappLoaderBase):
 
         # all resource paths must start with their pappName
         for path in self._rapuiResourcePathsByPappName[pappName]:
-            if not path.strip('/').startswith(pappName):
+            if not path.strip(b'/').startswith(pappName.encode("UTF-8")):
                 raise Exception("Resource path does not start with '%s'\n%s"
                                 % (pappName, path))
 

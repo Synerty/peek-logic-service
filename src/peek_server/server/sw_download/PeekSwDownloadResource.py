@@ -47,12 +47,12 @@ class PeekSwUpdateDownloadResource(RapuiResource):
                                       'peek_platform_%s' % version,
                                       '%s_%s.tar.bz2' % (componentName, version))
 
-        request.responseHeaders.setRawHeaders('content-type',
-                                              ['application/octet-stream'])
+        request.responseHeaders.setRawHeaders(b'content-type',
+                                              [b'application/octet-stream'])
 
         return resourceCacheAndServeStaticFile(request, newSoftwareTar)
 
 
-@addResourceCreator('/peek_server.sw_install.platform.download')
+@addResourceCreator(b'/peek_server.sw_install.platform.download')
 def _creatorAgent(userAccess):
     return PeekSwUpdateDownloadResource(userAccess)
