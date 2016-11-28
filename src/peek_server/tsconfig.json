@@ -1,0 +1,22 @@
+{
+  "newLine": "lf",
+  "compileOnSave": true,
+  "strictNullChecks": true,
+  "allowUnreachableCode": true,
+  "compilerOptions": {
+    "traceResolution": true,
+    "target": "es5",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "rootDirs": [
+      "admin/*",
+      "../../../txhttputil/txhttputil/js_util",
+      "../../../txhttputil/txhttputil/vortex",
+      "../../../txhttputil/txhttputil/angular_custom",
+      "../../../txhttputil/txhttputil/usr_msg_dispatcher"
+    ]
+  },
+  "include": [
+    "admin/*/*.ts"
+  ]
+}

@@ -3,11 +3,10 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-from peek_server.storage.Setting import globalSetting
-
-import rapui
+import txhttputil
 from peek_server.storage import getPeekServerOrmSession, Setting
-from rapui.handler.OrmCrudHandler import OrmCrudHandler
+from peek_server.storage.Setting import globalSetting
+from vortex.handler import OrmCrudHandler
 
 scheduleDataFiltKey = {"papp": "papp",
                        "key": "admin.setting.data"}
@@ -21,8 +20,8 @@ class __CrudHandler(OrmCrudHandler):
     def postProcess(self, action, payloadFilt, vortexUuid):
         if action in [OrmCrudHandler.UPDATE, OrmCrudHandler.CREATE]:
             settings = globalSetting()
-            rapui.DESCRIPTION = settings[Setting.SYSTEM_DESCRIPTION]
-            rapui.TITLE = settings[Setting.SYSTEM_NAME]
+            txhttputil.DESCRIPTION = settings[Setting.SYSTEM_DESCRIPTION]
+            txhttputil.TITLE = settings[Setting.SYSTEM_NAME]
 
 
 __ormCrudHandler = __CrudHandler(getPeekServerOrmSession, Setting, scheduleDataFiltKey)

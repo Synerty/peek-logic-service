@@ -1,13 +1,14 @@
+from twisted.cred import error
+from twisted.python.components import registerAdapter, proxyForInterface
 from twisted.web._auth.wrapper import UnauthorizedResource
 from twisted.web.resource import IResource, ErrorPage
-from twisted.web.util import DeferredResource
-from .AuthResource import LoginResource, LoginSucceededResource
-from rapui.auth.UserAccess import UserAccess
-from rapui.site.Root import createRootResource
-from zope.interface import Interface, Attribute, implements
-from twisted.python.components import registerAdapter, proxyForInterface
 from twisted.web.server import Session
-from twisted.cred import error
+from twisted.web.util import DeferredResource
+from zope.interface import Interface, Attribute, implements
+
+from txhttputil import AuthUserDetails
+from txhttputil import createRootResource
+from .AuthResource import LoginResource, LoginSucceededResource
 
 __author__ = 'synerty'
 
@@ -20,7 +21,7 @@ class Auth(object):
   implements(IAuth)
 
   def __init__(self, session):
-    self.userAccess = UserAccess()
+    self.userAccess = AuthUserDetails()
     self.userAccess.loggedIn = False
     self.userAccess.readOnly = True
 
@@ -37,7 +38,7 @@ class AuthSessionWrapper(object):
     """
     Get the L{IResource} which the given request is authorized to receive.
     If the proper authorization headers are present, the resource will be
-    requested from the portal.  If not, an anonymous login attempt will be
+    requested from the portal.  If not, an anonymous login_page attempt will be
     made.
     """
 
@@ -75,7 +76,7 @@ class AuthSessionWrapper(object):
         request.redirect(request.path)
         return LoginSucceededResource()
 
-    # Return login form
+    # Return login_page form
     return LoginResource()
 
 
@@ -116,7 +117,7 @@ class AuthSessionWrapper(object):
 
   def _loginSucceeded(self, xxx_todo_changeme):
     """
-    Handle login success by wrapping the resulting L{IResource} avatar
+    Handle login_page success by wrapping the resulting L{IResource} avatar
     so that the C{logout} callback will be invoked when rendering is
     complete.
     """
@@ -154,7 +155,7 @@ class AuthSessionWrapper(object):
 
   def _loginFailed(self, result):
     """
-    Handle login failure by presenting either another challenge (for
+    Handle login_page failure by presenting either another challenge (for
     expected authentication/authorization-related failures) or a server
     error page (for anything else).
     """

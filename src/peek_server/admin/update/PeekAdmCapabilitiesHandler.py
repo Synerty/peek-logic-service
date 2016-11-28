@@ -4,12 +4,11 @@ Created on 09/07/2014
 @author: synerty
 '''
 from peek_server.admin.navbar.PeekAdmNavbarHandler import navbarDataHandler
-from rapui.vortex.DataWrapTuple import DataWrapTuple
 from peek_server.storage import getPeekServerOrmSession
-from rapui.vortex.Payload import Payload
-from rapui.vortex.PayloadEndpoint import PayloadEndpoint
-
-from rapui.vortex.Vortex import vortexSendPayload
+from txhttputil import DataWrapTuple
+from txhttputil import Payload
+from txhttputil import PayloadEndpoint
+from txhttputil import vortexSendPayload
 
 capabilitiesDataFiltKey = {"key": "admin.capabilities.data"}
 

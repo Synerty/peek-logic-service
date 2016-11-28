@@ -3,7 +3,6 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-from sqlalchemy.sql.functions import count
 
 # from peek_server.server.live_db.LiveDb import liveDb
 # from peek_server.server.orm.LiveDb import LiveDbKey
@@ -11,7 +10,7 @@ from peek_server.storage import getPeekServerOrmSession
 # from peek_server.server.orm.AgentData import AgentImportDispGridInfo
 # from peek_server.server.orm.Display import DispBase
 # from peek_server.server.orm.GridKeyIndex import GridKeyCompilerQueue, DispIndexerQueue
-from rapui.handler.ModelHandler import ModelHandlerInThread
+from vortex.handler import ModelHandlerInThread
 
 executeListDataKey = {'papp': 'papp',
                       'key': "peakadm.dashboard.list.data"}

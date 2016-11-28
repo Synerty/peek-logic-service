@@ -11,23 +11,24 @@
  *  Synerty Pty Ltd
  *
 """
-from peek_server import importPackages
-from rapui import LoggingSetup
-from rapui.util.Directory import DirSettings
+from txhttputil.util.Directory import DirSettings
 
-LoggingSetup.setup()
+from peek_server import importPackages
+from txhttputil.util import LoggingUtil
+
+LoggingUtil.setup()
 
 import logging
 import os
 
 from twisted.internet import reactor, defer
 
-import rapui
-from rapui import addMetaTag
-from rapui.site.Site import setupSite
+import txhttputil
+from txhttputil import addMetaTag
+from txhttputil.site.SiteUtil import setupSite
 
-rapui.DESCRIPTION = "Peek"
-rapui.TITLE = "Peek"
+txhttputil.DESCRIPTION = "Peek"
+txhttputil.TITLE = "Peek"
 
 addMetaTag(name="apple-mobile-web-app-capable", content="yes")
 addMetaTag(name="apple-mobile-web-app-app-title", content="Peek")
@@ -108,7 +109,7 @@ def main():
 
     sitePort = peekServerConfig.sitePort
     setupSite(sitePort, debug=True)
-    # setupSite(8000, debug=True, protectedResource=AuthSessionWrapper())
+    # setupSite(8000, debug=True, protectedResource=HTTPAuthSessionWrapper())
 
     reactor.run()
 

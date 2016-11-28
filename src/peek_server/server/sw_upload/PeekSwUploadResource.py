@@ -17,7 +17,7 @@ from twisted.web.server import NOT_DONE_YET
 
 from peek_server.server.sw_upload.PappSwUploadManager import PappSwUploadManager
 from peek_server.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
-from rapui.site.ResourceUtil import RapuiResource, addResourceCreator
+from txhttputil import RapuiResource, addResourceCreator
 
 logger = logging.getLogger(name=__name__)
 

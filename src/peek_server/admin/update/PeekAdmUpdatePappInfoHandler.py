@@ -5,7 +5,7 @@ Created on 09/07/2014
 '''
 # from peek_server.api.platform.AgentUtil import getLatestAgentUpdateInfos
 from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
-from rapui.handler.ModelHandler import ModelHandlerInThread
+from vortex.handler import ModelHandlerInThread
 
 # HANDLER
 pappVersionInfoHandlerKey = {

@@ -6,7 +6,7 @@
     </content>
     <orderEntry type="jdk" jdkName="Python 3.5.2 (~/cpython-3.5.2/bin/python3)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module" module-name="rapui" />
+    <orderEntry type="module" module-name="txhttputil" />
     <orderEntry type="module" module-name="papp_base" />
     <orderEntry type="module" module-name="peek_platform" />
     <orderEntry type="module" module-name="txCelery" />

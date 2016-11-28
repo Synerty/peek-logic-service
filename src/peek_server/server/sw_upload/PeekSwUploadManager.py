@@ -1,13 +1,13 @@
+import os
 import shutil
 import tarfile
 
-import os
-from twisted.internet import defer, reactor
+from twisted.internet import reactor
 
 from peek_platform import PeekPlatformConfig
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
-from rapui.DeferUtil import deferToThreadWrap
-from rapui.util.Directory import Directory
+from txhttputil import Directory
+from txhttputil import deferToThreadWrap
 
 __author__ = 'synerty'
 

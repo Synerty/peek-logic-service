@@ -12,8 +12,9 @@
 """
 
 import os.path as p
-from rapui import addStaticResourceDir
-from rapui.Util import filterModules
+
+from txhttputil import addStaticResourceDir
+from txhttputil.util.ModuleUtil import filterModules
 
 __modPath = p.dirname(__file__)
 addStaticResourceDir(__modPath)

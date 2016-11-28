@@ -10,12 +10,12 @@
  *  Synerty Pty Ltd
  *
 """
-from rapui.site.Template import ElementRenderedCallback
+from peek_server.ui_main.login import AppLoginElement
 from twisted.web._flatten import flattenString
 from twisted.web.resource import Resource
 from twisted.web.server import NOT_DONE_YET
 
-from peek_server.ui_main.login import AppLoginElement
+from txhttputil import ElementRenderedCallback
 
 
 class LoginResource(Resource):

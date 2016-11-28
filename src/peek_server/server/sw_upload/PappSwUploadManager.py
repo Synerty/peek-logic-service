@@ -1,19 +1,17 @@
 import json
+import os
 import shutil
 import tarfile
 
-import os
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 from peek_server.PeekServerConfig import peekServerConfig
-from peek_server.papp.PappServerLoader import pappServerLoader
 from peek_server.server.sw_install.PappSwInstallManager import pappSwInstallManager
 from peek_server.server.sw_version.PeekSwVersionDataHandler import \
     peekSwVersionDataHandler
 from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
-from rapui.DeferUtil import deferToThreadWrap
-from rapui.util.Directory import Directory
+from txhttputil import Directory
 
 __author__ = 'synerty'
 

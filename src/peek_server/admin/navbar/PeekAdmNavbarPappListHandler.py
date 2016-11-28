@@ -4,7 +4,7 @@ Created on 09/07/2014
 @author: synerty
 '''
 
-from rapui.handler.ModelHandler import ModelHandler
+from vortex.handler import ModelHandler
 
 modelSetListDataFilt = {
     "papp": "peek_server",

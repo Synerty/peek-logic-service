@@ -4,7 +4,7 @@ Created on 09/07/2014
 @author: synerty
 '''
 
-from rapui.vortex.Tuple import addTupleType, Tuple, TupleField
+from txhttputil import addTupleType, Tuple, TupleField
 
 
 @addTupleType

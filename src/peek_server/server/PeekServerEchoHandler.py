@@ -1,7 +1,7 @@
-from rapui.vortex.PayloadEndpoint import PayloadEndpoint
-from rapui.vortex.Vortex import vortexSendPayload
-
 import logging
+
+from txhttputil import PayloadEndpoint
+from txhttputil import vortexSendPayload
 
 logger = logging.getLogger(__name__)
 

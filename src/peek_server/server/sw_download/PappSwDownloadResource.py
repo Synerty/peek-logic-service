@@ -10,8 +10,8 @@
  *
 """
 import logging
-
 import os
+
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from twisted.web.server import NOT_DONE_YET
@@ -19,7 +19,7 @@ from twisted.web.server import NOT_DONE_YET
 from peek_platform import PeekPlatformConfig
 from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
-from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFile, \
+from txhttputil import RapuiResource, resourceCacheAndServeStaticFile, \
     addResourceCreator
 
 logger = logging.getLogger(__name__)

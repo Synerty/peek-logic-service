@@ -4,8 +4,8 @@ from peek_platform import PeekPlatformConfig
 from peek_platform.sw_version.PeekSwVersionPollHandler import peekPlatformVersionFilt
 from peek_platform.sw_version.PeekSwVersionTuple import PeekSwVersionTuple
 from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
-from rapui.vortex.PayloadEndpoint import PayloadEndpoint
-from rapui.vortex.Vortex import vortexSendTuple
+from txhttputil import PayloadEndpoint
+from txhttputil import vortexSendTuple
 
 logger = logging.getLogger(__name__)
 

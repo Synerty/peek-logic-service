@@ -4,7 +4,7 @@ Created on 17/06/2013
 @author: darkstar
 '''
 
-from rapui.site.ElementUtil import RapuiElement, addPageElement, removePageElement
+from old.ElementUtil import RapuiElement, addPageElement, removePageElement
 
 
 @addPageElement('')

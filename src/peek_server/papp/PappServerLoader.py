@@ -1,18 +1,16 @@
 import imp
 import logging
+import os
 import sys
 from _collections import defaultdict
-
-import os
 
 from peek_platform.papp.PappLoaderBase import PappLoaderBase
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
 from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
-from rapui.site.ElementUtil import addPageElement
-from rapui.site.ResourceUtil import removeResourcePaths, registeredResourcePaths, \
+from txhttputil import PayloadIO
+from txhttputil import removeResourcePaths, registeredResourcePaths, \
     addResourceCreator
-from rapui.vortex.PayloadIO import PayloadIO
-from rapui.vortex.Tuple import removeTuplesForTupleNames, \
+from txhttputil import removeTuplesForTupleNames, \
     registeredTupleNames, tupleForTupleName
 
 logger = logging.getLogger(__name__)

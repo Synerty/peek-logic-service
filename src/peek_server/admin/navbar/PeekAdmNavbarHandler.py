@@ -5,7 +5,7 @@ Created on 09/07/2014
 '''
 from peek_server.admin.navbar.PeekAdmNavbarTuple import PeekAdmNavbarTuple
 
-from rapui.handler.ModelHandler import ModelHandler
+from vortex.handler import ModelHandler
 
 navbarDataFiltKey = {
     'papp': 'papp',

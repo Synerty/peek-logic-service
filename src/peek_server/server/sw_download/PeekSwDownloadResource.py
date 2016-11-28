@@ -10,15 +10,12 @@
  *
 """
 import logging
-
 import os
-from sqlalchemy.orm.exc import NoResultFound
+
 from twisted.web.server import NOT_DONE_YET
 
-from peek_server.storage import getPeekServerOrmSession
-# from peek_server.storage.AgentData import AgentUpdateInfo
 from peek_platform import PeekPlatformConfig
-from rapui.site.ResourceUtil import RapuiResource, resourceCacheAndServeStaticFile, \
+from txhttputil import RapuiResource, resourceCacheAndServeStaticFile, \
     addResourceCreator
 
 logger = logging.getLogger(__name__)

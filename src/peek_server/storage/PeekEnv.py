@@ -15,10 +15,10 @@ import logging
 from sqlalchemy import Column
 from sqlalchemy import Integer, String
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.schema import Index, ForeignKey
+from sqlalchemy.sql.schema import ForeignKey
 
 from peek_server.storage.DeclarativeBase import DeclarativeBase
-from rapui.vortex.Tuple import Tuple, addTupleType
+from txhttputil import Tuple, addTupleType
 
 logger = logging.getLogger(__name__)
 

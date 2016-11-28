@@ -1,7 +1,7 @@
 <div>
     <div ng-controller="PeekAdmAppCtrl">
         <script type="text/javascript">
-            requirejs(["PeekAdmAppMod"]);
+            require(["PeekAdmAppMod"]);
         </script>
 
         <peek-adm-navbar></peek-adm-navbar>
