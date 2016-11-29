@@ -12,3 +12,4 @@ run_logs
 .DS_Store
 
 workspace.xml
+.idea
