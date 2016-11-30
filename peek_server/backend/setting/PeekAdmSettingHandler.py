@@ -8,7 +8,7 @@ from peek_server.storage import getPeekServerOrmSession, Setting
 from peek_server.storage.Setting import globalSetting
 from vortex.handler import OrmCrudHandler
 
-scheduleDataFiltKey = {"papp": "papp",
+scheduleDataFiltKey = {"papp": "peek_server",
                        "key": "backend.setting.data"}
 
 

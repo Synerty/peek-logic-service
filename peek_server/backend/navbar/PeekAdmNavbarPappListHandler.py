@@ -7,7 +7,7 @@ Created on 09/07/2014
 from vortex.handler import ModelHandler
 
 modelSetListDataFilt = {
-    "papp": "peek_server_be",
+    "papp": "peek_server",
     "key": "nav.adm.papp.list"
 }
 

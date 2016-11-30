@@ -24,57 +24,76 @@ logger = logging.getLogger(__name__)
 
 
 @addTupleType
-class PeekEnvServers(Tuple, DeclarativeBase):
+class PeekEnvServer(Tuple, DeclarativeBase):
     """ PeekAppInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server_be.env.server'
-    __tablename__ = 'PeekEnvServers'
+    __tupleType__ = 'peek_server.env.server'
+    __tablename__ = 'PeekEnvServer'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
     ip = Column(String, nullable=True, unique=True)
 
-    workers = relationship("PeekEnvWorkers")
-    agent = relationship("PeekEnvAgents")
+    workers = relationship("PeekEnvWorker")
+    agent = relationship("PeekEnvAgent")
 
 
 @addTupleType
-class PeekEnvWorkers(Tuple, DeclarativeBase):
+class PeekEnvWorker(Tuple, DeclarativeBase):
     """ PeekAppInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server_be.env.worker'
-    __tablename__ = 'PeekEnvWorkers'
+    __tupleType__ = 'peek_server.env.worker'
+    __tablename__ = 'PeekEnvWorker'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
     ip = Column(String, nullable=True, unique=True)
 
-    serverId = Column(ForeignKey('peek_server_be.PeekEnvServers.id'), primary_key=True)
-    server = relationship("PeekEnvServers")
+    serverId = Column(ForeignKey('peek_server.PeekEnvServer.id'), primary_key=True)
+    server = relationship("PeekEnvServer")
 
 
 @addTupleType
-class PeekEnvAgents(Tuple, DeclarativeBase):
+class PeekEnvAgent(Tuple, DeclarativeBase):
     """ PeekAppInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server_be.env.platform'
-    __tablename__ = 'PeekEnvAgents'
+    __tupleType__ = 'peek_server.env.agent'
+    __tablename__ = 'PeekEnvAgent'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
     ip = Column(String, nullable=True, unique=True)
 
-    serverId = Column(ForeignKey('peek_server_be.PeekEnvServers.id'), primary_key=True)
-    server = relationship("PeekEnvServers")
+    serverId = Column(ForeignKey('peek_server.PeekEnvServer.id'), primary_key=True)
+    server = relationship("PeekEnvServer")
+
+
+@addTupleType
+class PeekEnvClient(Tuple, DeclarativeBase):
+    """ PeekAppInfo
+
+    This table stores information on the version of Peek apps that are stored in Peek.
+
+    """
+    __tupleType__ = 'peek_server.env.client'
+    __tablename__ = 'PeekEnvClient'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(String, nullable=True)
+    ip = Column(String, nullable=True, unique=True)
+
+    serverId = Column(ForeignKey('peek_server.PeekEnvServer.id'), primary_key=True)
+    server = relationship("PeekEnvServer")
