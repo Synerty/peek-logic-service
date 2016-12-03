@@ -18,7 +18,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.sql.schema import ForeignKey
 
 from peek_server.storage.DeclarativeBase import DeclarativeBase
-from txhttputil import Tuple, addTupleType
+from vortex.Tuple import Tuple, addTupleType
 
 logger = logging.getLogger(__name__)
 

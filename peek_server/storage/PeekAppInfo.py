@@ -17,7 +17,7 @@ from sqlalchemy import Integer, String
 from sqlalchemy.sql.schema import Index
 
 from peek_server.storage.DeclarativeBase import DeclarativeBase
-from txhttputil import Tuple, addTupleType
+from vortex.Tuple import Tuple, addTupleType
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ class PeekAppInfo(Tuple, DeclarativeBase):
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server_be.papp.info'
+    __tupleType__ = 'peek_server.papp.info'
     __tablename__ = 'PeekAppInfo'
 
     id = Column(Integer, primary_key=True)

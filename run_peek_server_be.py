@@ -11,30 +11,18 @@
  *  Synerty Pty Ltd
  *
 """
-from txhttputil.util.Directory import DirSettings
-
 from peek_server import importPackages
-from txhttputil.util import LoggingUtil
+from pytmpdir.Directory import DirSettings
+from txhttputil.util.LoggingUtil import setupLogging
 
-LoggingUtil.setup()
+setupLogging()
 
 import logging
 import os
 
 from twisted.internet import reactor, defer
 
-import txhttputil
-from txhttputil import addMetaTag
 from txhttputil.site.SiteUtil import setupSite
-
-txhttputil.DESCRIPTION = "Peek"
-txhttputil.TITLE = "Peek"
-
-addMetaTag(name="apple-mobile-web-app-capable", content="yes")
-addMetaTag(name="apple-mobile-web-app-app-title", content="Peek")
-addMetaTag(name="apple-mobile-web-app-status-bar-style", content="black")
-addMetaTag(name="viewport", content="initial-scale=1")
-addMetaTag(name="format-detection", content="telephone=no")
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +52,7 @@ def main():
     # pydevd.settrace(suspend=False)
 
     from peek_platform import PeekPlatformConfig
-    PeekPlatformConfig.componentName = "peek_server_be"
+    PeekPlatformConfig.componentName = "peek_server"
 
     # Tell the platform classes about our instance of the pappSwInstallManager
     from peek_server.server.sw_install.PappSwInstallManager import pappSwInstallManager
@@ -107,9 +95,17 @@ def main():
     from peek_server.papp.PappServerLoader import pappServerLoader
     pappServerLoader.loadAllPapps()
 
-    sitePort = peekServerConfig.sitePort
-    setupSite(sitePort, debug=True)
-    # setupSite(8000, debug=True, protectedResource=HTTPAuthSessionWrapper())
+    from peek_server.backend.PeekServerBackendRootResource import root as siteRoot
+    setupSite("Peek Admin",
+              siteRoot,
+              peekServerConfig.sitePort,
+              enableLogin=False)
+
+    from peek_server.server.PeekServerPlatformRootResource import  root as platformRoot
+    setupSite("Peek Platform Data Exchange",
+              platformRoot,
+              peekServerConfig.platformHttpPort,
+              enableLogin=False)
 
     reactor.run()
 

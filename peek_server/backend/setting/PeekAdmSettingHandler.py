@@ -6,7 +6,7 @@ Created on 09/07/2014
 import txhttputil
 from peek_server.storage import getPeekServerOrmSession, Setting
 from peek_server.storage.Setting import globalSetting
-from vortex.handler import OrmCrudHandler
+from vortex.handler.OrmCrudHandler import OrmCrudHandler
 
 scheduleDataFiltKey = {"papp": "peek_server",
                        "key": "backend.setting.data"}

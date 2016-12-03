@@ -15,13 +15,13 @@ import os
 from twisted.web.server import NOT_DONE_YET
 
 from peek_platform import PeekPlatformConfig
-from txhttputil import RapuiResource, resourceCacheAndServeStaticFile, \
-    addResourceCreator
+from txhttputil.site.BasicResource import BasicResource
+from txhttputil.site.StaticFileResource import StaticFileResource
 
 logger = logging.getLogger(__name__)
 
 
-class PeekSwUpdateDownloadResource(RapuiResource):
+class PeekSwUpdateDownloadResource(BasicResource):
     isLeaf = True
     isGzipped = True
 
@@ -47,9 +47,7 @@ class PeekSwUpdateDownloadResource(RapuiResource):
         request.responseHeaders.setRawHeaders(b'content-type',
                                               [b'application/octet-stream'])
 
-        return resourceCacheAndServeStaticFile(request, newSoftwareTar)
+        resource = StaticFileResource(newSoftwareTar)
+        return resource.render_GET(request)
 
 
-@addResourceCreator(b'/peek_server_be.sw_install.platform.download')
-def _creatorAgent(userAccess):
-    return PeekSwUpdateDownloadResource(userAccess)

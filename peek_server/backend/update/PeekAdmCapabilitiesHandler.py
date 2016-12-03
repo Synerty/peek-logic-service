@@ -5,10 +5,10 @@ Created on 09/07/2014
 '''
 from peek_server.backend.navbar.PeekAdmNavbarHandler import navbarDataHandler
 from peek_server.storage import getPeekServerOrmSession
-from txhttputil import DataWrapTuple
-from txhttputil import Payload
-from txhttputil import PayloadEndpoint
-from txhttputil import vortexSendPayload
+from vortex.DataWrapTuple import DataWrapTuple
+from vortex.Payload import Payload
+from vortex.PayloadEndpoint import PayloadEndpoint
+from vortex.Vortex import vortexSendPayload
 
 capabilitiesDataFiltKey = {"key": "backend.capabilities.data"}
 

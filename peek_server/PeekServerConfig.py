@@ -44,9 +44,23 @@ class PeekServerConfig(PeekFileConfigBase,
 
     ### SERVER SECTION ###
     @property
-    def sitePort(self):
+    def sitePort(self)-> int:
+        """ Site Port
+
+        The port used to serve the admin web page on
+        """
         with self._cfg as c:
-            return c.server.port(8000, require_integer)
+            return c.server.sitePort(8010, require_integer)
+
+    ### SERVER SECTION ###
+    @property
+    def platformHttpPort(self) -> int:
+        """ Platform HTTP Port
+
+        The port used to communications between the platform services.
+        """
+        with self._cfg as c:
+            return c.server.platformHttpPort(8011, require_integer)
 
     @property
     def popupMenuScript(self):

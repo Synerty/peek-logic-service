@@ -6,8 +6,8 @@ from twisted.internet import reactor
 
 from peek_platform import PeekPlatformConfig
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
-from txhttputil import Directory
-from txhttputil import deferToThreadWrap
+from pytmpdir.Directory import Directory
+from txhttputil.util.DeferUtil import deferToThreadWrap
 
 __author__ = 'synerty'
 

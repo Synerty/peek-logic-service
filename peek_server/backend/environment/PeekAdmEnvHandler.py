@@ -7,7 +7,7 @@ Created on 09/07/2014
 from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekEnv import PeekEnvServer, PeekEnvAgent, PeekEnvWorker, \
     PeekEnvClient
-from vortex.handler import OrmCrudHandler, OrmCrudHandlerExtension
+from vortex.handler.OrmCrudHandler import OrmCrudHandler, OrmCrudHandlerExtension
 
 # -----------------------------------------------------------------------------
 # Servers

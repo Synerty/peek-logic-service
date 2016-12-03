@@ -3,17 +3,17 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-# from peek_server_be.api.platform.AgentUtil import getLatestAgentUpdateInfos
 from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
-from vortex.handler import ModelHandlerInThread
+from txhttputil.util.DeferUtil import deferToThreadWrap
+from vortex.handler.ModelHandler import ModelHandler
 
-# HANDLER
 pappVersionInfoHandlerKey = {
     'papp': 'platform',
     'key': "backend.papp.version.info"}
 
 
-class __PappVersionInfoHandler(ModelHandlerInThread):
+class __PappVersionInfoHandler(ModelHandler):
+    @deferToThreadWrap
     def buildModel(self, payloadFilt, **kwargs):
         return getLatestPappVersionInfos()
 

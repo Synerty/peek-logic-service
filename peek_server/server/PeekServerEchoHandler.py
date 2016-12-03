@@ -1,13 +1,13 @@
 import logging
 
-from txhttputil import PayloadEndpoint
-from txhttputil import vortexSendPayload
+from vortex.PayloadEndpoint import PayloadEndpoint
+from vortex.Vortex import vortexSendPayload
 
 logger = logging.getLogger(__name__)
 
 # -------------------------------------
 # Payload echo for the platform
-# Used for the platform to tell when the peek_server_be server restarts.
+# Used for the platform to tell when the peek_server server restarts.
 
 # The filter we listen on
 peekServerEchoFilt = {

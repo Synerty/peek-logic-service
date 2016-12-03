@@ -11,7 +11,7 @@ from peek_server.server.sw_version.PeekSwVersionDataHandler import \
     peekSwVersionDataHandler
 from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
-from txhttputil import Directory
+from pytmpdir.Directory import Directory
 
 __author__ = 'synerty'
 

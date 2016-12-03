@@ -7,10 +7,8 @@ from _collections import defaultdict
 from peek_platform.papp.PappLoaderBase import PappLoaderBase
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
 from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
-from txhttputil import PayloadIO
-from txhttputil import removeResourcePaths, registeredResourcePaths, \
-    addResourceCreator
-from txhttputil import removeTuplesForTupleNames, \
+from vortex.PayloadIO import PayloadIO
+from vortex.Tuple import removeTuplesForTupleNames, \
     registeredTupleNames, tupleForTupleName
 
 logger = logging.getLogger(__name__)

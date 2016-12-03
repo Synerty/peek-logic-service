@@ -3,9 +3,8 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-from peek_server.backend.navbar.PeekAdmNavbarTuple import PeekAdmNavbarUserTuple
-
-from vortex.handler import ModelHandler
+from peek_server.backend.navbar.PeekAdmNavbarUserTuple import PeekAdmNavbarUserTuple
+from vortex.handler.ModelHandler import ModelHandler
 
 navbarDataFiltKey = {
     'papp': 'peek_server',

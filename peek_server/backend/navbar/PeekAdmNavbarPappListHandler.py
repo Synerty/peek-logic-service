@@ -3,8 +3,7 @@ Created on 09/07/2014
 
 @author: synerty
 '''
-
-from vortex.handler import ModelHandler
+from vortex.handler.ModelHandler import ModelHandler
 
 modelSetListDataFilt = {
     "papp": "peek_server",

@@ -17,12 +17,12 @@ from twisted.web.server import NOT_DONE_YET
 
 from peek_server.server.sw_upload.PappSwUploadManager import PappSwUploadManager
 from peek_server.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
-from txhttputil import RapuiResource, addResourceCreator
+from txhttputil.site.BasicResource import BasicResource
 
 logger = logging.getLogger(name=__name__)
 
 
-class PeekSwUploadResource(RapuiResource):
+class PeekSwUploadResource(BasicResource):
     isLeaf = True
     useLargeRequest = True
 
@@ -30,7 +30,7 @@ class PeekSwUploadResource(RapuiResource):
     UPDATE_TYPE_PAPP = 1
 
     def __init__(self, updateType, *args):
-        RapuiResource.__init__(self, *args)
+        BasicResource.__init__(self, *args)
 
         self._updateType = updateType
         self._desc = {self.UPDATE_TYPE_PLATFORM: "Peek Platform",
@@ -77,11 +77,3 @@ class PeekSwUploadResource(RapuiResource):
 
         return NOT_DONE_YET
 
-
-@addResourceCreator(b'/peek_server_be.update.platform', useLargeRequest=True)
-def createPlatformUpdateResource(*args):
-    return PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM, *args)
-
-@addResourceCreator(b'/peek_server_be.update.papp', useLargeRequest=True)
-def createPappUpdateResource(*args):
-    return PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PAPP, *args)

@@ -1,12 +1,12 @@
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
-from txhttputil import LoggingUtil
+from txhttputil.util.LoggingUtil import setupLogging
 
 global config
 config = context.config
 
-LoggingUtil.setup()
+setupLogging()
 
 import peek_server
 target_metadata = peek_server.storage.DeclarativeBase.metadata

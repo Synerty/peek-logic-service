@@ -19,7 +19,7 @@ from sqlalchemy.types import Integer, String, Boolean
 
 from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.DeclarativeBase import DeclarativeBase
-from txhttputil import Tuple, addTupleType
+from vortex.Tuple import Tuple, addTupleType
 
 __author__ = 'synerty'
 
