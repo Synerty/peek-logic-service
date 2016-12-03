@@ -138,3 +138,4 @@ def _writeAlembicIni():
 
 from . import PeekAppInfo
 from . import Setting
+from . import PeekEnv

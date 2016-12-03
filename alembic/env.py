@@ -8,8 +8,8 @@ config = context.config
 
 setupLogging()
 
-import peek_server
-target_metadata = peek_server.storage.DeclarativeBase.metadata
+from peek_server.storage.DeclarativeBase import metadata
+target_metadata = metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
