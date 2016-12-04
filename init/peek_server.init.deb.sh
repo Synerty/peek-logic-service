@@ -1,13 +1,13 @@
 #!/bin/sh
  
 ### BEGIN INIT INFO
-# Provides:          peek_server_be
+# Provides:          peek_server
 # Required-Start:    $remote_fs $syslog postgresql
 # Required-Stop:     $remote_fs $syslog postgresql
 # Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: peek_server_be, Extensible Model Viewer
-# Description:       peek_server_be, Extensible Model Viewer
+# Short-Description: peek_server, Extensible Model Viewer
+# Description:       peek_server, Extensible Model Viewer
 ### END INIT INFO
 
 # Change the next 3 lines to suit where you install your script and what you want to call it

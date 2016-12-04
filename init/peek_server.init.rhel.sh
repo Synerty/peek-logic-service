@@ -7,7 +7,7 @@
 #
 
 ### BEGIN INIT INFO
-# Provides: peek_server_be
+# Provides: peek_server
 # Required-Start: sshd postgresql
 # Required-Stop: sshd postgresql
 # Should-Start:
@@ -44,7 +44,7 @@ export PATH=${HOME}/python/bin:$PATH
 start() {
     echo -n $"Starting $prog: "
     # if not running, start it up here, usually something like "daemon $exec"
-    su - $DAEMON_USER -c "$PYTHON $DAEMON >> $HOME/peek_server_be.log 2>&1 &" && success || failure
+    su - $DAEMON_USER -c "$PYTHON $DAEMON >> $HOME/peek_server.log 2>&1 &" && success || failure
 
     retval=$?
     echo
