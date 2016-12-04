@@ -58,16 +58,16 @@ class PeekSwUploadResource(BasicResource):
                          }[self._updateType]()
 
         def good(data):
-            request.write(json.dumps({'message': str(data)}))
+            request.write(json.dumps({'message': str(data)}).encode())
             request.finish()
             logger.info("Finished updating %s sw_upload" % self._desc)
 
         def bad(failure):
-            request.write(json.dumps({'error': str(failure.value)}))
+            request.write(json.dumps({'error': str(failure.value)}).encode())
             request.finish()
             return failure
 
-        d = updateManager.processUpdate(request.args['file'])
+        d = updateManager.processUpdate(request.content)
         d.addCallbacks(good, bad)
 
         def closedError(failure):

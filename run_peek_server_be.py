@@ -11,8 +11,10 @@
  *  Synerty Pty Ltd
  *
 """
-from peek_server import importPackages
 from pytmpdir.Directory import DirSettings
+
+from peek_server import importPackages
+from txhttputil.site.FileUploadRequest import FileUploadRequest
 from txhttputil.util.LoggingUtil import setupLogging
 
 setupLogging()
@@ -73,6 +75,7 @@ def main():
     # Set paths for the Directory object
     DirSettings.defaultDirChmod = peekServerConfig.DEFAULT_DIR_CHMOD
     DirSettings.tmpDirPath = peekServerConfig.tmpPath
+    FileUploadRequest.tmpFilePath = peekServerConfig.tmpPath
 
     # Set default logging level
     logging.root.setLevel(peekServerConfig.loggingLevel)

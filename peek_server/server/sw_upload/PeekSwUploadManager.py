@@ -19,17 +19,12 @@ class PeekSwUploadManager(object):
         pass
 
     @deferToThreadWrap
-    def processUpdate(self, namedTempFiles):
-        if len(namedTempFiles) != 1:
-            raise Exception("Expected 1 Peek Platform update, received %s"
-                            % len(namedTempFiles))
+    def processUpdate(self, namedTempFile):
 
-        newSoftware = namedTempFiles[0]
-
-        if not tarfile.is_tarfile(newSoftware.name):
+        if not tarfile.is_tarfile(namedTempFile.name):
             raise Exception("Uploaded archive is not a tar file")
 
-        newVersion = self.updateToTarFile(newSoftware.name)
+        newVersion = self.updateToTarFile(namedTempFile.name)
 
         # Tell the peek server to install and restart
 

@@ -8,8 +8,8 @@ from peek_server.storage import getPeekServerOrmSession, Setting
 from peek_server.storage.Setting import globalSetting
 from vortex.handler.OrmCrudHandler import OrmCrudHandler
 
-scheduleDataFiltKey = {"papp": "peek_server",
-                       "key": "backend.setting.data"}
+filtKey = {"papp": "peek_server",
+           "key": "server.setting.data"}
 
 
 # HANDLER
@@ -24,4 +24,4 @@ class __CrudHandler(OrmCrudHandler):
             txhttputil.TITLE = settings[Setting.SYSTEM_NAME]
 
 
-__ormCrudHandler = __CrudHandler(getPeekServerOrmSession, Setting, scheduleDataFiltKey)
+__ormCrudHandler = __CrudHandler(getPeekServerOrmSession, Setting, filtKey)
