@@ -62,18 +62,18 @@ class PeekServerConfig(PeekFileConfigBase,
         with self._cfg as c:
             return c.server.platformHttpPort(8011, require_integer)
 
-    @property
-    def popupMenuScript(self):
-        p = os.path
-        name = "PopupMenuItemMaker.py"
-
-        if p.exists(p.join(self._homePath, name)):
-            return p.join(self._homePath, name)
-
-        import run_peek_server
-        peekPath = p.dirname(run_peek_server.__file__)
-
-        return p.join(peekPath, name)
+    # @property
+    # def popupMenuScript(self):
+    #     p = os.path
+    #     name = "PopupMenuItemMaker.py"
+    #
+    #     if p.exists(p.join(self._homePath, name)):
+    #         return p.join(self._homePath, name)
+    #
+    #     import run_peek_server
+    #     peekPath = p.dirname(run_peek_server.__file__)
+    #
+    #     return p.join(peekPath, name)
 
 
 peekServerConfig = PeekServerConfig()

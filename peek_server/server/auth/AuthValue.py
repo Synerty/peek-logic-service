@@ -48,7 +48,7 @@ def loadCapabilities(destObj, data):
 
     synKey = 'fM66hbfd15zkLFso'
     obj = AES.new(key + synKey, AES.MODE_CBC, synKey)
-    capabilities = obj.decrypt(b64decode(data)).strip()
+    capabilities = obj.decrypt(b64decode(data)).strip().decode()
     if not (capabilities[0] == '{' and capabilities[-1] == '}'):
         return None
 

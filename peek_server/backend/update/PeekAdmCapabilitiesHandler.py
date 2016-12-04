@@ -10,7 +10,10 @@ from vortex.Payload import Payload
 from vortex.PayloadEndpoint import PayloadEndpoint
 from vortex.Vortex import vortexSendPayload
 
-capabilitiesDataFiltKey = {"key": "backend.capabilities.data"}
+capabilitiesDataFiltKey = {
+    "papp": "peek_server",
+    "key": "admin.capabilities.data"
+}
 
 
 # HANDLER
