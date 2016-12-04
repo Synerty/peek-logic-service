@@ -23,17 +23,12 @@ class PappSwUploadManager(object):
         pass
 
     @inlineCallbacks
-    def processUpdate(self, namedTempFiles):
-        if len(namedTempFiles) != 1:
-            raise Exception("Expected 1 platform update archive, received %s"
-                            % len(namedTempFiles))
+    def processUpdate(self, namedTempFile):
 
-        newSoftwareTar = namedTempFiles[0]
-
-        if not tarfile.is_tarfile(newSoftwareTar.name):
+        if not tarfile.is_tarfile(namedTempFile.name):
             raise Exception("Uploaded archive is not a tar file")
 
-        pappName, pappVersion, fullNewTarPath = yield self.updateToTarFile(newSoftwareTar)
+        pappName, pappVersion, fullNewTarPath = yield self.updateToTarFile(namedTempFile)
 
         # Cascade this update to all the other Peek environment components
         yield pappSwInstallManager.installAndReload(pappName, pappVersion, fullNewTarPath)

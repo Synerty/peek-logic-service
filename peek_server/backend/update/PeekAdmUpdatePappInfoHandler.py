@@ -8,8 +8,9 @@ from txhttputil.util.DeferUtil import deferToThreadWrap
 from vortex.handler.ModelHandler import ModelHandler
 
 pappVersionInfoHandlerKey = {
-    'papp': 'platform',
-    'key': "backend.papp.version.info"}
+    'papp': 'peek_server',
+    'key': "peek_server.papp.version.info"
+}
 
 
 class __PappVersionInfoHandler(ModelHandler):
