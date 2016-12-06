@@ -11,6 +11,7 @@ from vortex.PayloadIO import PayloadIO
 from vortex.Tuple import removeTuplesForTupleNames, \
     registeredTupleNames, tupleForTupleName
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -38,21 +39,14 @@ class PappServerLoader(PappLoaderBase):
         if not oldLoadedPapp:
             return
 
-        # Remove the Papp resource creator
-        removeResourcePaths(pappName)
-
-        # Remove the backend page element
-        from peek_server.backend.app.PeekAdmAppElement import removePappAdminPage
-        removePappAdminPage(pappName)
+        # Remove the Papp resource tree
+        from peek_server.backend.SiteRootResource import root as serverRootResource
+        serverRootResource.deleteChild(pappName.encode())
 
         # Remove the registered endpoints
         for endpoint in self._rapuiEndpointInstancesByPappName[pappName]:
             PayloadIO().remove(endpoint)
         del self._rapuiEndpointInstancesByPappName[pappName]
-
-        # Remove the registered paths
-        removeResourcePaths(self._rapuiResourcePathsByPappName[pappName])
-        del self._rapuiResourcePathsByPappName[pappName]
 
         # Remove the registered tuples
         removeTuplesForTupleNames(self._rapuiTupleNamesByPappName[pappName])
@@ -73,7 +67,6 @@ class PappServerLoader(PappLoaderBase):
 
         # Make note of the initial registrations for this papp
         endpointInstancesBefore = set(PayloadIO().endpoints)
-        resourcePathsBefore = set(registeredResourcePaths())
         tupleNamesBefore = set(registeredTupleNames())
 
         # Everyone gets their own instance of the papp API
@@ -105,19 +98,12 @@ class PappServerLoader(PappLoaderBase):
 
         # Add all the resources required to serve the backend site
         # And all the papp custom resources it may create
-        addResourceCreator(pappName.encode("UTF-8"))(
-            serverPlatformApi._PappPlatformApiResourceBase__createPappRootResource)
-
-        # Add the page element, for angular routing for the papp_xxx page
-        from peek_server.backend.app.PeekAdmAppElement import addPappAdminPage
-        addPappAdminPage(pappName)
+        from peek_server.backend.SiteRootResource import root as serverRootResource
+        serverRootResource.putChild(pappName.encode(), serverPlatformApi.rootResource)
 
         # Make note of the final registrations for this papp
         self._rapuiEndpointInstancesByPappName[pappName] = list(
             set(PayloadIO().endpoints) - endpointInstancesBefore)
-
-        self._rapuiResourcePathsByPappName[pappName] = list(
-            set(registeredResourcePaths()) - resourcePathsBefore)
 
         self._rapuiTupleNamesByPappName[pappName] = list(
             set(registeredTupleNames()) - tupleNamesBefore)
@@ -138,12 +124,6 @@ class PappServerLoader(PappLoaderBase):
                 raise Exception("Payload endpoint does not contan 'papp':'%s'\n%s"
                                 % (pappName, filt))
 
-        # all resource paths must start with their pappName
-        for path in self._rapuiResourcePathsByPappName[pappName]:
-            if not path.strip(b'/').startswith(pappName.encode("UTF-8")):
-                raise Exception("Resource path does not start with '%s'\n%s"
-                                % (pappName, path))
-
         # all tuple names must start with their pappName
         for tupleName in self._rapuiTupleNamesByPappName[pappName]:
             TupleCls = tupleForTupleName(tupleName)
@@ -163,6 +143,17 @@ class PappServerLoader(PappLoaderBase):
         data = []
         for pappName, papp in list(self._loadedPapps.items()):
             data.append((pappName, papp.title, "/%s" % pappName))
+
+        return data
+
+    def pappAdminAngularRoutes(self):
+        """ Papp Admin Name Urls
+
+        @:returns a list of tuples (pappName, angularAdminModule)
+        """
+        data = []
+        for pappName, papp in list(self._loadedPapps.items()):
+            data.append((pappName, papp.angularAdminModule))
 
         return data
 

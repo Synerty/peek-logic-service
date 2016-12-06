@@ -98,7 +98,7 @@ def main():
     from peek_server.papp.PappServerLoader import pappServerLoader
     pappServerLoader.loadAllPapps()
 
-    from peek_server.backend.PeekServerBackendRootResource import root as siteRoot
+    from peek_server.backend.SiteRootResource import root as siteRoot
     setupSite("Peek Admin",
               siteRoot,
               peekServerConfig.sitePort,

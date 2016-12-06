@@ -3,6 +3,8 @@ from txhttputil.site.FileUnderlayResource import FileUnderlayResource
 from vortex.VortexResource import VortexResource
 
 root = FileUnderlayResource()
+root.enableSinglePageApplication()
+root.addFileSystemRoot("/home/peek/project/peek_server_fe/dist")
 # rootResource.addFileSystemRoot()
 
 root.putChild(b'vortex', VortexResource())
