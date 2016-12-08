@@ -14,23 +14,27 @@
 '''
 import logging
 
-import os
-
 from jsoncfg.value_mappers import require_string, require_integer
-from peek_platform.file_config.PeekFileConfigBase import PeekFileConfigBase
-from peek_platform.file_config.PeekFileConfigPlatformMixin import \
-    PeekFileConfigPlatformMixin
-from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import \
-    PeekFileConfigSqlAlchemyMixin
+from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
+from peek_platform.file_config.PeekFileConfigFrontendDirMixin import PeekFileConfigFrontendDirMixin
+from peek_platform.file_config.PeekFileConfigPlatformMixin import PeekFileConfigPlatformMixin
+from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import PeekFileConfigSqlAlchemyMixin
 from peek_server.PeekServerConfigLicMixin import PeekServerConfigLicMixin
 
 logger = logging.getLogger(__name__)
 
 
-class PeekServerConfig(PeekFileConfigBase,
+class PeekServerConfig(PeekFileConfigABC,
                        PeekFileConfigPlatformMixin,
                        PeekFileConfigSqlAlchemyMixin,
-                       PeekServerConfigLicMixin):
+                       PeekServerConfigLicMixin,
+                       PeekFileConfigFrontendDirMixin):
+    """
+    This class creates a server configuration
+    """
+
+    _frontendProjectDir = "/home/peek/project/peek_server_fe"
+
     ### USER SECTION ###
     @property
     def adminPass(self):
@@ -44,7 +48,7 @@ class PeekServerConfig(PeekFileConfigBase,
 
     ### SERVER SECTION ###
     @property
-    def sitePort(self)-> int:
+    def sitePort(self) -> int:
         """ Site Port
 
         The port used to serve the admin web page on
@@ -62,18 +66,18 @@ class PeekServerConfig(PeekFileConfigBase,
         with self._cfg as c:
             return c.server.platformHttpPort(8011, require_integer)
 
-    # @property
-    # def popupMenuScript(self):
-    #     p = os.path
-    #     name = "PopupMenuItemMaker.py"
-    #
-    #     if p.exists(p.join(self._homePath, name)):
-    #         return p.join(self._homePath, name)
-    #
-    #     import run_peek_server
-    #     peekPath = p.dirname(run_peek_server.__file__)
-    #
-    #     return p.join(peekPath, name)
+            # @property
+            # def popupMenuScript(self):
+            #     p = os.path
+            #     name = "PopupMenuItemMaker.py"
+            #
+            #     if p.exists(p.join(self._homePath, name)):
+            #         return p.join(self._homePath, name)
+            #
+            #     import run_peek_server
+            #     peekPath = p.dirname(run_peek_server.__file__)
+            #
+            #     return p.join(peekPath, name)
 
 
 peekServerConfig = PeekServerConfig()

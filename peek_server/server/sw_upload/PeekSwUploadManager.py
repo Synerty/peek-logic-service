@@ -2,12 +2,12 @@ import os
 import shutil
 import tarfile
 
+from pytmpdir.Directory import Directory
 from twisted.internet import reactor
+from txhttputil.util.DeferUtil import deferToThreadWrap
 
 from peek_platform import PeekPlatformConfig
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
-from pytmpdir.Directory import Directory
-from txhttputil.util.DeferUtil import deferToThreadWrap
 
 __author__ = 'synerty'
 

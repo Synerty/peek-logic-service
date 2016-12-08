@@ -1,12 +1,13 @@
-from papp_base.server.ServerPlatformApiBase import ServerPlatformApiBase
-from peek_platform.papp.PappPlatformApiResourceBase import PappPlatformApiResourceBase
+from papp_base.PeekPlatformFrontendABC import PeekPlatformFrontendABC
+from papp_base.server.PeekServerPlatformABC import PeekServerPlatformABC
 
 
-class ServerPlatformApi(ServerPlatformApiBase, PappPlatformApiResourceBase):
+class ServerPlatformApi(PeekServerPlatformABC, PeekPlatformFrontendABC):
     def __init__(self):
-        PappPlatformApiResourceBase.__init__(self)
+        PeekPlatformFrontendABC.__init__(self)
 
     @property
     def dbConnectString(self) -> str:
         from peek_server.PeekServerConfig import peekServerConfig
         return peekServerConfig.dbConnectString
+

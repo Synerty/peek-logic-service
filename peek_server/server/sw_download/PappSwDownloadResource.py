@@ -15,12 +15,12 @@ import os
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.sql.expression import desc
 from twisted.web.server import NOT_DONE_YET
+from txhttputil.site.BasicResource import BasicResource
+from txhttputil.site.StaticFileResource import StaticFileResource
 
 from peek_platform import PeekPlatformConfig
 from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
-from txhttputil.site.BasicResource import BasicResource
-from txhttputil.site.StaticFileResource import StaticFileResource
 
 logger = logging.getLogger(__name__)
 

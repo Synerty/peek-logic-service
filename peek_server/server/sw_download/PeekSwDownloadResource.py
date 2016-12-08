@@ -13,10 +13,10 @@ import logging
 import os
 
 from twisted.web.server import NOT_DONE_YET
-
-from peek_platform import PeekPlatformConfig
 from txhttputil.site.BasicResource import BasicResource
 from txhttputil.site.StaticFileResource import StaticFileResource
+
+from peek_platform import PeekPlatformConfig
 
 logger = logging.getLogger(__name__)
 

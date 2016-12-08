@@ -12,10 +12,10 @@
  *
 """
 from pytmpdir.Directory import DirSettings
-
-from peek_server import importPackages
 from txhttputil.site.FileUploadRequest import FileUploadRequest
 from txhttputil.util.LoggingUtil import setupLogging
+
+from peek_server import importPackages
 
 setupLogging()
 
