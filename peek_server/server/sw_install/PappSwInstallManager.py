@@ -5,6 +5,7 @@ from peek_server.papp.PappServerLoader import pappServerLoader
 class PappSwInstallManager(PappSwInstallManagerBase):
     def notifyOfPappVersionUpdate(self, pappName, targetVersion):
         pappServerLoader.loadPapp(pappName)
+        pappServerLoader.buildFrontend(self)
 
 
 pappSwInstallManager = PappSwInstallManager()

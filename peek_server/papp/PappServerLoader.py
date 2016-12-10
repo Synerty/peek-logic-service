@@ -1,15 +1,16 @@
 import logging
-import sys
-from importlib.util import find_spec
+from typing import Type
 
-from jsoncfg.value_mappers import require_string
+from papp_base.PappCommonEntryHookABC import PappCommonEntryHookABC
+from papp_base.server.PappServerEntryHookABC import PappServerEntryHookABC
+from peek_platform.papp.PappFrontendInstallerABC import PappFrontendInstallerABC
 from peek_platform.papp.PappLoaderABC import PappLoaderABC
 from peek_server.papp.ServerPlatformApi import ServerPlatformApi
 
 logger = logging.getLogger(__name__)
 
 
-class PappServerLoader(PappLoaderABC):
+class PappServerLoader(PappLoaderABC, PappFrontendInstallerABC):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -17,41 +18,52 @@ class PappServerLoader(PappLoaderABC):
         cls._instance = PappLoaderABC.__new__(cls, *args, **kwargs)
         return cls._instance
 
-    def _loadPappThrows(self, pappName: str, pappPackageJson: str):
-        self.unloadPapp(pappName)
+    def __init__(self, *args, **kwargs):
+        PappLoaderABC.__init__(self, *args, **kwargs)
+        PappFrontendInstallerABC.__init__(self, *args, platformService="server", **kwargs)
 
+    def loadAllPapps(self):
+        PappLoaderABC.loadAllPapps(self)
+        self.buildFrontend()
+
+    @property
+    def _entryHookFuncName(self) -> str:
+        return "peekServerEntryHook"
+
+    @property
+    def _entryHookClassType(self):
+        return PappServerEntryHookABC
+
+    @property
+    def _platformServiceNames(self) -> [str]:
+        return ["server", "storage"]
+
+    def _loadPappThrows(self, pappName: str, EntryHookClass: Type[PappCommonEntryHookABC],
+                        pappRootDir: str) -> None:
         # Everyone gets their own instance of the papp API
         serverPlatformApi = ServerPlatformApi()
 
-        # Load up the entry hook details from the papp_package.json
-        entryHookPackage = pappPackageJson.config.server.entryHookPackage(require_string)
-        entryHookClass = pappPackageJson.config.server.entryHookClass(require_string)
+        pappMain = EntryHookClass(pappName=pappName,
+                                  pappRootDir=pappRootDir,
+                                  platform=serverPlatformApi)
 
-        modSpec = find_spec(entryHookPackage)
-        if not modSpec:
-            raise Exception("Can not load package %s for Peek App %s",
-                            entryHookPackage, pappName)
-
-        # Load the package
-        Mod = modSpec.loader.load_module()
-
-        pappMain = Mod.PappServerMain(serverPlatformApi)
-
-        self._loadedPapps[pappName] = pappMain
+        # Load the papp
+        pappMain.load()
 
         # Configure the celery app in the worker
         # This is not the worker that will be started, it allows the worker to queue tasks
-
         from peek_platform.CeleryApp import configureCeleryApp
         configureCeleryApp(pappMain.celeryApp)
 
+        # Start the Papp
         pappMain.start()
-        sys.path.pop()
 
         # Add all the resources required to serve the backend site
         # And all the papp custom resources it may create
         from peek_server.backend.SiteRootResource import root as serverRootResource
         serverRootResource.putChild(pappName.encode(), serverPlatformApi.rootResource)
+
+        self._loadedPapps[pappName] = pappMain
 
     def pappAdminTitleUrls(self):
         """ Papp Admin Name Urls
