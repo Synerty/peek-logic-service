@@ -5,7 +5,7 @@ from papp_base.PappCommonEntryHookABC import PappCommonEntryHookABC
 from papp_base.server.PappServerEntryHookABC import PappServerEntryHookABC
 from peek_platform.papp.PappFrontendInstallerABC import PappFrontendInstallerABC
 from peek_platform.papp.PappLoaderABC import PappLoaderABC
-from peek_server.papp.ServerPlatformApi import ServerPlatformApi
+from peek_server.papp.PeekServerPlatformHook import PeekServerPlatformHook
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +41,7 @@ class PappServerLoader(PappLoaderABC, PappFrontendInstallerABC):
     def _loadPappThrows(self, pappName: str, EntryHookClass: Type[PappCommonEntryHookABC],
                         pappRootDir: str) -> None:
         # Everyone gets their own instance of the papp API
-        serverPlatformApi = ServerPlatformApi()
+        serverPlatformApi = PeekServerPlatformHook()
 
         pappMain = EntryHookClass(pappName=pappName,
                                   pappRootDir=pappRootDir,
