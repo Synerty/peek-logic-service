@@ -41,11 +41,11 @@ class PappServerLoader(PappLoaderABC, PappFrontendInstallerABC):
     def _loadPappThrows(self, pappName: str, EntryHookClass: Type[PappCommonEntryHookABC],
                         pappRootDir: str) -> None:
         # Everyone gets their own instance of the papp API
-        serverPlatformApi = PeekServerPlatformHook()
+        platformApi = PeekServerPlatformHook()
 
         pappMain = EntryHookClass(pappName=pappName,
                                   pappRootDir=pappRootDir,
-                                  platform=serverPlatformApi)
+                                  platform=platformApi)
 
         # Load the papp
         pappMain.load()
@@ -60,21 +60,10 @@ class PappServerLoader(PappLoaderABC, PappFrontendInstallerABC):
 
         # Add all the resources required to serve the backend site
         # And all the papp custom resources it may create
-        from peek_server.backend.SiteRootResource import root as serverRootResource
-        serverRootResource.putChild(pappName.encode(), serverPlatformApi.rootResource)
+        from peek_server.backend.SiteRootResource import root as siteRootResource
+        siteRootResource.putChild(pappName.encode(), platformApi.rootResource)
 
         self._loadedPapps[pappName] = pappMain
-
-    def pappAdminTitleUrls(self):
-        """ Papp Admin Name Urls
-
-        @:returns a list of tuples (pappName, pappTitle, pappUrl)
-        """
-        data = []
-        for pappName, papp in list(self._loadedPapps.items()):
-            data.append((pappName, papp.title, "/%s" % pappName))
-
-        return data
 
 
 pappServerLoader = PappServerLoader()

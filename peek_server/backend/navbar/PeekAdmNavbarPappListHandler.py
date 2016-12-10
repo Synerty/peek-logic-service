@@ -15,9 +15,8 @@ class PeekModelSetListHandler(ModelHandler):
     def buildModel(self, payloadFilt, **kwargs):
         from peek_server.papp.PappServerLoader import pappServerLoader
         data = []
-        for name, title, url in pappServerLoader.pappAdminTitleUrls():
+        for name, title, url in pappServerLoader.pappFrontendTitleUrls:
             data.append({
-                "templateUrl": '/%s/view/PappAdminRoot.html' % name,
                 "title": title,
                 "url": url})
 
