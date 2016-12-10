@@ -16,6 +16,8 @@ from txhttputil.site.FileUploadRequest import FileUploadRequest
 from txhttputil.util.LoggingUtil import setupLogging
 
 from peek_server import importPackages
+from peek_server.storage import setupDbConn
+from peek_server.storage.DeclarativeBase import metadata
 
 setupLogging()
 
@@ -35,24 +37,8 @@ reactor.suggestThreadPoolSize(10)
 defer.setDebugging(True)
 
 
-def getAlembicDir():
-    p = os.path
-    pappDir = p.dirname(__file__)
 
-    if p.isdir(p.join(pappDir, "alembic")):
-        # Deployed
-        return p.join(pappDir, "alembic")
-    else:
-        # Checked out code
-        return p.join(p.dirname(pappDir), "alembic")
-
-
-def main():
-    # defer.setDebugging(True)
-    # sys.argv.remove(DEBUG_ARG)
-    # import pydevd
-    # pydevd.settrace(suspend=False)
-
+def setupPlatform():
     from peek_platform import PeekPlatformConfig
     PeekPlatformConfig.componentName = "peek_server"
 
@@ -72,24 +58,35 @@ def main():
     from peek_server.PeekServerConfig import peekServerConfig
     PeekPlatformConfig.config = peekServerConfig
 
+    # Set default logging level
+    logging.root.setLevel(peekServerConfig.loggingLevel)
+
     # Set paths for the Directory object
     DirSettings.defaultDirChmod = peekServerConfig.DEFAULT_DIR_CHMOD
     DirSettings.tmpDirPath = peekServerConfig.tmpPath
     FileUploadRequest.tmpFilePath = peekServerConfig.tmpPath
 
-    # Set default logging level
-    logging.root.setLevel(peekServerConfig.loggingLevel)
 
-    # Configure sql alchemy
-    from peek_server import storage
-    storage.SynSqlaConn.dbEngineArgs = peekServerConfig.sqlaEngineArgs
-    storage.SynSqlaConn.dbConnectString = peekServerConfig.dbConnectString
-    storage.SynSqlaConn.alembicDir = getAlembicDir()
+def main():
+    # defer.setDebugging(True)
+    # sys.argv.remove(DEBUG_ARG)
+    # import pydevd
+    # pydevd.settrace(suspend=False)
+
+    setupPlatform()
+
+    # Configure sqlalchemy
+    from peek_server.PeekServerConfig import peekServerConfig
+    setupDbConn(
+        metadata=metadata,
+        dbEngineArgs = peekServerConfig.dbEngineArgs,
+        dbConnectString=peekServerConfig.dbConnectString,
+        alembicDir=os.path.join(os.path.dirname(__file__), "alembic")
+    )
 
     # Force model migration
-    from peek_server.storage import getPeekServerOrmSession
-    session = getPeekServerOrmSession()
-    session.close()
+    from peek_server.storage import dbConn
+    dbConn.migrate()
 
     # Import remaining components
     importPackages()
@@ -104,7 +101,7 @@ def main():
               peekServerConfig.sitePort,
               enableLogin=False)
 
-    from peek_server.server.PeekServerPlatformRootResource import  root as platformRoot
+    from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
     setupSite("Peek Platform Data Exchange",
               platformRoot,
               peekServerConfig.platformHttpPort,

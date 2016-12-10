@@ -4,7 +4,6 @@ Created on 09/07/2014
 @author: synerty
 '''
 from peek_server.backend.navbar.PeekAdmNavbarHandler import navbarDataHandler
-from peek_server.storage import getPeekServerOrmSession
 from vortex.DataWrapTuple import DataWrapTuple
 from vortex.Payload import Payload
 from vortex.PayloadEndpoint import PayloadEndpoint
@@ -28,7 +27,8 @@ class __CrudHandler():
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
 
         result = None
-        session = getPeekServerOrmSession()
+        from peek_server.storage import dbConn
+        session = dbConn.ormSession
 
         # Force capabilities reload on page load
         peekServerConfig._capabilities = None

@@ -4,7 +4,8 @@ Created on 09/07/2014
 @author: synerty
 '''
 import txhttputil
-from peek_server.storage import getPeekServerOrmSession, Setting
+
+from peek_server.storage import Setting, dbConn
 from peek_server.storage.Setting import globalSetting
 from vortex.handler.OrmCrudHandler import OrmCrudHandler
 
@@ -24,4 +25,4 @@ class __CrudHandler(OrmCrudHandler):
             txhttputil.TITLE = settings[Setting.SYSTEM_NAME]
 
 
-__ormCrudHandler = __CrudHandler(getPeekServerOrmSession, Setting, filtKey)
+__ormCrudHandler = __CrudHandler(lambda: dbConn.ormSession, Setting, filtKey)

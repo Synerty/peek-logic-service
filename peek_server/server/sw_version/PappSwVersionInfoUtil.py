@@ -1,13 +1,11 @@
 from sqlalchemy.sql.functions import func
 
-from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
 
 
-def getLatestPappVersionInfos(name=None, session=None):
-    closeSession = session == None
-
-    session = session if session else getPeekServerOrmSession()
+def getLatestPappVersionInfos(name=None):
+    from peek_server.storage import dbConn
+    session = dbConn.ormSession
 
     maxGroupedIds = (session
                      .query(func.max(PeekAppInfo.id).label('maxId'))
@@ -25,8 +23,6 @@ def getLatestPappVersionInfos(name=None, session=None):
 
     tuples = qry.all()
 
-    if closeSession:
-        session.expunge_all()
-        session.close()
+    session.expunge_all()
 
     return tuples

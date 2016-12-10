@@ -6,7 +6,6 @@ Created on 09/07/2014
 
 # from peek_server.server.live_db.LiveDb import liveDb
 # from peek_server.server.orm.LiveDb import LiveDbKey
-from peek_server.storage import getPeekServerOrmSession
 # from peek_server.server.orm.AgentData import AgentImportDispGridInfo
 # from peek_server.server.orm.Display import DispBase
 # from peek_server.server.orm.GridKeyIndex import GridKeyCompilerQueue, DispIndexerQueue
@@ -23,7 +22,8 @@ class DashboardListHandler(ModelHandler):
     def buildModel(self, payloadFilt, **kwargs):
         qryItems = []
 
-        session = getPeekServerOrmSession()
+        from peek_server.storage import dbConn
+        session = dbConn.ormSession
 
         def rowsQuick(Declarative):
             sql = '''

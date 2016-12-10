@@ -9,7 +9,6 @@ from peek_server.PeekServerConfig import peekServerConfig
 from peek_server.server.sw_install.PappSwInstallManager import pappSwInstallManager
 from peek_server.server.sw_version.PeekSwVersionDataHandler import \
     peekSwVersionDataHandler
-from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
 from pytmpdir.Directory import Directory
 
@@ -95,7 +94,8 @@ class PappSwUploadManager(object):
         fullNewTarPath = os.path.join(peekServerConfig.pappSoftwarePath, peekAppInfo.fileName)
         shutil.move(newSoftwareTar.name, fullNewTarPath)
 
-        session = getPeekServerOrmSession()
+        from peek_server.storage import dbConn
+        session = dbConn.ormSession
         existing = (session.query(PeekAppInfo)
                     .filter(PeekAppInfo.name == peekAppInfo.name,
                             PeekAppInfo.version == peekAppInfo.version)

@@ -19,7 +19,6 @@ from txhttputil.site.BasicResource import BasicResource
 from txhttputil.site.StaticFileResource import StaticFileResource
 
 from peek_platform import PeekPlatformConfig
-from peek_server.storage import getPeekServerOrmSession
 from peek_server.storage.PeekAppInfo import PeekAppInfo
 
 logger = logging.getLogger(__name__)
@@ -43,7 +42,8 @@ class PappSwDownloadResource(BasicResource):
         logger.debug("Papp Download Resource GET, name=%s, version=%s",
                       name, version)
 
-        session = getPeekServerOrmSession()
+        from peek_server.storage import dbConn
+        session = dbConn.ormSession
         qry = session.query(PeekAppInfo).filter(PeekAppInfo.name == name)
 
         try:

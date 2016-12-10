@@ -13,6 +13,7 @@
  *
 '''
 import logging
+import os
 
 from jsoncfg.value_mappers import require_string, require_integer
 from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
@@ -35,7 +36,8 @@ class PeekServerConfig(PeekFileConfigABC,
     This class creates a server configuration
     """
 
-    _frontendProjectDir = "/home/peek/project/peek_server_fe"
+    import peek_server_fe
+    _frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
 
     ### USER SECTION ###
     @property
