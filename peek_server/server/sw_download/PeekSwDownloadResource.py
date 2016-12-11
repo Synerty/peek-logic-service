@@ -26,14 +26,14 @@ class PeekSwUpdateDownloadResource(BasicResource):
     isGzipped = True
 
     def render_GET(self, request):
-        componentName = request.args.get('name', [None])[0]
-        version = request.args.get('version', [None])[0]
+        componentName = request.args.get(b'name', [None])[0]
+        version = request.args.get(b'version', [None])[0]
 
         if not componentName and not version:
             msg = "Download requires sw_update_server name and version, Name=%s, Version=%s"
             msg %= (componentName, version)
             logger.error(msg)
-            request.write(msg)
+            request.write(msg.encode())
             request.finish()
             return NOT_DONE_YET
 
