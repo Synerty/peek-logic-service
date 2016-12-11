@@ -1,7 +1,5 @@
-/build
-/dist
-/attune.egg-info
-*.pyc
+build
+dist
 _trial_temp
 log
 .project
@@ -11,9 +9,16 @@ run_logs
 .AppleDouble
 .DS_Store
 
-workspace.xml
-.idea
 
 # Ignore pycharm project files
 .idea/
 
+
+
+# Ignore python compiled files
+__pycache__
+
+
+dist/
+build/
+*.egg-info/
