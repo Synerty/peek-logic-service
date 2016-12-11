@@ -1,0 +1,11 @@
+<div>
+    <div ng-controller="PeekAdmAppCtrl">
+        <script type="text/javascript">
+            requirejs(["PeekAdmAppMod"]);
+        </script>
+
+        <peek-adm-navbar></peek-adm-navbar>
+
+        <div ng-view="" class="view-animate" autoscroll="true"></div>
+    </div>
+</div>

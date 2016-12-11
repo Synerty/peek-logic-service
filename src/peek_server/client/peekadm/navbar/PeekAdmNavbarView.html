@@ -1,0 +1,89 @@
+<div ng-controller="PeekAdmNavbarCtrl">
+
+    <nav class="navbar navbar-default" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle"
+                        data-toggle="collapse"
+                        data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <ul class="nav navbar-nav">
+                    <li ng-class="{active:wereAt(peekAdmConfigDashboardPath)}">
+                        <a class="navbar-brand"
+                           href="{{peekAdmConfigDashboardPath}}">Peek Dashboard</a>
+                    </li>
+                </ul>
+            </div>
+
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse"
+                 id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+
+
+                    <li ng-class="{active:wereAt(peekAdmConfigSettingPath)}">
+                        <a ng-href="{{peekAdmConfigSettingPath}}">Settings</a>
+                    </li>
+
+                    <li ng-class="{active:wereAt(peekAdmConfigUpdatePath)}">
+                        <a ng-href="{{peekAdmConfigUpdatePath}}">Update</a>
+                    </li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true" aria-expanded="false">
+                            Peek Apps Config</a>
+                        <ul class="dropdown-menu">
+                            <li ng-repeat="papp in papps | orderBy:'name' ">
+                                <a ng-href="{{papp.url}}">{{papp.name}}</a>
+                            </li>
+                        </ul>
+                    </li>
+
+
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="text-muted text-right small">
+                    <span class="small">Product of <a
+                            href="https://www.synerty.com">Synerty Pty Ltd,</a> All Rights Reserved</span><br/>
+                        <span class="small">Version #PEEK_VER#</span><br/>
+                        <span class="small">Build #PEEK_BUILD#</span><br/>
+                        <div ng-if="navData.supportExceeded && !navData.demoExceeded">
+                        <span class="small">
+                            <a class="text-danger" ng-href="{{peekAdmConfigUpdatePath}}"
+                            >Support Expired</a>
+                        </span><br/>
+                        </div>
+                        <div ng-if="navData.demoExceeded">
+                        <span class="small">
+                            <a class="text-danger" ng-href="{{peekAdmConfigUpdatePath}}"
+                            >Demo Period Ended</a>
+                        </span><br/>
+                        </div>
+                        <div ng-if="navData.countsExceeded">
+                        <span class="small">
+                            <a class="text-danger" ng-href="{{peekAdmConfigUpdatePath}}"
+                            >License Over Limit</a>
+                        </span><br/>
+                        </div>
+                    </li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="glyphicon glyphicon-user"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="#">Logged in as {{navData.username}}</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </nav>
+</div>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/../papp_base" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../papp_diagram" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../papp_mobile" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../papp_model" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../papp_noop" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../peek_agent" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../peek_server.lic" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../pof_api" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../rapui" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../txCelery" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/../txsuds" vcs="Git" />
+  </component>
+</project>

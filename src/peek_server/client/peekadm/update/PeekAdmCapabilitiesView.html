@@ -1,0 +1,93 @@
+<div ng-controller="PeekAdmCapabilitiesSoftwareCtrl">
+    <div class="panel panel-default">
+        <!-- Default panel contents -->
+        <div class="panel-heading">Licensing</div>
+        <div class="panel-body">
+
+            <div class="alert alert-danger" role="alert"
+                 ng-show="data.supportExceeded && !data.demoExceeded">
+                Peek server support period has ended, contact Synerty to renew.
+            </div>
+
+            <div class="alert alert-danger" role="alert"
+                 ng-show="data.demoExceeded">
+                Peek server demo license has expired, please contact Synerty to
+                purchase.
+            </div>
+
+
+            <p>Apply or renew this servers license</p>
+            <form class="form-horizontal">
+                <!-- Begin main lisence details section ----------------------------------->
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="ServerID" class="col-md-4 control-label">Server
+                            ID</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control"
+                                   ng-model="data.sid"
+                                   id="ServerID" readonly>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6"
+                         ng-class="{'has-error':data.supportExceeded,
+                                'has-success':!data.supportExceeded }">
+                        <label for="ExpireDate"
+                               class="col-md-4 control-label">Expiry Date</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="ExpireDate"
+                                   ng-model="data.upd" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label for="LicenseType"
+                               class="col-md-4 control-label">License Type</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="LicenseType"
+                                   ng-model="data.lin"
+                                   readonly>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6"
+                         ng-class="{'has-error':data.supportExceeded,
+                                'has-success':!data.supportExceeded }">
+                        <label for="SupportType"
+                               class="col-md-4 control-label">Support Type</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="SupportType"
+                                   ng-model="data.sun"
+                                   readonly>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Begin update license section ----------------------------------->
+                <hr>
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label for="LicenseKey"
+                               class="col-md-2 control-label">Update License</label>
+                        <div class="col-md-10">
+                    <textarea ng-model="data.newkey" type="text" class="form-control"
+                              id="LicenseKey" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12">
+                        <div class="col-md-offset-2 col-md-10">
+                            <button ng-click="updateLicense()" class="btn btn-default"
+                                    ng-disabled="!data.newkey">Update
+                            </button>
+                            To request a new license, email support@synerty.com, include
+                            the
+                            following "'{{data.serverName}}'={{data.sid}}"
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>

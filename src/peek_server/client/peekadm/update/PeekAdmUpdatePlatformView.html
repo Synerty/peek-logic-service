@@ -1,0 +1,54 @@
+<div ng-controller="PeekAdmUpdatePlatformCtrl" class="panel panel-default">
+
+    <!-- Default panel contents -->
+    <div class="panel-heading">Update Peek Platform</div>
+    <div class="panel-body" ng-hide="serverRestarting">
+
+        <p>Update the Peek Platform software with a newer release from
+            Synerty</p>
+
+        <div class="alert alert-info alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert"
+                    aria-label="Close"><span
+                    aria-hidden="true">&times;</span></button>
+            Ensure you have taken a backup of the Peek server before
+            performing any of the following operations.
+        </div>
+
+        <div ng-hide="pageData.supportExceeded"
+             ng-model="files" class="panel panel-warning"
+             ngf-drag-over-class="'panel-success'"
+             ngf-multiple="false"
+             ngf-allow-dir="false"
+             ngf-drop="upload($files, $event, $rejectedFiles)"
+             accept="'*.tar.bz2'">
+
+            <div class="panel-heading">
+                <h3>
+                    <span class="glyphicon glyphicon-flash"></span>
+                    <small ng-hide="progressPercentage">
+                        Drop Peek Platform Release Here
+                    </small>
+                    <small ng-show="progressPercentage">
+                        Uploading, {{progressPercentage}}% done.
+                    </small>
+                </h3>
+
+            </div>
+        </div>
+
+        <div ng-show="pageData.supportExceeded" class="panel panel-danger">
+            <div class="panel-heading">
+                <h3>
+                    <small>
+                        <span class="glyphicon glyphicon-ban-circle"></span>
+                        Updates disabled.
+                        Support period has ended, Please renew the Peek license.
+                    </small>
+                </h3>
+
+            </div>
+        </div>
+    </div>
+
+</div>

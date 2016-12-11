@@ -1,0 +1,14 @@
+/build
+/dist
+/attune.egg-info
+*.pyc
+_trial_temp
+log
+.project
+.pydevproject
+run_logs
+*~
+.AppleDouble
+.DS_Store
+
+workspace.xml

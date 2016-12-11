@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/../papp_base/.idea/papp_base.iml" filepath="$PROJECT_DIR$/../papp_base/.idea/papp_base.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../papp_diagram/.idea/papp_diagram.iml" filepath="$PROJECT_DIR$/../papp_diagram/.idea/papp_diagram.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../papp_mobile/.idea/papp_mobile.iml" filepath="$PROJECT_DIR$/../papp_mobile/.idea/papp_mobile.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../papp_model/.idea/papp_model.iml" filepath="$PROJECT_DIR$/../papp_model/.idea/papp_model.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../papp_noop/.idea/papp_noop.iml" filepath="$PROJECT_DIR$/../papp_noop/.idea/papp_noop.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../peek_agent/.idea/peek_agent.iml" filepath="$PROJECT_DIR$/../peek_agent/.idea/peek_agent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/peek_server.iml" filepath="$PROJECT_DIR$/.idea/peek_server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../peek_server.lic/.idea/peek_server.lic.iml" filepath="$PROJECT_DIR$/../peek_server.lic/.idea/peek_server.lic.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../peek_worker/.idea/peek_worker.iml" filepath="$PROJECT_DIR$/../peek_worker/.idea/peek_worker.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../pof_api/.idea/pof_api.iml" filepath="$PROJECT_DIR$/../pof_api/.idea/pof_api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../rapui/.idea/rapui.iml" filepath="$PROJECT_DIR$/../rapui/.idea/rapui.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../txCelery/.idea/txCelery.iml" filepath="$PROJECT_DIR$/../txCelery/.idea/txCelery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../txsuds/.idea/txsuds.iml" filepath="$PROJECT_DIR$/../txsuds/.idea/txsuds.iml" />
+    </modules>
+  </component>
+</project>
