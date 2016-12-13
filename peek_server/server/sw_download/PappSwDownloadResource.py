@@ -35,7 +35,7 @@ class PappSwDownloadResource(BasicResource):
         if not name and not version:
             msg = "Download requires peek app name, Name=%s" % name
             logger.error(msg)
-            request.write(msg)
+            request.write(msg.encode())
             request.finish()
             return NOT_DONE_YET
 

@@ -1,7 +1,11 @@
+import logging
 import os
 import shutil
+import subprocess
 import tarfile
+from subprocess import PIPE
 
+import virtualenv
 from pytmpdir.Directory import Directory
 from twisted.internet import reactor
 from txhttputil.util.DeferUtil import deferToThreadWrap
@@ -10,6 +14,15 @@ from peek_platform import PeekPlatformConfig
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
 
 __author__ = 'synerty'
+
+logger = logging.getLogger(__name__)
+
+
+class PlatformInstallException(Exception):
+    def __init__(self, message, output, error):
+        Exception.__init__(message)
+        self.output = output
+        self.error = error
 
 
 class PeekSwUploadManager(object):
@@ -28,23 +41,26 @@ class PeekSwUploadManager(object):
 
         # Tell the peek server to install and restart
 
-        reactor.callLater(0, peekSwInstallManager.installAndRestart, newVersion)
+        # reactor.callLater(0, peekSwInstallManager.installAndRestart, newVersion)
 
         return newVersion
 
     def updateToTarFile(self, newSoftwareTar):
-        ''' Update To Tar File
+        """ Update To Tar File
 
         This method inspects the tar file and finally extracts it to the platform
         path.
 
-        '''
+        """
 
         directory = Directory()
         tarfile.open(newSoftwareTar).extractall(directory.path)
         directory.scan()
 
-        platformVersionFile = [f for f in directory.files if f.name == self.PEEK_PLATFORM_VERSION_JSON]
+        self._testPackageUpdate(directory)
+
+        platformVersionFile = [f for f in directory.files if
+                               f.name == self.PEEK_PLATFORM_VERSION_JSON]
         if len(platformVersionFile) != 1:
             raise Exception("Uploaded archive does not contain a Peek Platform update"
                             ", Expected 1 %s, got %s"
@@ -85,3 +101,49 @@ class PeekSwUploadManager(object):
         shutil.move(os.path.join(directory.path, newVersionDir), newPath)
 
         return newVersion
+
+    def _testPackageUpdate(self, directory: Directory) -> None:
+        """ Test Package Update
+
+        :param directory: The directory where the packages are extracted
+
+        Since we ARE running on the server, we will test install these packages here
+         first, this is done by creating a virtualenv.
+
+        There isn't a lot of testing for the release at this stage.
+        Currently we just use pip to try and install the packages off line, if it's happy
+         we're happy.
+
+        """
+
+        # Create the test virtualenv
+        virtualEnvDir = Directory()
+        virtualenv.main(['--site-packages', virtualEnvDir])
+
+        # Install all the packages from the directory
+        args = ['install',  # Install the packages
+                '--ignore-installed ',  # Reinstall if they already exist
+                '--no-cache-dir',  # Don't use the local pip cache
+                '--no-index',  # Work offline, don't use pypi
+                '--find-links', directory.path,  # Look in the directory for dependencies
+                [f.name for f in directory]
+                ]
+
+        # We could use import pip, pip.main(..), except:
+        # We want to capture, the output, and:
+        # we can't tell it to use the virtualenv
+
+        pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
+
+        commandComplete = subprocess.run(['pip'] + args,
+                                         executable=pipExec,
+                                         stdout=PIPE, stderr=PIPE, shell=True)
+
+        if commandComplete.returncode:
+            raise PlatformInstallException(
+                "Package install test failed",
+                output=commandComplete.stdout.decode(),
+                error=commandComplete.stderr.decode())
+
+        # Continue normally if it all succeeded
+        logger.debug("Peek update successfully tested.")
