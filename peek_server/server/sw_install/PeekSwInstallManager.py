@@ -1,6 +1,6 @@
 from peek_platform.sw_install.PeekSwInstallManagerBase import PeekSwInstallManagerBase
 from peek_server import storage
-from peek_server.plugin.PluginServerLoader import pluginServerLoader
+from peek_server.plugin.ServerPluginLoader import serverPluginLoader
 
 __author__ = 'synerty'
 
@@ -8,7 +8,7 @@ __author__ = 'synerty'
 class PeekSwInstallManager(PeekSwInstallManagerBase):
 
     def _stopCode(self):
-        pluginServerLoader.unloadAllPlugins()
+        serverPluginLoader.unloadAllPlugins()
 
     def _upgradeCode(self):
         # Ensure the migration succeeds before restarting.
@@ -17,7 +17,7 @@ class PeekSwInstallManager(PeekSwInstallManagerBase):
         dbConn.migratre()
 
     def _startCode(self):
-        pluginServerLoader.loadAllPlugins()
+        serverPluginLoader.loadAllPlugins()
 
 
 peekSwInstallManager = PeekSwInstallManager()

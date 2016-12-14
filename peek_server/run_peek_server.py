@@ -51,8 +51,8 @@ def setupPlatform():
     PeekPlatformConfig.peekSwInstallManager = peekSwInstallManager
 
     # Tell the platform classes about our instance of the PeekLoaderBase
-    from peek_server.plugin.PluginServerLoader import pluginServerLoader
-    PeekPlatformConfig.pluginLoader = pluginServerLoader
+    from peek_server.plugin.ServerPluginLoader import serverPluginLoader
+    PeekPlatformConfig.pluginLoader = serverPluginLoader
 
     # The config depends on the componentName, order is important
     from peek_server.PeekServerConfig import peekServerConfig
@@ -92,8 +92,8 @@ def main():
     importPackages()
 
     # Load all plugins
-    from peek_server.plugin.PluginServerLoader import pluginServerLoader
-    pluginServerLoader.loadAllPlugins()
+    from peek_server.plugin.ServerPluginLoader import serverPluginLoader
+    serverPluginLoader.loadAllPlugins()
 
     from peek_server.backend.SiteRootResource import root as siteRoot
     setupSite("Peek Admin",

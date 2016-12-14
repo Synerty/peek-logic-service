@@ -139,9 +139,9 @@ class SettingProperty(PolymorphicVerticalProperty, Tuple, DeclarativeBase):
     __tablename__ = 'SettingProperty'
     __tupleType__ = 'c.s.p.setting.property'
 
-    id = Column(Integer, primary_key=True)
-    settingId = Column(ForeignKey('Setting.id'), primary_key=True)
-    key = Column(String, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    settingId = Column(ForeignKey('Setting.id'), primary_key=True, nullable=False)
+    key = Column(String, primary_key=True, nullable=False)
     type = Column(String(16))
 
     # add information about storage for different types
@@ -309,6 +309,3 @@ def serviceSetting(key=None, value=None):
     return _getSetting("Service", serviceProperties, key=key, value=value)
 
 
-SCHEDULER_ENABLED = PropertyKey('scheduler.enabled',
-                                True,
-                                propertyDict=serviceProperties)

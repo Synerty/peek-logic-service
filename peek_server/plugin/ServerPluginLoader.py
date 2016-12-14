@@ -10,11 +10,11 @@ from peek_server.plugin.PeekServerPlatformHook import PeekServerPlatformHook
 logger = logging.getLogger(__name__)
 
 
-class PluginServerLoader(PluginLoaderABC, PluginFrontendInstallerABC):
+class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
-        assert cls._instance is None, "PluginServerLoader is a singleton, don't construct it"
+        assert cls._instance is None, "ServerPluginLoader is a singleton, don't construct it"
         cls._instance = PluginLoaderABC.__new__(cls, *args, **kwargs)
         return cls._instance
 
@@ -79,4 +79,4 @@ class PluginServerLoader(PluginLoaderABC, PluginFrontendInstallerABC):
         self._loadedPlugins[pluginName] = pluginMain
 
 
-pluginServerLoader = PluginServerLoader()
+serverPluginLoader = ServerPluginLoader()

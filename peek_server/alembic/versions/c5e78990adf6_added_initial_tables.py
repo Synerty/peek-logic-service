@@ -33,13 +33,13 @@ def upgrade():
     )
     op.create_index('idx_PeekPluginInfo_NameVersion', 'PeekPluginInfo', ['name', 'version'], unique=True, schema='peek_server')
     op.create_table('Setting',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
     sa.Column('name', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     schema='peek_server'
     )
     op.create_table('SettingProperty',
-    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
     sa.Column('settingId', sa.Integer(), nullable=False),
     sa.Column('key', sa.String(), nullable=False),
     sa.Column('type', sa.String(length=16), nullable=True),

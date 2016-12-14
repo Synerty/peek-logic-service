@@ -1,11 +1,11 @@
 from peek_platform.sw_install.PluginSwInstallManagerBase import PluginSwInstallManagerBase
-from peek_server.plugin.PluginServerLoader import pluginServerLoader
+from peek_server.plugin.ServerPluginLoader import serverPluginLoader
 
 
 class PluginSwInstallManager(PluginSwInstallManagerBase):
     def notifyOfPluginVersionUpdate(self, pluginName, targetVersion):
-        pluginServerLoader.loadPlugin(pluginName)
-        pluginServerLoader.buildFrontend(self)
+        serverPluginLoader.loadPlugin(pluginName)
+        serverPluginLoader.buildFrontend(self)
 
 
 pluginSwInstallManager = PluginSwInstallManager()

@@ -23,9 +23,9 @@ class PluginAdminMenuItemTuple(Tuple):
 
 class PeekModelSetListHandler(ModelHandler):
     def buildModel(self, payloadFilt, **kwargs):
-        from peek_server.plugin.PluginServerLoader import pluginServerLoader
+        from peek_server.plugin.ServerPluginLoader import serverPluginLoader
         data = []
-        for name, title, path in pluginServerLoader.pluginFrontendTitleUrls:
+        for name, title, path in serverPluginLoader.pluginFrontendTitleUrls:
             data.append(
                 PluginAdminMenuItemTuple(name=name,
                                    title=title,
