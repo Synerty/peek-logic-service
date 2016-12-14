@@ -9,7 +9,7 @@ from peek_server.storage import Setting, dbConn
 from peek_server.storage.Setting import globalSetting
 from vortex.handler.OrmCrudHandler import OrmCrudHandler
 
-filtKey = {"papp": "peek_server",
+filtKey = {"plugin": "peek_server",
            "key": "server.setting.data"}
 
 

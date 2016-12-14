@@ -3,7 +3,7 @@ import logging
 from peek_platform import PeekPlatformConfig
 from peek_platform.sw_version.PeekSwVersionPollHandler import peekPlatformVersionFilt
 from peek_platform.sw_version.PeekSwVersionTuple import PeekSwVersionTuple
-from peek_server.server.sw_version.PappSwVersionInfoUtil import getLatestPappVersionInfos
+from peek_server.server.sw_version.PluginSwVersionInfoUtil import getLatestPluginVersionInfos
 from vortex.PayloadEndpoint import PayloadEndpoint
 from vortex.Vortex import vortexSendTuple
 
@@ -26,9 +26,9 @@ class PeekSwVersionDataHandler(object):
         data.append(PeekSwVersionTuple(name="peek_platform",
                                        version=PeekPlatformConfig.config.platformVersion))
 
-        for pappVersionInfo in getLatestPappVersionInfos():
-            data.append(PeekSwVersionTuple(name=pappVersionInfo.name,
-                                           version=pappVersionInfo.version))
+        for pluginVersionInfo in getLatestPluginVersionInfos():
+            data.append(PeekSwVersionTuple(name=pluginVersionInfo.name,
+                                           version=pluginVersionInfo.version))
 
         vortexSendTuple(filt=peekPlatformVersionFilt,
                         tuple_=data,

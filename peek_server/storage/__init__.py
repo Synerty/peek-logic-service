@@ -14,7 +14,7 @@ import logging
 
 from sqlalchemy import MetaData
 
-from papp_base.storage.DbConnection import DbConnection
+from peek_plugin_base.storage.DbConnection import DbConnection
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +32,6 @@ def setupDbConn(dbConnectString: str, metadata: MetaData, alembicDir: str,
                           enableForeignKeys=False)
 
 
-from . import PeekAppInfo
+from . import PeekPluginInfo
 from . import Setting
 from . import PeekEnv

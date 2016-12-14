@@ -11,7 +11,7 @@ from vortex.handler.OrmCrudHandler import OrmCrudHandler, OrmCrudHandlerExtensio
 # -----------------------------------------------------------------------------
 # Servers
 serverListDataKey = {
-    'papp': 'peek_server',
+    'plugin': 'peek_server',
     'key': "peakadm.env.server.list.data"
 }
 
@@ -37,7 +37,7 @@ class _EnvServerListHandlerExtension(OrmCrudHandlerExtension):
 # -----------------------------------------------------------------------------
 # workers
 workerListDataKey = {
-    'papp': 'peek_server',
+    'plugin': 'peek_server',
     'key': "peakadm.env.worker.list.data"
 }
 
@@ -62,7 +62,7 @@ class _EnvWorkerListHandlerExtension(OrmCrudHandlerExtension):
 # -----------------------------------------------------------------------------
 # agents
 agentListDataKey = {
-    'papp': 'peek_server',
+    'plugin': 'peek_server',
     'key': "peakadm.env.agent.list.data"
 }
 
@@ -82,7 +82,7 @@ class _EnvAgentListHandlerExtension(OrmCrudHandlerExtension):
 # -----------------------------------------------------------------------------
 # agents
 clientListDataKey = {
-    'papp': 'peek_server',
+    'plugin': 'peek_server',
     'key': "peakadm.env.client.list.data"
 }
 

@@ -7,7 +7,7 @@ from peek_server.backend.navbar.PeekAdmNavbarUserTuple import PeekAdmNavbarUserT
 from vortex.handler.ModelHandler import ModelHandler
 
 navbarDataFiltKey = {
-    'papp': 'peek_server',
+    'plugin': 'peek_server',
     'key': "nav.adm.user.data"
 }
 

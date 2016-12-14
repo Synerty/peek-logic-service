@@ -7,27 +7,27 @@ from vortex.handler.ModelHandler import ModelHandler
 from vortex.Tuple import addTupleType, Tuple, TupleField
 
 modelSetListDataFilt = {
-    "papp": "peek_server",
-    "key": "nav.adm.papp.list"
+    "plugin": "peek_server",
+    "key": "nav.adm.plugin.list"
 }
 
 
 
 @addTupleType
-class PappAdminMenuItemTuple(Tuple):
-    __tupleType__ = 'peek_server.PappAdminMenuItemTuple'
+class PluginAdminMenuItemTuple(Tuple):
+    __tupleType__ = 'peek_server.PluginAdminMenuItemTuple'
 
-    name = TupleField(comment="The name of the papp, EG papp_noop")
-    title = TupleField(comment="The title of the papp, EG No Op")
-    resourcePath = TupleField(comment="The resource path of the papp")
+    name = TupleField(comment="The name of the plugin, EG plugin_noop")
+    title = TupleField(comment="The title of the plugin, EG No Op")
+    resourcePath = TupleField(comment="The resource path of the plugin")
 
 class PeekModelSetListHandler(ModelHandler):
     def buildModel(self, payloadFilt, **kwargs):
-        from peek_server.papp.PappServerLoader import pappServerLoader
+        from peek_server.plugin.PluginServerLoader import pluginServerLoader
         data = []
-        for name, title, path in pappServerLoader.pappFrontendTitleUrls:
+        for name, title, path in pluginServerLoader.pluginFrontendTitleUrls:
             data.append(
-                PappAdminMenuItemTuple(name=name,
+                PluginAdminMenuItemTuple(name=name,
                                    title=title,
                                    resourcePath=path))
 

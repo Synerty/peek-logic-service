@@ -42,17 +42,17 @@ def setupPlatform():
     from peek_platform import PeekPlatformConfig
     PeekPlatformConfig.componentName = "peek_server"
 
-    # Tell the platform classes about our instance of the pappSwInstallManager
-    from peek_server.server.sw_install.PappSwInstallManager import pappSwInstallManager
-    PeekPlatformConfig.pappSwInstallManager = pappSwInstallManager
+    # Tell the platform classes about our instance of the pluginSwInstallManager
+    from peek_server.server.sw_install.PluginSwInstallManager import pluginSwInstallManager
+    PeekPlatformConfig.pluginSwInstallManager = pluginSwInstallManager
 
     # Tell the platform classes about our instance of the PeekSwInstallManager
     from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
     PeekPlatformConfig.peekSwInstallManager = peekSwInstallManager
 
     # Tell the platform classes about our instance of the PeekLoaderBase
-    from peek_server.papp.PappServerLoader import pappServerLoader
-    PeekPlatformConfig.pappLoader = pappServerLoader
+    from peek_server.plugin.PluginServerLoader import pluginServerLoader
+    PeekPlatformConfig.pluginLoader = pluginServerLoader
 
     # The config depends on the componentName, order is important
     from peek_server.PeekServerConfig import peekServerConfig
@@ -91,9 +91,9 @@ def main():
     # Import remaining components
     importPackages()
 
-    # Load all papps
-    from peek_server.papp.PappServerLoader import pappServerLoader
-    pappServerLoader.loadAllPapps()
+    # Load all plugins
+    from peek_server.plugin.PluginServerLoader import pluginServerLoader
+    pluginServerLoader.loadAllPlugins()
 
     from peek_server.backend.SiteRootResource import root as siteRoot
     setupSite("Peek Admin",

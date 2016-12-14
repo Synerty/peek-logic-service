@@ -23,14 +23,14 @@ logger = logging.getLogger(__name__)
 
 
 @addTupleType
-class PeekAppInfo(Tuple, DeclarativeBase):
-    """ PeekAppInfo
+class PeekPluginInfo(Tuple, DeclarativeBase):
+    """ PeekPluginInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
 
     """
-    __tupleType__ = 'peek_server.papp.info'
-    __tablename__ = 'PeekAppInfo'
+    __tupleType__ = 'peek_server.plugin.info'
+    __tablename__ = 'PeekPluginInfo'
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
@@ -46,6 +46,6 @@ class PeekAppInfo(Tuple, DeclarativeBase):
     dirName = Column(String, nullable=False)
 
     __table_args__ = (
-        Index("idx_PeekAppInfo_NameVersion",
+        Index("idx_PeekPluginInfo_NameVersion",
               name, version, unique=True),
     )

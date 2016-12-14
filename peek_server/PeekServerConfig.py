@@ -21,7 +21,7 @@ from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
 from peek_platform.file_config.PeekFileConfigFrontendDirMixin import \
     PeekFileConfigFrontendDirMixin
 from peek_platform.file_config.PeekFileConfigOsMixin import PeekFileConfigOsMixin
-from peek_platform.file_config.PeekFileConfigPlatformABC import PeekFileConfigPlatformABC
+from peek_platform.file_config.PeekFileConfigPlatformMixin import PeekFileConfigPlatformMixin
 from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import \
     PeekFileConfigSqlAlchemyMixin
 from peek_server.PeekServerConfigLicMixin import PeekServerConfigLicMixin
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 class PeekServerConfig(PeekFileConfigABC,
                        PeekFileConfigOsMixin,
-                       PeekFileConfigPlatformABC,
+                       PeekFileConfigPlatformMixin,
                        PeekFileConfigSqlAlchemyMixin,
                        PeekServerConfigLicMixin,
                        PeekFileConfigFrontendDirMixin):
@@ -41,11 +41,6 @@ class PeekServerConfig(PeekFileConfigABC,
 
     import peek_server_fe
     _frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
-
-    @property
-    def platformVersion(self):
-        import peek_server
-        return peek_server.__version__
 
     ### USER SECTION ###
     @property

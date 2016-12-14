@@ -1,5 +1,5 @@
-from papp_base.PeekPlatformFrontendHookABC import PeekPlatformFrontendHookABC
-from papp_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
+from peek_plugin_base.PeekPlatformFrontendHookABC import PeekPlatformFrontendHookABC
+from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
 
 
 class PeekServerPlatformHook(PeekServerPlatformHookABC):
@@ -11,5 +11,5 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
         from peek_server.PeekServerConfig import peekServerConfig
         return peekServerConfig.dbConnectString
 
-    def getOtherPappApi(self, pappName):
+    def getOtherPluginApi(self, pluginName):
         return None

@@ -19,12 +19,12 @@ from txhttputil.site.BasicResource import BasicResource
 from txhttputil.site.StaticFileResource import StaticFileResource
 
 from peek_platform import PeekPlatformConfig
-from peek_server.storage.PeekAppInfo import PeekAppInfo
+from peek_server.storage.PeekPluginInfo import PeekPluginInfo
 
 logger = logging.getLogger(__name__)
 
 
-class PappSwDownloadResource(BasicResource):
+class PluginSwDownloadResource(BasicResource):
     isLeaf = True
     isGzipped = True
 
@@ -39,29 +39,29 @@ class PappSwDownloadResource(BasicResource):
             request.finish()
             return NOT_DONE_YET
 
-        logger.debug("Papp Download Resource GET, name=%s, version=%s",
+        logger.debug("Plugin Download Resource GET, name=%s, version=%s",
                       name, version)
 
         from peek_server.storage import dbConn
         session = dbConn.ormSession
-        qry = session.query(PeekAppInfo).filter(PeekAppInfo.name == name)
+        qry = session.query(PeekPluginInfo).filter(PeekPluginInfo.name == name)
 
         try:
             if version:
-                pappInfo = qry.filter(PeekAppInfo.version == version).one()
+                pluginInfo = qry.filter(PeekPluginInfo.version == version).one()
             else:
                 # Choose the latest
-                pappInfo = qry.order_by(desc(PeekAppInfo.id)).first()
+                pluginInfo = qry.order_by(desc(PeekPluginInfo.id)).first()
 
 
         except NoResultFound as e:
-            logger.warning("There are no builds for papp %s, version %s",
+            logger.warning("There are no builds for plugin %s, version %s",
                            name, version)
             request.finish()
             return NOT_DONE_YET
 
 
-        newSoftwareTar = os.path.join(PeekPlatformConfig.config.pappSoftwarePath, pappInfo.fileName)
+        newSoftwareTar = os.path.join(PeekPlatformConfig.config.pluginSoftwarePath, pluginInfo.fileName)
 
         request.responseHeaders.setRawHeaders('content-type',
                                               ['application/octet-stream'])

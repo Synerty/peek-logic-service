@@ -14,10 +14,10 @@ import json
 import logging
 
 from twisted.web.server import NOT_DONE_YET
-
-from peek_server.server.sw_upload.PappSwUploadManager import PappSwUploadManager
-from peek_server.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
 from txhttputil.site.BasicResource import BasicResource
+
+from peek_server.server.sw_upload.PluginSwUploadManager import PluginSwUploadManager
+from peek_server.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
 
 logger = logging.getLogger(name=__name__)
 
@@ -27,14 +27,14 @@ class PeekSwUploadResource(BasicResource):
     useLargeRequest = True
 
     UPDATE_TYPE_PLATFORM = 0
-    UPDATE_TYPE_PAPP = 1
+    UPDATE_TYPE_PLUGIN = 1
 
     def __init__(self, updateType, *args):
         BasicResource.__init__(self, *args)
 
         self._updateType = updateType
         self._desc = {self.UPDATE_TYPE_PLATFORM: "Peek Platform",
-                      self.UPDATE_TYPE_PAPP: "Peek App",
+                      self.UPDATE_TYPE_PLUGIN: "Peek App",
                       }[self._updateType]
 
     def render_GET(self, request):
@@ -54,7 +54,7 @@ class PeekSwUploadResource(BasicResource):
             return json.dumps({'error': str(e.message)})
 
         updateManager = {self.UPDATE_TYPE_PLATFORM: PeekSwUploadManager,
-                         self.UPDATE_TYPE_PAPP: PappSwUploadManager,
+                         self.UPDATE_TYPE_PLUGIN: PluginSwUploadManager,
                          }[self._updateType]()
 
         def good(data):
@@ -63,7 +63,13 @@ class PeekSwUploadResource(BasicResource):
             logger.info("Finished updating %s sw_upload" % self._desc)
 
         def bad(failure):
-            request.write(json.dumps({'error': str(failure.value)}).encode())
+            e = failure.value
+
+            request.write(json.dumps(
+                {'error': str(failure.value),
+                 'stdout': e.stdout if hasattr(e, 'stdout') else None,
+                 'stderr': e.stderr if hasattr(e, 'stderr') else None}).encode())
+
             request.finish()
             return failure
 
@@ -76,4 +82,3 @@ class PeekSwUploadResource(BasicResource):
         request.notifyFinish().addErrback(closedError)
 
         return NOT_DONE_YET
-

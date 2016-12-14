@@ -29,5 +29,5 @@ root.putChild(b'vortex', VortexResource())
 root.putChild(b'peek_server.update.platform',
               PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM))
 
-root.putChild(b'peek_server.update.papp',
-              PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PAPP))
+root.putChild(b'peek_server.update.plugin',
+              PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN))

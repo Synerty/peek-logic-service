@@ -12,7 +12,7 @@ Created on 09/07/2014
 from txhttputil.util.DeferUtil import deferToThreadWrap
 from vortex.handler.ModelHandler import ModelHandler
 
-executeListDataKey = {'papp': 'peek_server',
+executeListDataKey = {'plugin': 'peek_server',
                       'key': "peakadm.dashboard.list.data"}
 
 
