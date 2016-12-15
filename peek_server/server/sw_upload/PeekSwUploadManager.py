@@ -11,6 +11,7 @@ from twisted.internet import reactor
 from txhttputil.util.DeferUtil import deferToThreadWrap
 
 from peek_platform import PeekPlatformConfig
+from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
 
 __author__ = 'synerty'
@@ -26,7 +27,6 @@ class PlatformTestException(Exception):
 
 
 class PeekSwUploadManager(object):
-    PEEK_PLATFORM_VERSION_FILE = 'version'
 
     def __init__(self):
         pass
@@ -37,7 +37,7 @@ class PeekSwUploadManager(object):
         if not tarfile.is_tarfile(namedTempFile.name):
             raise Exception("Uploaded archive is not a tar file")
 
-        newVersion = self.updateToTarFile(namedTempFile.name)
+        newVersion, newPath = self.updateToTarFile(namedTempFile.name)
 
         # Tell the peek server to install and restart
 
@@ -60,31 +60,33 @@ class PeekSwUploadManager(object):
         self._testPackageUpdate(directory)
 
         platformVersionFile = [f for f in directory.files if
-                               f.name == self.PEEK_PLATFORM_VERSION_FILE]
+                               f.name == PEEK_PLATFORM_STAMP_FILE]
         if len(platformVersionFile) != 1:
             raise Exception("Uploaded archive does not contain a Peek Platform update"
                             ", Expected 1 %s, got %s"
-                            % (self.PEEK_PLATFORM_VERSION_FILE, len(platformVersionFile)))
+                            % (PEEK_PLATFORM_STAMP_FILE, len(platformVersionFile)))
 
         platformVersionFile = platformVersionFile[0]
 
         if '/' in platformVersionFile.path:
             raise Exception("Expected %s to be one level down, it's at %s"
-                            % (self.PEEK_PLATFORM_VERSION_FILE, platformVersionFile.path))
+                            % (PEEK_PLATFORM_STAMP_FILE, platformVersionFile.path))
 
         with platformVersionFile.open() as f:
-            newVersion = f.read().decode().strip()
+            newVersion = f.read().strip()
 
-        newPath = os.path.join(PeekPlatformConfig.config.platformSoftwarePath,
-                               newVersion + ".tar.gz")
+        newPath = peekSwInstallManager.makeReleaseFileName(newVersion)
 
         # Do we really need to keep the old version if it's the same build?
-        if os.path.exists(newPath):
+        if os.path.isdir(newPath):
             shutil.rmtree(newPath)
+
+        elif os.path.isfile(newPath):
+            os.remove(newPath)
 
         shutil.copy(newSoftwareTar, newPath)
 
-        return newVersion
+        return newVersion, newPath
 
     def _testPackageUpdate(self, directory: Directory) -> None:
         """ Test Package Update
@@ -127,14 +129,7 @@ class PeekSwUploadManager(object):
         pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
 
         # Install all the packages from the directory
-        pipArgs = [pipExec,
-                   'install',  # Install the packages
-                   '--ignore-installed',  # Reinstall if they already exist
-                   '--no-cache-dir',  # Don't use the local pip cache
-                   '--no-index',  # Work offline, don't use pypi
-                   '--find-links', directory.path,
-                   # Look in the directory for dependencies
-                   ] + [f.realPath for f in directory.files if f.name.endswith(".tar.gz")]
+        pipArgs = [pipExec] + peekSwInstallManager.makePipArgs(directory)
 
         commandComplete = subprocess.run(' '.join(pipArgs),
                                          executable=bashExec,

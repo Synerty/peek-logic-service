@@ -1,11 +1,11 @@
-from peek_platform.sw_install.PeekSwInstallManagerBase import PeekSwInstallManagerBase
+from peek_platform.sw_install.PeekSwInstallManagerABC import PeekSwInstallManagerABC
 from peek_server import storage
 from peek_server.plugin.ServerPluginLoader import serverPluginLoader
 
 __author__ = 'synerty'
 
 
-class PeekSwInstallManager(PeekSwInstallManagerBase):
+class PeekSwInstallManager(PeekSwInstallManagerABC):
 
     def _stopCode(self):
         serverPluginLoader.unloadAllPlugins()
