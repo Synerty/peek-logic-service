@@ -1,13 +1,12 @@
+import sys
+
 import logging
 import os
 import shutil
 import subprocess
-import sys
 import tarfile
-from subprocess import PIPE
-
 from pytmpdir.Directory import Directory
-from twisted.internet import reactor
+from subprocess import PIPE
 from twisted.internet.defer import inlineCallbacks
 from txhttputil.util.DeferUtil import deferToThreadWrap
 
@@ -29,7 +28,6 @@ class PlatformTestException(PlatformInstallException):
 
 
 class PeekSwUploadManager(object):
-
     def __init__(self):
         pass
 
@@ -65,7 +63,7 @@ class PeekSwUploadManager(object):
                                f.name == PEEK_PLATFORM_STAMP_FILE]
         if len(platformVersionFile) != 1:
             raise Exception("Uploaded archive does not contain a Peek Platform update"
-                            ", Expected 1 %s, got %s"
+                            ", Expected 1 %s file, got %s"
                             % (PEEK_PLATFORM_STAMP_FILE, len(platformVersionFile)))
 
         platformVersionFile = platformVersionFile[0]
@@ -131,20 +129,23 @@ class PeekSwUploadManager(object):
         pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
 
         # Install all the packages from the directory
-        pipArgs = [pipExec] + peekSwInstallManager.makePipArgs(directory)
 
         logger.debug("Using interpreter : %s", bashExec)
-        logger.debug("Executing command : %s", pipArgs)
 
-        commandComplete = subprocess.run(' '.join(pipArgs),
-                                         executable=bashExec,
-                                         stdout=PIPE, stderr=PIPE, shell=True)
+        for pipArgs in peekSwInstallManager.makePipArgs(directory):
+            pipArgs = [pipExec] + pipArgs
 
-        if commandComplete.returncode:
-            raise PlatformTestException(
-                "Test install of updated packages failed.",
-                stdout=commandComplete.stdout.decode(),
-                stderr=commandComplete.stderr.decode())
+            logger.debug("Executing command : %s", pipArgs)
+
+            commandComplete = subprocess.run(' '.join(pipArgs),
+                                             executable=bashExec,
+                                             stdout=PIPE, stderr=PIPE, shell=True)
+
+            if commandComplete.returncode:
+                raise PlatformTestException(
+                    "Test install of updated package failed.",
+                    stdout=commandComplete.stdout.decode(),
+                    stderr=commandComplete.stderr.decode())
 
         # Continue normally if it all succeeded
         logger.debug("Peek update successfully tested.")

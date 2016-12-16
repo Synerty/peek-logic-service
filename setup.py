@@ -4,7 +4,7 @@ from distutils.core import setup
 
 from setuptools import find_packages
 
-package_name = "peek_server"
+package_name = "peek-server"
 package_version = '0.0.6dev123456'
 
 egg_info = "%s.egg-info" % package_name
@@ -19,7 +19,7 @@ setup(
             'run_peek_server = peek_server.run_peek_server.main',
         ],
     },
-    install_requires=["peek_platform", "peek_server_fe"],
+    install_requires=["peek-platform", "peek-server-fe"],
     version=package_version,
     description='Peek Platform - Server Service',
     author='Synerty',
