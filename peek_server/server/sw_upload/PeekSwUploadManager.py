@@ -8,10 +8,12 @@ from subprocess import PIPE
 
 from pytmpdir.Directory import Directory
 from twisted.internet import reactor
+from twisted.internet.defer import inlineCallbacks
 from txhttputil.util.DeferUtil import deferToThreadWrap
 
 from peek_platform import PeekPlatformConfig
-from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE
+from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE, \
+    PlatformInstallException
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
 
 __author__ = 'synerty'
@@ -19,11 +21,11 @@ __author__ = 'synerty'
 logger = logging.getLogger(__name__)
 
 
-class PlatformTestException(Exception):
-    def __init__(self, message, stdout, stderr):
-        self.message = message
-        self.stdout = stdout
-        self.stderr = stderr
+class PlatformTestException(PlatformInstallException):
+    """ Platform Test Exception
+
+    This is thrown with stdout and stderr when the test install fails
+    """
 
 
 class PeekSwUploadManager(object):
@@ -31,20 +33,20 @@ class PeekSwUploadManager(object):
     def __init__(self):
         pass
 
-    @deferToThreadWrap
+    @inlineCallbacks
     def processUpdate(self, namedTempFile):
 
         if not tarfile.is_tarfile(namedTempFile.name):
             raise Exception("Uploaded archive is not a tar file")
 
-        newVersion, newPath = self.updateToTarFile(namedTempFile.name)
+        newVersion, newPath = yield self.updateToTarFile(namedTempFile.name)
 
         # Tell the peek server to install and restart
-
-        reactor.callLater(0, peekSwInstallManager.installAndRestart, newVersion)
+        yield peekSwInstallManager.installAndRestart(newVersion)
 
         return newVersion
 
+    @deferToThreadWrap
     def updateToTarFile(self, newSoftwareTar):
         """ Update To Tar File
 
@@ -131,13 +133,16 @@ class PeekSwUploadManager(object):
         # Install all the packages from the directory
         pipArgs = [pipExec] + peekSwInstallManager.makePipArgs(directory)
 
+        logger.debug("Using interpreter : %s", bashExec)
+        logger.debug("Executing command : %s", pipArgs)
+
         commandComplete = subprocess.run(' '.join(pipArgs),
                                          executable=bashExec,
                                          stdout=PIPE, stderr=PIPE, shell=True)
 
         if commandComplete.returncode:
             raise PlatformTestException(
-                "Package install test failed",
+                "Test install of updated packages failed.",
                 stdout=commandComplete.stdout.decode(),
                 stderr=commandComplete.stderr.decode())
 
