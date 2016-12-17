@@ -11,20 +11,13 @@ from twisted.internet.defer import inlineCallbacks
 from txhttputil.util.DeferUtil import deferToThreadWrap
 
 from peek_platform import PeekPlatformConfig
-from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE, \
-    PlatformInstallException
+from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE
+from peek_platform.util.PtyUtil import spawnPty, logSpawnException, spawnSubprocess
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
 
 __author__ = 'synerty'
 
 logger = logging.getLogger(__name__)
-
-
-class PlatformTestException(PlatformInstallException):
-    """ Platform Test Exception
-
-    This is thrown with stdout and stderr when the test install fails
-    """
 
 
 class PeekSwUploadManager(object):
@@ -112,15 +105,16 @@ class PeekSwUploadManager(object):
                     # Give the virtual environment access to the global
                     '--system-site-packages',
                     virtualEnvDir.path]
+        virtArgs = ' '.join(virtArgs)
 
-        commandComplete = subprocess.run(' '.join(virtArgs),
-                                         executable=bashExec,
-                                         stdout=PIPE, stderr=PIPE, shell=True)
+        try:
+            spawnSubprocess(virtArgs)
+            logger.debug("Vritual env created.")
 
-        if commandComplete.returncode:
-            [logger.error(l) for l in commandComplete.stdout.splitlines()]
-            [logger.error(l) for l in commandComplete.stderr.splitlines()]
-            raise Exception("Failed to create virtualenv for platform test")
+        except Exception as e:
+            logSpawnException(e)
+            e.message = "Failed to create virtualenv for platform test"
+            raise
 
         # We could use import pip, pip.main(..), except:
         # We want to capture, the output, and:
@@ -129,23 +123,19 @@ class PeekSwUploadManager(object):
         pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
 
         # Install all the packages from the directory
+        pipArgs = [pipExec] + peekSwInstallManager.makePipArgs(directory)
+        pipArgs = ' '.join(pipArgs)
 
-        logger.debug("Using interpreter : %s", bashExec)
+        try:
+            spawnPty(pipArgs)
+            logger.info("Peek package update complete.")
 
-        for pipArgs in peekSwInstallManager.makePipArgs(directory):
-            pipArgs = [pipExec] + pipArgs
+        except Exception as e:
+            logSpawnException(e)
 
-            logger.debug("Executing command : %s", pipArgs)
-
-            commandComplete = subprocess.run(' '.join(pipArgs),
-                                             executable=bashExec,
-                                             stdout=PIPE, stderr=PIPE, shell=True)
-
-            if commandComplete.returncode:
-                raise PlatformTestException(
-                    "Test install of updated package failed.",
-                    stdout=commandComplete.stdout.decode(),
-                    stderr=commandComplete.stderr.decode())
+            # Update the detail of the exception and raise it
+            e.message = "Test install of updated package failed."
+            raise
 
         # Continue normally if it all succeeded
         logger.debug("Peek update successfully tested.")
