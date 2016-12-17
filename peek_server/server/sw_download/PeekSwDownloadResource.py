@@ -17,6 +17,7 @@ from txhttputil.site.BasicResource import BasicResource
 from txhttputil.site.StaticFileResource import StaticFileResource
 
 from peek_platform import PeekPlatformConfig
+from peek_platform.sw_install.PeekSwInstallManagerABC import PeekSwInstallManagerABC
 
 logger = logging.getLogger(__name__)
 
@@ -40,9 +41,7 @@ class PeekSwUpdateDownloadResource(BasicResource):
         logger.debug("Peek Platform Download Resource GET, name=%s, version=%s",
                      componentName, version)
 
-        newSoftwareTar = os.path.join(PeekPlatformConfig.config.platformSoftwarePath,
-                                      'peek_platform_%s' % version,
-                                      '%s_%s.tar.bz2' % (componentName, version))
+        newSoftwareTar = PeekSwInstallManagerABC.makeReleaseFileName(version.decode())
 
         request.responseHeaders.setRawHeaders(b'content-type',
                                               [b'application/octet-stream'])
