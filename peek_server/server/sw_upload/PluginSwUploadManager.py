@@ -1,10 +1,11 @@
-import json
 import logging
 import os
 import shutil
 import sys
 import tarfile
 
+import jsoncfg
+from jsoncfg.value_mappers import require_string
 from pytmpdir.Directory import Directory, File
 from twisted.internet.defer import inlineCallbacks, returnValue
 
@@ -62,12 +63,18 @@ class PluginSwUploadManager(object):
             raise Exception("Unable to find PKG-INFO")
 
         # CHECK 2
+        pgkName = None
         pkgVersion = None
         with pkgInfoFile.open() as f:
             for line in f:
+                if line.startswith("Name: "):
+                    pgkName = line.split(':')[1].strip()
+
                 if line.startswith("Version: "):
                     pkgVersion = line.split(':')[1].strip()
-                    break
+
+        if not pgkName:
+            raise Exception("Unable to determine package name")
 
         if not pkgVersion:
             raise Exception("Unable to determine package version")
@@ -93,30 +100,36 @@ class PluginSwUploadManager(object):
         peekAppInfo.fileName = "%s.tar.bz2" % dirName
         peekAppInfo.dirName = dirName
 
-        with pluginPackageFile.open() as f:
-            versionJson = json.load(f)
+        packageJson = jsoncfg.load_config(pluginPackageFile.realPath)
 
-        peekAppInfo.title = versionJson["title"]
-        peekAppInfo.name = versionJson["name"]
-        peekAppInfo.creator = versionJson["creator"]
-        peekAppInfo.website = versionJson["website"]
-        peekAppInfo.version = versionJson["version"]
-        peekAppInfo.buildNumber = versionJson["buildNumber"]
-        peekAppInfo.buildDate = versionJson["buildDate"]
+        peekAppInfo.title = packageJson.plugin.title(require_string)
+        peekAppInfo.name = packageJson.plugin.name(require_string)
+        peekAppInfo.creator = packageJson.plugin.creator(require_string)
+        peekAppInfo.website = packageJson.plugin.website(require_string)
+        peekAppInfo.version = packageJson.plugin.version(require_string)
+        peekAppInfo.buildNumber = packageJson.plugin.buildNumber(require_string)
+        peekAppInfo.buildDate = packageJson.plugin.buildDate(require_string)
 
-        pluginName, pluginPackageFile = peekAppInfo.name, peekAppInfo.version
+        del packageJson  # No longer used
+
+        pluginName = peekAppInfo.name
 
         # CHECK 4
-        if pluginPackageFile.path != os.path.join(dirName, peekAppInfo.name):
+        if pluginName != pgkName:
+            raise Exception("PyPI package name and papp_package.json name missmatch,"
+                            " %s VS %s" % (pluginName, pgkName))
+
+        # CHECK 5
+        if pluginPackageFile.path != os.path.join(dirName, pgkName):
             raise Exception("Expected %s to be at %s, it's at %s"
                             % (PLUGIN_PACKAGE_JSON, dirName, pluginPackageFile.path))
 
-        # CHECK 5
-        if not dirName.startswith(peekAppInfo.name):
-            raise Exception("Peek app name '%s' does not match peek root dir name '%s"
-                            % (peekAppInfo.name, dirName))
-
         # CHECK 6
+        if not dirName.startswith(pluginName):
+            raise Exception("Peek app name '%s' does not match peek root dir name '%s"
+                            % (pluginName, dirName))
+
+        # CHECK 7
         if peekAppInfo.version != pkgVersion:
             raise Exception("Plugin %s trget version is %s actual version is %s"
                             % (pluginName, peekAppInfo.version, pkgVersion))
