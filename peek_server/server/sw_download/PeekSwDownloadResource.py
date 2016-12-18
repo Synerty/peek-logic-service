@@ -31,7 +31,7 @@ class PeekSwUpdateDownloadResource(BasicResource):
         version = request.args.get(b'version', [None])[0]
 
         if not componentName and not version:
-            msg = "Download requires sw_update_server name and version, Name=%s, Version=%s"
+            msg = "Download requires name and version, Name=%s, Version=%s"
             msg %= (componentName, version)
             logger.error(msg)
             request.write(msg.encode())

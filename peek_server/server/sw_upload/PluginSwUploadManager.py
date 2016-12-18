@@ -1,23 +1,27 @@
 import json
+import logging
 import os
 import shutil
+import sys
 import tarfile
 
+from pytmpdir.Directory import Directory, File
 from twisted.internet.defer import inlineCallbacks, returnValue
 
+from peek_platform.sw_install.PluginSwInstallManagerABC import PLUGIN_PACKAGE_JSON
+from peek_platform.util.PtyUtil import spawnSubprocess, logSpawnException, spawnPty
 from peek_server.PeekServerConfig import peekServerConfig
 from peek_server.server.sw_install.PluginSwInstallManager import pluginSwInstallManager
 from peek_server.server.sw_version.PeekSwVersionDataHandler import \
     peekSwVersionDataHandler
 from peek_server.storage.PeekPluginInfo import PeekPluginInfo
-from pytmpdir.Directory import Directory
 
 __author__ = 'synerty'
 
+logger = logging.getLogger(__name__)
+
 
 class PluginSwUploadManager(object):
-    PLUGIN_VERSION_JSON = "plugin_version.json"
-
     def __init__(self):
         pass
 
@@ -27,10 +31,12 @@ class PluginSwUploadManager(object):
         if not tarfile.is_tarfile(namedTempFile.name):
             raise Exception("Uploaded archive is not a tar file")
 
-        pluginName, pluginVersion, fullNewTarPath = yield self.updateToTarFile(namedTempFile)
+        pluginName, pluginVersion, fullNewTarPath = yield self.updateToTarFile(
+            namedTempFile)
 
         # Cascade this update to all the other Peek environment components
-        yield pluginSwInstallManager.installAndReload(pluginName, pluginVersion, fullNewTarPath)
+        yield pluginSwInstallManager.installAndReload(pluginName, pluginVersion,
+                                                      fullNewTarPath)
 
         # Cascade this update to all the other Peek environment components
         yield peekSwVersionDataHandler.notifyOfVersion(pluginName, pluginVersion)
@@ -38,20 +44,37 @@ class PluginSwUploadManager(object):
         returnValue("%s, %s" % (pluginName, pluginVersion))
 
     def updateToTarFile(self, newSoftwareTar):
-        dirName = tarfile.open(newSoftwareTar.name).getnames()[0]
-        directory = Directory()
-        try:
-            with tarfile.open(newSoftwareTar.name) as tar:
-                tar.extract("%s/%s" % (dirName, self.PLUGIN_VERSION_JSON), directory.path)
 
-        except KeyError as e:
-            raise Exception("Uploaded archive does not contain a Peek App sw_upload, %s"
-                            % e.message)
+        # We need the file to end in .tar.gz
+        # PIP doesn't like it otherwise
+        shutil.move(newSoftwareTar.name, newSoftwareTar.name + ".tar.gz")
+        newSoftwareTar.name = newSoftwareTar.name + ".tar.gz"
+
+        dirName = tarfile.open(newSoftwareTar.name).getnames()[0]
+
+        directory = Directory()
+        tarfile.open(newSoftwareTar.name).extractall(directory.path)
         directory.scan()
-        pluginVersion = directory.getFile(path=dirName, name=self.PLUGIN_VERSION_JSON)
-        if '/' in pluginVersion.path:
-            raise Exception("Expected %s to be one level down, it's at %s"
-                            % (self.PLUGIN_VERSION_JSON, pluginVersion.path))
+
+        # CHECK 1
+        pkgInfoFile = directory.getFile(path=dirName, name="PKG-INFO")
+        if not pkgInfoFile:
+            raise Exception("Unable to find PKG-INFO")
+
+        # CHECK 2
+        pkgVersion = None
+        with pkgInfoFile.open() as f:
+            for line in f:
+                if line.startswith("Version: "):
+                    pkgVersion = line.split(':')[1].strip()
+                    break
+
+        if not pkgVersion:
+            raise Exception("Unable to determine package version")
+
+        # CHECK 3
+        pluginPackageFile = self._getFileForFileName(PLUGIN_PACKAGE_JSON, directory)
+        self._testPackageUpdate(newSoftwareTar.name)
 
         # Example
         """
@@ -70,7 +93,7 @@ class PluginSwUploadManager(object):
         peekAppInfo.fileName = "%s.tar.bz2" % dirName
         peekAppInfo.dirName = dirName
 
-        with pluginVersion.open() as f:
+        with pluginPackageFile.open() as f:
             versionJson = json.load(f)
 
         peekAppInfo.title = versionJson["title"]
@@ -81,17 +104,28 @@ class PluginSwUploadManager(object):
         peekAppInfo.buildNumber = versionJson["buildNumber"]
         peekAppInfo.buildDate = versionJson["buildDate"]
 
-        pluginName, pluginVersion = peekAppInfo.name, peekAppInfo.version
+        pluginName, pluginPackageFile = peekAppInfo.name, peekAppInfo.version
 
+        # CHECK 4
+        if pluginPackageFile.path != os.path.join(dirName, peekAppInfo.name):
+            raise Exception("Expected %s to be at %s, it's at %s"
+                            % (PLUGIN_PACKAGE_JSON, dirName, pluginPackageFile.path))
+
+        # CHECK 5
         if not dirName.startswith(peekAppInfo.name):
             raise Exception("Peek app name '%s' does not match peek root dir name '%s"
                             % (peekAppInfo.name, dirName))
 
-        newPath = os.path.join(peekServerConfig.pluginSoftwarePath, dirName)
+        # CHECK 6
+        if peekAppInfo.version != pkgVersion:
+            raise Exception("Plugin %s trget version is %s actual version is %s"
+                            % (pluginName, peekAppInfo.version, pkgVersion))
 
         # Install the TAR file
         newSoftwareTar.delete = False
-        fullNewTarPath = os.path.join(peekServerConfig.pluginSoftwarePath, peekAppInfo.fileName)
+        fullNewTarPath = os.path.join(peekServerConfig.pluginSoftwarePath,
+                                      peekAppInfo.fileName)
+
         shutil.move(newSoftwareTar.name, fullNewTarPath)
 
         from peek_server.storage import dbConn
@@ -110,4 +144,74 @@ class PluginSwUploadManager(object):
         session.expunge_all()
         session.close()
 
-        return pluginName, pluginVersion, fullNewTarPath
+        return pluginName, pluginPackageFile, fullNewTarPath
+
+    def _getFileForFileName(self, fileName: str, directory: Directory) -> File:
+        """ Get File For FileName
+
+        Get the file from the directory that matches the fileName, this directory
+         contains the extracted package.
+
+        :param fileName: The filename to look for.
+        :param directory: The directory object where the package is extracted to.
+        :return: The File object representing the PKG-INFO
+
+        """
+        files = [f for f in directory.files if f.name == fileName]
+
+        if len(files) != 1:
+            raise Exception("Uploaded package does not contain exatly 1 %s file, found %s"
+                            % (fileName, len(files)))
+
+        return files[0]
+
+    def _testPackageUpdate(self, fileName: str) -> None:
+        """ Test Package Update
+
+        :param fileName: The full path to the package file to test install
+
+        Since we ARE running on the server, we will test install these packages here
+         first, this is done by creating a virtualenv.
+
+        Currently we just use pip to try and install the package off line, if it's happy
+         we're happy.
+
+        """
+
+        # Create the test virtualenv
+        virtualEnvDir = Directory()
+
+        virtExec = os.path.join(os.path.dirname(sys.executable), "virtualenv")
+        virtArgs = [virtExec,
+                    # Give the virtual environment access to the global
+                    '--system-site-packages',
+                    virtualEnvDir.path]
+        virtArgs = ' '.join(virtArgs)
+
+        try:
+            spawnSubprocess(virtArgs)
+            logger.debug("Vritual env created.")
+
+        except Exception as e:
+            logSpawnException(e)
+            e.message = "Failed to create virtualenv for platform test"
+            raise
+
+        pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
+
+        # Install all the packages from the directory
+        pipArgs = [pipExec] + pluginSwInstallManager.makePipArgs(fileName)
+        pipArgs = ' '.join(pipArgs)
+
+        try:
+            spawnPty(pipArgs)
+
+        except Exception as e:
+            logSpawnException(e)
+
+            # Update the detail of the exception and raise it
+            e.message = "Test install of updated plugin package failed."
+            raise
+
+        # Continue normally if it all succeeded
+        logger.debug("Peek Plugin package update successfully tested.")

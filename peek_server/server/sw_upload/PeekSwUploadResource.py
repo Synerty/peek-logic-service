@@ -73,7 +73,7 @@ class PeekSwUploadResource(BasicResource):
             request.finish()
             return failure
 
-        d = updateManager.processUpdate(request.content)
+        d = updateManager.processUpdate(request.content.namedTemporaryFile)
         d.addCallbacks(good, bad)
 
         def closedError(failure):

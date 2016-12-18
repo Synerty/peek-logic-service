@@ -1,16 +1,13 @@
-import sys
-
 import logging
 import os
 import shutil
-import subprocess
+import sys
 import tarfile
+
 from pytmpdir.Directory import Directory
-from subprocess import PIPE
 from twisted.internet.defer import inlineCallbacks
 from txhttputil.util.DeferUtil import deferToThreadWrap
 
-from peek_platform import PeekPlatformConfig
 from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE
 from peek_platform.util.PtyUtil import spawnPty, logSpawnException, spawnSubprocess
 from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
@@ -95,8 +92,6 @@ class PeekSwUploadManager(object):
 
         """
 
-        bashExec = PeekPlatformConfig.config.bashLocation
-
         # Create the test virtualenv
         virtualEnvDir = Directory()
 
@@ -128,7 +123,6 @@ class PeekSwUploadManager(object):
 
         try:
             spawnPty(pipArgs)
-            logger.info("Peek package update complete.")
 
         except Exception as e:
             logSpawnException(e)

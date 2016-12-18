@@ -29,18 +29,18 @@ class PluginSwDownloadResource(BasicResource):
     isGzipped = True
 
     def render_GET(self, request):
-        name = request.args.get('name', [None])[0]
-        version = request.args.get('version', [None])[0]
+        name = request.args.get(b'name', [None])[0]
+        version = request.args.get(b'version', [None])[0]
 
         if not name and not version:
-            msg = "Download requires peek app name, Name=%s" % name
+            msg = "Download requires peek plugin name, Name=%s" % name
             logger.error(msg)
             request.write(msg.encode())
             request.finish()
             return NOT_DONE_YET
 
         logger.debug("Plugin Download Resource GET, name=%s, version=%s",
-                      name, version)
+                     name, version)
 
         from peek_server.storage import dbConn
         session = dbConn.ormSession
@@ -53,19 +53,19 @@ class PluginSwDownloadResource(BasicResource):
                 # Choose the latest
                 pluginInfo = qry.order_by(desc(PeekPluginInfo.id)).first()
 
-
         except NoResultFound as e:
-            logger.warning("There are no builds for plugin %s, version %s",
+            logger.warning("There are no packages availible for plugin %s, version %s",
                            name, version)
             request.finish()
             return NOT_DONE_YET
 
+        newSoftwareTar = os.path.join(PeekPlatformConfig.config.pluginSoftwarePath,
+                                      pluginInfo.fileName)
 
-        newSoftwareTar = os.path.join(PeekPlatformConfig.config.pluginSoftwarePath, pluginInfo.fileName)
+        session.close()
 
-        request.responseHeaders.setRawHeaders('content-type',
-                                              ['application/octet-stream'])
+        request.responseHeaders.setRawHeaders(b'content-type',
+                                              [b'application/octet-stream'])
 
         resource = StaticFileResource(newSoftwareTar)
         return resource.render_GET(request)
-
