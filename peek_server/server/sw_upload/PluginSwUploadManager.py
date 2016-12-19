@@ -58,28 +58,9 @@ class PluginSwUploadManager(object):
         directory.scan()
 
         # CHECK 1
-        pkgInfoFile = directory.getFile(path=dirName, name="PKG-INFO")
-        if not pkgInfoFile:
-            raise Exception("Unable to find PKG-INFO")
+        pgkName, pkgVersion = pluginSwInstallManager.getPackageInfo(directory)
 
         # CHECK 2
-        pgkName = None
-        pkgVersion = None
-        with pkgInfoFile.open() as f:
-            for line in f:
-                if line.startswith("Name: "):
-                    pgkName = line.split(':')[1].strip()
-
-                if line.startswith("Version: "):
-                    pkgVersion = line.split(':')[1].strip()
-
-        if not pgkName:
-            raise Exception("Unable to determine package name")
-
-        if not pkgVersion:
-            raise Exception("Unable to determine package version")
-
-        # CHECK 3
         pluginPackageFile = self._getFileForFileName(PLUGIN_PACKAGE_JSON, directory)
         self._testPackageUpdate(newSoftwareTar.name)
 
@@ -87,7 +68,7 @@ class PluginSwUploadManager(object):
         """
         {
           "title": "Peek App - Noop",
-          "name": "plugin_noop",
+          "packageName": "plugin_noop",
           "company": "Synerty Pty Ltd",
           "website": "www.synerty.com",
           "version": "#PLUGIN_VER#",
@@ -97,13 +78,13 @@ class PluginSwUploadManager(object):
         """
 
         peekAppInfo = PeekPluginInfo()
-        peekAppInfo.fileName = "%s.tar.bz2" % dirName
+        peekAppInfo.fileName = "%s.tar.gz" % dirName
         peekAppInfo.dirName = dirName
 
         packageJson = jsoncfg.load_config(pluginPackageFile.realPath)
 
         peekAppInfo.title = packageJson.plugin.title(require_string)
-        peekAppInfo.name = packageJson.plugin.name(require_string)
+        peekAppInfo.name = packageJson.plugin.packageName(require_string)
         peekAppInfo.creator = packageJson.plugin.creator(require_string)
         peekAppInfo.website = packageJson.plugin.website(require_string)
         peekAppInfo.version = packageJson.plugin.version(require_string)
@@ -115,19 +96,19 @@ class PluginSwUploadManager(object):
         pluginName = peekAppInfo.name
 
         # CHECK 4
-        if pluginName != pgkName:
-            raise Exception("PyPI package name and papp_package.json name missmatch,"
-                            " %s VS %s" % (pluginName, pgkName))
+        # if pluginName != pgkName:
+        #     raise Exception("PyPI package name and papp_package.json name missmatch,"
+        #                     " %s VS %s" % (pluginName, pgkName))
 
         # CHECK 5
-        if pluginPackageFile.path != os.path.join(dirName, pgkName):
-            raise Exception("Expected %s to be at %s, it's at %s"
-                            % (PLUGIN_PACKAGE_JSON, dirName, pluginPackageFile.path))
+        # if pluginPackageFile.path != os.path.join(dirName, pgkName):
+        #     raise Exception("Expected %s to be at %s, it's at %s"
+        #                     % (PLUGIN_PACKAGE_JSON, dirName, pluginPackageFile.path))
 
-        # CHECK 6
-        if not dirName.startswith(pluginName):
-            raise Exception("Peek app name '%s' does not match peek root dir name '%s"
-                            % (pluginName, dirName))
+        # # CHECK 6
+        # if not dirName.startswith(pluginName):
+        #     raise Exception("Peek app name '%s' does not match peek root dir name '%s"
+        #                     % (pluginName, dirName))
 
         # CHECK 7
         if peekAppInfo.version != pkgVersion:
@@ -157,7 +138,7 @@ class PluginSwUploadManager(object):
         session.expunge_all()
         session.close()
 
-        return pluginName, pluginPackageFile, fullNewTarPath
+        return pluginName, pkgVersion, fullNewTarPath
 
     def _getFileForFileName(self, fileName: str, directory: Directory) -> File:
         """ Get File For FileName
