@@ -40,7 +40,7 @@ defer.setDebugging(True)
 
 def setupPlatform():
     from peek_platform import PeekPlatformConfig
-    PeekPlatformConfig.componentName = "peek_server"
+    PeekPlatformConfig.componentName = "peek-server"
 
     # Tell the platform classes about our instance of the pluginSwInstallManager
     from peek_server.server.sw_install.PluginSwInstallManager import pluginSwInstallManager

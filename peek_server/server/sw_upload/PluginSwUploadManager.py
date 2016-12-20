@@ -3,12 +3,14 @@ import os
 import shutil
 import sys
 import tarfile
+from tempfile import NamedTemporaryFile
 
 import jsoncfg
 from jsoncfg.value_mappers import require_string
 from pytmpdir.Directory import Directory, File
 from twisted.internet.defer import inlineCallbacks, returnValue
 
+from peek_platform import PeekPlatformConfig
 from peek_platform.sw_install.PluginSwInstallManagerABC import PLUGIN_PACKAGE_JSON
 from peek_platform.util.PtyUtil import spawnSubprocess, logSpawnException, spawnPty
 from peek_server.PeekServerConfig import peekServerConfig
@@ -32,8 +34,15 @@ class PluginSwUploadManager(object):
         if not tarfile.is_tarfile(namedTempFile.name):
             raise Exception("Uploaded archive is not a tar file")
 
+        # We need the file to end in .tar.gz
+        # PIP doesn't like it otherwise
+        namedTempTarGzFile = NamedTemporaryFile(
+            dir=PeekPlatformConfig.config.tmpPath, suffix=".tar.gz")
+        shutil.copy(namedTempFile.name, namedTempTarGzFile.name)
+        del namedTempFile
+
         pluginName, pluginVersion, fullNewTarPath = yield self.updateToTarFile(
-            namedTempFile)
+            namedTempTarGzFile)
 
         # Cascade this update to all the other Peek environment components
         yield pluginSwInstallManager.installAndReload(pluginName, pluginVersion,
@@ -46,10 +55,7 @@ class PluginSwUploadManager(object):
 
     def updateToTarFile(self, newSoftwareTar):
 
-        # We need the file to end in .tar.gz
-        # PIP doesn't like it otherwise
-        shutil.move(newSoftwareTar.name, newSoftwareTar.name + ".tar.gz")
-        newSoftwareTar.name = newSoftwareTar.name + ".tar.gz"
+
 
         dirName = tarfile.open(newSoftwareTar.name).getnames()[0]
 
