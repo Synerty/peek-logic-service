@@ -39,6 +39,9 @@ class PluginSwDownloadResource(BasicResource):
             request.finish()
             return NOT_DONE_YET
 
+        name = name.decode()
+        version = version.decode()
+
         logger.debug("Plugin Download Resource GET, name=%s, version=%s",
                      name, version)
 
