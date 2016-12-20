@@ -1,9 +1,22 @@
+import logging
+from typing import Optional
+
 from sqlalchemy.sql.functions import func
 
 from peek_server.storage.PeekPluginInfo import PeekPluginInfo
 
+logger = logging.getLogger(__name__)
 
-def getLatestPluginVersionInfos(name=None):
+
+def getLatestPluginVersionInfos(name: Optional[str] = None) -> [PeekPluginInfo]:
+    """ Get Latest Plugin Version Infos
+
+    This method returns the newest c{PeekPluginInfo} object for each plugin we have
+    data for.
+
+    :param name: Optionally, the name of the plugin to get the newest info for.
+    :return: An array of c{PeekPluginInfo} objects
+    """
     from peek_server.storage import dbConn
     session = dbConn.ormSession
 
@@ -21,8 +34,14 @@ def getLatestPluginVersionInfos(name=None):
     if name:
         qry = qry.filter(PeekPluginInfo.name == name)
 
-    tuples = qry.all()
+    tuples = []
 
-    session.expunge_all()
+    try:
+        tuples = qry.all()
+        session.expunge_all()
+
+    except Exception as e:
+        logger.info("There are no plugin updates")
+        # logger.exception(e)
 
     return tuples

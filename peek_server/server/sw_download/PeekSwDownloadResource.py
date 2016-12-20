@@ -38,10 +38,13 @@ class PeekSwUpdateDownloadResource(BasicResource):
             request.finish()
             return NOT_DONE_YET
 
+        componentName = componentName.decode()
+        version = version.decode()
+
         logger.debug("Peek Platform Download Resource GET, name=%s, version=%s",
                      componentName, version)
 
-        newSoftwareTar = PeekSwInstallManagerABC.makeReleaseFileName(version.decode())
+        newSoftwareTar = PeekSwInstallManagerABC.makeReleaseFileName(version)
 
         request.responseHeaders.setRawHeaders(b'content-type',
                                               [b'application/octet-stream'])

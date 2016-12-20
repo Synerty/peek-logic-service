@@ -64,6 +64,7 @@ class PeekSwUploadResource(BasicResource):
 
         def bad(failure):
             e = failure.value
+            logger.exception(e)
 
             request.write(json.dumps(
                 {'error': str(failure.value),
@@ -71,7 +72,6 @@ class PeekSwUploadResource(BasicResource):
                  'stderr': e.stderr if hasattr(e, 'stderr') else None}).encode())
 
             request.finish()
-            return failure
 
         d = updateManager.processUpdate(request.content.namedTemporaryFile)
         d.addCallbacks(good, bad)
