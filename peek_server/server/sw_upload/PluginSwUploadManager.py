@@ -57,12 +57,11 @@ class PluginSwUploadManager(object):
         tarfile.open(newSoftwareTar.name).extractall(directory.path)
         directory.scan()
 
-        # CHECK 1
+        # CHECK
         pgkName, pkgVersion = pluginSwInstallManager.getPackageInfo(directory)
 
-        # CHECK 2
+        # CHECK
         pluginPackageFile = self._getFileForFileName(PLUGIN_PACKAGE_JSON, directory)
-        self._testPackageUpdate(newSoftwareTar.name)
 
         # Example
         """
@@ -93,27 +92,40 @@ class PluginSwUploadManager(object):
 
         del packageJson  # No longer used
 
-        pluginName = peekAppInfo.name
+        packageName = peekAppInfo.name
 
-        # CHECK 4
-        # if pluginName != pgkName:
-        #     raise Exception("PyPI package name and papp_package.json name missmatch,"
-        #                     " %s VS %s" % (pluginName, pgkName))
+        # CHECK
+        # Ensure that the python package name starts with "peek_plugin_"
+        if not packageName.startswith("peek_plugin_"):
+            raise Exception("papp_package.json plugin.packageName must start with"
+                            " 'peek_plugin_',"
+                            " It's '%s'" % packageName)
 
-        # CHECK 5
+        # CHECK
+        if packageName.replace("_", "-") != pgkName:
+            raise Exception("PyPI package name VS papp_package.json plugin.packageName"
+                            " mismatch, python package name underscores are replaced"
+                            " with hyphens to match the PyPI package name"
+                            " %s(%s) VS %s"
+                            % (packageName.replace("_", "-"), packageName, pgkName))
+
+        self._testPackageUpdate(newSoftwareTar.name, packageName)
+
+        # CHECK
         # if pluginPackageFile.path != os.path.join(dirName, pgkName):
         #     raise Exception("Expected %s to be at %s, it's at %s"
         #                     % (PLUGIN_PACKAGE_JSON, dirName, pluginPackageFile.path))
 
-        # # CHECK 6
-        # if not dirName.startswith(pluginName):
-        #     raise Exception("Peek app name '%s' does not match peek root dir name '%s"
-        #                     % (pluginName, dirName))
+        # CHECK
+        if not dirName.startswith(pgkName):
+            raise Exception("Peek app name '%s' does not match peek root dir name '%s"
+                            % (packageName, dirName))
 
-        # CHECK 7
+        # CHECK
         if peekAppInfo.version != pkgVersion:
-            raise Exception("Plugin %s trget version is %s actual version is %s"
-                            % (pluginName, peekAppInfo.version, pkgVersion))
+            raise Exception("PyPI package version VS papp_package.json plugin.version"
+                            " mismatch. %s VS %s"
+                            % (peekAppInfo.version, pkgVersion))
 
         # Install the TAR file
         newSoftwareTar.delete = False
@@ -138,7 +150,7 @@ class PluginSwUploadManager(object):
         session.expunge_all()
         session.close()
 
-        return pluginName, pkgVersion, fullNewTarPath
+        return packageName, pkgVersion, fullNewTarPath
 
     def _getFileForFileName(self, fileName: str, directory: Directory) -> File:
         """ Get File For FileName
@@ -159,10 +171,12 @@ class PluginSwUploadManager(object):
 
         return files[0]
 
-    def _testPackageUpdate(self, fileName: str) -> None:
+    def _testPackageUpdate(self, fileName: str, packageName: str) -> None:
         """ Test Package Update
 
         :param fileName: The full path to the package file to test install
+        :param packageName: The name of the python package to try loading.
+            EG "peek_plugin_noop"
 
         Since we ARE running on the server, we will test install these packages here
          first, this is done by creating a virtualenv.
@@ -206,6 +220,14 @@ class PluginSwUploadManager(object):
             # Update the detail of the exception and raise it
             e.message = "Test install of updated plugin package failed."
             raise
+
+        # CHECK
+        # Now try to load the package name
+        #### This didn't load from the virtualenv...
+        # modSpec = find_spec(packageName)
+        # if not modSpec:
+        #     raise Exception("Testing python import of %s failed, package not found"
+        #                     % packageName)
 
         # Continue normally if it all succeeded
         logger.debug("Peek Plugin package update successfully tested.")
