@@ -53,14 +53,14 @@ class PluginSwUploadManager(object):
 
         returnValue("%s, %s" % (pluginName, pluginVersion))
 
-    def updateToTarFile(self, newSoftwareTar):
+    def updateToTarFile(self, namedTempTarGzFile):
 
 
 
-        dirName = tarfile.open(newSoftwareTar.name).getnames()[0]
+        dirName = tarfile.open(namedTempTarGzFile.name).getnames()[0]
 
         directory = Directory()
-        tarfile.open(newSoftwareTar.name).extractall(directory.path)
+        tarfile.open(namedTempTarGzFile.name).extractall(directory.path)
         directory.scan()
 
         # CHECK
@@ -115,7 +115,7 @@ class PluginSwUploadManager(object):
                             " %s(%s) VS %s"
                             % (packageName.replace("_", "-"), packageName, pgkName))
 
-        self._testPackageUpdate(newSoftwareTar.name, packageName)
+        self._testPackageUpdate(namedTempTarGzFile.name, packageName)
 
         # CHECK
         # if pluginPackageFile.path != os.path.join(dirName, pgkName):
@@ -134,11 +134,10 @@ class PluginSwUploadManager(object):
                             % (peekAppInfo.version, pkgVersion))
 
         # Install the TAR file
-        newSoftwareTar.delete = False
         fullNewTarPath = os.path.join(peekServerConfig.pluginSoftwarePath,
                                       peekAppInfo.fileName)
 
-        shutil.move(newSoftwareTar.name, fullNewTarPath)
+        shutil.copy(namedTempTarGzFile.name, fullNewTarPath)
 
         from peek_server.storage import dbConn
         session = dbConn.ormSession
