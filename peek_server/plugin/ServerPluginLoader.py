@@ -79,4 +79,3 @@ class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
         self._loadedPlugins[pluginName] = pluginMain
 
 
-serverPluginLoader = ServerPluginLoader()

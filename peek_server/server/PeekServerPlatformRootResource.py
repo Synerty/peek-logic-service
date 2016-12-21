@@ -6,12 +6,14 @@ from vortex.VortexResource import VortexResource
 
 root = BasicResource()
 
-# Add in a vortex
-root.putChild(b'vortex', VortexResource())
+def setup():
 
-root.putChild(b'peek_server.sw_install.platform.download',
-              PeekSwUpdateDownloadResource())
+    # Add in a vortex
+    root.putChild(b'vortex', VortexResource())
 
-root.putChild(b'peek_server.sw_install.plugin.download'
-              , PluginSwDownloadResource())
+    root.putChild(b'peek_server.sw_install.platform.download',
+                  PeekSwUpdateDownloadResource())
+
+    root.putChild(b'peek_server.sw_install.plugin.download'
+                  , PluginSwDownloadResource())
 

@@ -87,4 +87,3 @@ class PeekServerConfig(PeekFileConfigABC,
             #     return p.join(peekPath, name)
 
 
-peekServerConfig = PeekServerConfig()

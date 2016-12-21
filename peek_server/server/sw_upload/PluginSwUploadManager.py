@@ -11,10 +11,9 @@ from pytmpdir.Directory import Directory, File
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 from peek_platform import PeekPlatformConfig
-from peek_platform.sw_install.PluginSwInstallManagerABC import PLUGIN_PACKAGE_JSON
+from peek_platform.sw_install.PluginSwInstallManagerABC import PLUGIN_PACKAGE_JSON, \
+    PluginSwInstallManagerABC
 from peek_platform.util.PtyUtil import spawnSubprocess, logSpawnException, spawnPty
-from peek_server.PeekServerConfig import peekServerConfig
-from peek_server.server.sw_install.PluginSwInstallManager import pluginSwInstallManager
 from peek_server.server.sw_version.PeekSwVersionDataHandler import \
     peekSwVersionDataHandler
 from peek_server.storage.PeekPluginInfo import PeekPluginInfo
@@ -45,8 +44,8 @@ class PluginSwUploadManager(object):
             namedTempTarGzFile)
 
         # Cascade this update to all the other Peek environment components
-        yield pluginSwInstallManager.installAndReload(pluginName, pluginVersion,
-                                                      fullNewTarPath)
+        yield PeekPlatformConfig.pluginSwInstallManager.installAndReload(
+            pluginName, pluginVersion, fullNewTarPath)
 
         # Cascade this update to all the other Peek environment components
         yield peekSwVersionDataHandler.notifyOfVersion(pluginName, pluginVersion)
@@ -55,8 +54,6 @@ class PluginSwUploadManager(object):
 
     def updateToTarFile(self, namedTempTarGzFile):
 
-
-
         dirName = tarfile.open(namedTempTarGzFile.name).getnames()[0]
 
         directory = Directory()
@@ -64,7 +61,7 @@ class PluginSwUploadManager(object):
         directory.scan()
 
         # CHECK
-        pgkName, pkgVersion = pluginSwInstallManager.getPackageInfo(directory)
+        pgkName, pkgVersion = PluginSwInstallManagerABC.getPackageInfo(directory)
 
         # CHECK
         pluginPackageFile = self._getFileForFileName(PLUGIN_PACKAGE_JSON, directory)
@@ -134,7 +131,7 @@ class PluginSwUploadManager(object):
                             % (peekAppInfo.version, pkgVersion))
 
         # Install the TAR file
-        fullNewTarPath = os.path.join(peekServerConfig.pluginSoftwarePath,
+        fullNewTarPath = os.path.join(PeekPlatformConfig.config.pluginSoftwarePath,
                                       peekAppInfo.fileName)
 
         shutil.copy(namedTempTarGzFile.name, fullNewTarPath)
@@ -213,7 +210,7 @@ class PluginSwUploadManager(object):
         pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
 
         # Install all the packages from the directory
-        pipArgs = [pipExec] + pluginSwInstallManager.makePipArgs(fileName)
+        pipArgs = [pipExec] + PluginSwInstallManagerABC.makePipArgs(fileName)
         pipArgs = ' '.join(pipArgs)
 
         try:

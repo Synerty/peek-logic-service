@@ -8,9 +8,10 @@ from pytmpdir.Directory import Directory
 from twisted.internet.defer import inlineCallbacks
 from txhttputil.util.DeferUtil import deferToThreadWrap
 
-from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE
+from peek_platform import PeekPlatformConfig
+from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE, \
+    PeekSwInstallManagerABC
 from peek_platform.util.PtyUtil import spawnPty, logSpawnException, spawnSubprocess
-from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
 
 __author__ = 'synerty'
 
@@ -30,7 +31,7 @@ class PeekSwUploadManager(object):
         newVersion, newPath = yield self.updateToTarFile(namedTempFile.name)
 
         # Tell the peek server to install and restart
-        yield peekSwInstallManager.installAndRestart(newVersion)
+        yield PeekPlatformConfig.peekSwInstallManager.installAndRestart(newVersion)
 
         return newVersion
 
@@ -65,7 +66,7 @@ class PeekSwUploadManager(object):
         with platformVersionFile.open() as f:
             newVersion = f.read().strip()
 
-        newPath = peekSwInstallManager.makeReleaseFileName(newVersion)
+        newPath = PeekSwInstallManagerABC.makeReleaseFileName(newVersion)
 
         # Do we really need to keep the old version if it's the same build?
         if os.path.isdir(newPath):
@@ -118,7 +119,7 @@ class PeekSwUploadManager(object):
         pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
 
         # Install all the packages from the directory
-        pipArgs = [pipExec] + peekSwInstallManager.makePipArgs(directory)
+        pipArgs = [pipExec] + PeekSwInstallManagerABC.makePipArgs(directory)
         pipArgs = ' '.join(pipArgs)
 
         try:

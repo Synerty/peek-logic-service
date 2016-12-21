@@ -43,28 +43,28 @@ def setupPlatform():
     PeekPlatformConfig.componentName = "peek-server"
 
     # Tell the platform classes about our instance of the pluginSwInstallManager
-    from peek_server.server.sw_install.PluginSwInstallManager import pluginSwInstallManager
-    PeekPlatformConfig.pluginSwInstallManager = pluginSwInstallManager
+    from peek_server.server.sw_install.PluginSwInstallManager import PluginSwInstallManager
+    PeekPlatformConfig.pluginSwInstallManager = PluginSwInstallManager()
 
     # Tell the platform classes about our instance of the PeekSwInstallManager
-    from peek_server.server.sw_install.PeekSwInstallManager import peekSwInstallManager
-    PeekPlatformConfig.peekSwInstallManager = peekSwInstallManager
+    from peek_server.server.sw_install.PeekSwInstallManager import PeekSwInstallManager
+    PeekPlatformConfig.peekSwInstallManager = PeekSwInstallManager()
 
     # Tell the platform classes about our instance of the PeekLoaderBase
-    from peek_server.plugin.ServerPluginLoader import serverPluginLoader
-    PeekPlatformConfig.pluginLoader = serverPluginLoader
+    from peek_server.plugin.ServerPluginLoader import ServerPluginLoader
+    PeekPlatformConfig.pluginLoader = ServerPluginLoader()
 
     # The config depends on the componentName, order is important
-    from peek_server.PeekServerConfig import peekServerConfig
-    PeekPlatformConfig.config = peekServerConfig
+    from peek_server.PeekServerConfig import PeekServerConfig
+    PeekPlatformConfig.config = PeekServerConfig()
 
     # Set default logging level
-    logging.root.setLevel(peekServerConfig.loggingLevel)
+    logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
 
     # Set paths for the Directory object
-    DirSettings.defaultDirChmod = peekServerConfig.DEFAULT_DIR_CHMOD
-    DirSettings.tmpDirPath = peekServerConfig.tmpPath
-    FileUploadRequest.tmpFilePath = peekServerConfig.tmpPath
+    DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
+    DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
+    FileUploadRequest.tmpFilePath = PeekPlatformConfig.config.tmpPath
 
 
 def main():
@@ -74,13 +74,13 @@ def main():
     # pydevd.settrace(suspend=False)
 
     setupPlatform()
+    from peek_platform import PeekPlatformConfig
 
     # Configure sqlalchemy
-    from peek_server.PeekServerConfig import peekServerConfig
     setupDbConn(
         metadata=metadata,
-        dbEngineArgs = peekServerConfig.dbEngineArgs,
-        dbConnectString=peekServerConfig.dbConnectString,
+        dbEngineArgs = PeekPlatformConfig.config.dbEngineArgs,
+        dbConnectString=PeekPlatformConfig.config.dbConnectString,
         alembicDir=os.path.join(os.path.dirname(__file__), "alembic")
     )
 
@@ -92,19 +92,24 @@ def main():
     importPackages()
 
     # Load all plugins
-    from peek_server.plugin.ServerPluginLoader import serverPluginLoader
-    serverPluginLoader.loadAllPlugins()
+    PeekPlatformConfig.pluginLoader.loadAllPlugins()
 
+    from peek_server.backend.SiteRootResource import setup as setupSiteRoot
     from peek_server.backend.SiteRootResource import root as siteRoot
+    setupSiteRoot()
+
     setupSite("Peek Admin",
               siteRoot,
-              peekServerConfig.sitePort,
+              PeekPlatformConfig.config.sitePort,
               enableLogin=False)
 
     from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
+    from peek_server.server.PeekServerPlatformRootResource import setup as setupPlatRoot
+    setupPlatRoot()
+
     setupSite("Peek Platform Data Exchange",
               platformRoot,
-              peekServerConfig.platformHttpPort,
+              PeekPlatformConfig.config.platformHttpPort,
               enableLogin=False)
 
     reactor.run()

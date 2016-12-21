@@ -1,3 +1,4 @@
+
 from peek_plugin_base.PeekPlatformFrontendHookABC import PeekPlatformFrontendHookABC
 from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
 
@@ -8,8 +9,8 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
 
     @property
     def dbConnectString(self) -> str:
-        from peek_server.PeekServerConfig import peekServerConfig
-        return peekServerConfig.dbConnectString
+        from peek_platform import PeekPlatformConfig
+        return PeekPlatformConfig.config.dbConnectString
 
     def getOtherPluginApi(self, pluginName):
         return None
