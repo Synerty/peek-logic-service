@@ -3,6 +3,7 @@ Created on 09/07/2014
 
 @author: synerty
 '''
+from peek_platform import PeekPlatformConfig
 from peek_server.backend.navbar.PeekAdmNavbarHandler import navbarDataHandler
 from vortex.DataWrapTuple import DataWrapTuple
 from vortex.Payload import Payload
@@ -22,7 +23,6 @@ class __CrudHandler():
         self._ep = PayloadEndpoint(self._payloadFilter, self.process)
 
     def process(self, payload, vortexUuid=None, userAccess=None, **kwargs):
-        from peek_server.PeekServerConfig import peekServerConfig
         from peek_server.server.auth import AuthValue
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
 
@@ -31,7 +31,7 @@ class __CrudHandler():
         session = dbConn.ormSession
 
         # Force capabilities reload on page load
-        peekServerConfig._capabilities = None
+        PeekPlatformConfig.config._capabilities = None
 
         # This is an update
         if payload.tuples:
@@ -50,14 +50,14 @@ class __CrudHandler():
                                   vortexUuid=vortexUuid)
                 return
 
-            peekServerConfig._capabilities = self._capabilities
+            PeekPlatformConfig.config._capabilities = self._capabilities
 
             internalSetting()[CAPABILITIES_KEY] = dataWrapTuple.data
             session.commit()
             result = {"success": True,
                       "message": "The license was successfully loaded"}
         dataWrapTuple = DataWrapTuple()
-        dataWrapTuple.data = peekServerConfig.capabilities
+        dataWrapTuple.data = PeekPlatformConfig.config.capabilities
 
         vortexSendPayload(Payload(filt=self._payloadFilter,
                                   tuples=[dataWrapTuple],

@@ -16,6 +16,7 @@ import logging
 from twisted.web.server import NOT_DONE_YET
 from txhttputil.site.BasicResource import BasicResource
 
+from peek_platform import PeekPlatformConfig
 from peek_server.server.sw_upload.PluginSwUploadManager import PluginSwUploadManager
 from peek_server.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
 
@@ -46,8 +47,7 @@ class PeekSwUploadResource(BasicResource):
         logger.info("received %s sw_upload update request" % self._desc)
 
         try:
-            from peek_server.PeekServerConfig import peekServerConfig
-            if peekServerConfig.capabilities['supportExceeded']:
+            if PeekPlatformConfig.config.capabilities['supportExceeded']:
                 return json.dumps({'error': "License has expired, Updates not allowed"})
 
         except Exception as e:

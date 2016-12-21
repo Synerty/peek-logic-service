@@ -6,6 +6,8 @@ Created on 09/07/2014
 from vortex.handler.ModelHandler import ModelHandler
 from vortex.Tuple import addTupleType, Tuple, TupleField
 
+from peek_platform import PeekPlatformConfig
+
 modelSetListDataFilt = {
     "plugin": "peek_server",
     "key": "nav.adm.plugin.list"
@@ -23,9 +25,8 @@ class PluginAdminMenuItemTuple(Tuple):
 
 class PeekModelSetListHandler(ModelHandler):
     def buildModel(self, payloadFilt, **kwargs):
-        from peek_server.plugin.ServerPluginLoader import serverPluginLoader
         data = []
-        for name, title, path in serverPluginLoader.pluginFrontendTitleUrls:
+        for name, title, path in PeekPlatformConfig.pluginLoader.pluginFrontendTitleUrls:
             data.append(
                 PluginAdminMenuItemTuple(name=name,
                                    title=title,
