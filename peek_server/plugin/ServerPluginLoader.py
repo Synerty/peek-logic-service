@@ -5,10 +5,10 @@ from peek_platform.plugin.PluginFrontendInstallerABC import PluginFrontendInstal
 from peek_platform.plugin.PluginLoaderABC import PluginLoaderABC
 from peek_plugin_base.PluginCommonEntryHookABC import PluginCommonEntryHookABC
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
-from peek_plugin_base.server.PluginServerStorageEntryHookMixin import \
-    PluginServerStorageEntryHookMixin
-from peek_plugin_base.server.PluginServerWorkerEntryHookMixin import \
-    PluginServerWorkerEntryHookMixin
+from peek_plugin_base.server.PluginServerStorageEntryHookABC import \
+    PluginServerStorageEntryHookABC
+from peek_plugin_base.server.PluginServerWorkerEntryHookABC import \
+    PluginServerWorkerEntryHookABC
 from peek_server.plugin.PeekServerPlatformHook import PeekServerPlatformHook
 
 logger = logging.getLogger(__name__)
@@ -68,7 +68,7 @@ class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
         # Load the plugin
         pluginMain.load()
 
-        if isinstance(pluginMain, PluginServerWorkerEntryHookMixin):
+        if isinstance(pluginMain, PluginServerWorkerEntryHookABC):
             # Configure the celery app in the worker
             # This is not the worker that will be started, it allows the worker to queue tasks
             from peek_platform.CeleryApp import configureCeleryApp
@@ -77,10 +77,10 @@ class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
         # Check the implementation
         elif "worker" in requiresService:
             raise Exception("Plugin %s requires 'worker' service."
-                            " It must now inherit PluginServerWorkerEntryHookMixin"
+                            " It must now inherit PluginServerWorkerEntryHookABC"
                             " in its PluginServerEntryHook implementation")
 
-        if isinstance(pluginMain, PluginServerStorageEntryHookMixin):
+        if isinstance(pluginMain, PluginServerStorageEntryHookABC):
 
             metadata = pluginMain.dbMetadata
             schemaName = pluginName.replace("peek_plugin_", "pl_")
@@ -104,7 +104,7 @@ class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
         # Add all the resources required to serve the backend site
         # And all the plugin custom resources it may create
 
-        from peek_server.backend.SiteRootResource import root as serverRootResource
-        serverRootResource.putChild(pluginName.encode(), platformApi.rootResource)
+        from peek_server.backend.SiteRootResource import root
+        root.putChild(pluginName.encode(), platformApi.rootResource)
 
         self._loadedPlugins[pluginName] = pluginMain
