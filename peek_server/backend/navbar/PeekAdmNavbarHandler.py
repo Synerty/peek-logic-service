@@ -15,7 +15,11 @@ navbarDataFiltKey = {
 
 # HANDLER
 class __NavbarHandler(ModelHandler):
-    def buildModel(self, payloadFilt, vortexUuid=None, session=None, userAccess=None,
+    def buildModel(self,
+                   # payloadFilt=None,
+                   # vortexUuid=None,
+                   # payload=Payload(),
+                   # session=None,
                    **kwargs):
 
         navbarTuple = PeekAdmNavbarUserTuple()

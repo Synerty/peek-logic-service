@@ -1,7 +1,7 @@
 import logging
 
 from vortex.PayloadEndpoint import PayloadEndpoint
-from vortex.Vortex import vortexSendPayload
+from vortex.VortexABC import SendVortexMsgResponseCallable
 
 logger = logging.getLogger(__name__)
 
@@ -20,8 +20,10 @@ class PeekServerEchoHandler(object):
     def __init__(self, payloadFilter):
         self._ep = PayloadEndpoint(payloadFilter, self._process)
 
-    def _process(self, payload, vortexUuid, **kwargs):
-        vortexSendPayload(payload, vortexUuid)
+    def _process(self, payload,
+                 sendResponse: SendVortexMsgResponseCallable,
+                 **kwargs):
+        sendResponse(payload.toVortexMsg())
 
 
 __peekServerEchoHandler = PeekServerEchoHandler(peekServerEchoFilt)

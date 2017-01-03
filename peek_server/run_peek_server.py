@@ -15,9 +15,11 @@ from pytmpdir.Directory import DirSettings
 from txhttputil.site.FileUploadRequest import FileUploadRequest
 from txhttputil.util.LoggingUtil import setupLogging
 
+from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
+from vortex.VortexFactory import VortexFactory
 
 setupLogging()
 
@@ -40,7 +42,7 @@ defer.setDebugging(True)
 
 def setupPlatform():
     from peek_platform import PeekPlatformConfig
-    PeekPlatformConfig.componentName = "peek-server"
+    PeekPlatformConfig.componentName = peekServerName
 
     # Tell the platform classes about our instance of the pluginSwInstallManager
     from peek_server.server.sw_install.PluginSwInstallManager import PluginSwInstallManager
@@ -103,8 +105,8 @@ def main():
               PeekPlatformConfig.config.sitePort,
               enableLogin=False)
 
-    from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
     from peek_server.server.PeekServerPlatformRootResource import setup as setupPlatRoot
+    from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
     setupPlatRoot()
 
     setupSite("Peek Platform Data Exchange",
