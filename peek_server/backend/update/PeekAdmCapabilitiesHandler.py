@@ -8,7 +8,7 @@ from peek_server.backend.navbar.PeekAdmNavbarHandler import navbarDataHandler
 from vortex.DataWrapTuple import DataWrapTuple
 from vortex.Payload import Payload
 from vortex.PayloadEndpoint import PayloadEndpoint
-from vortex.Vortex import vortexSendPayload
+from vortex.VortexABC import SendVortexMsgResponseCallable
 
 capabilitiesDataFiltKey = {
     "plugin": "peek_server",
@@ -22,7 +22,11 @@ class __CrudHandler():
         self._payloadFilter = payloadFilter
         self._ep = PayloadEndpoint(self._payloadFilter, self.process)
 
-    def process(self, payload, vortexUuid=None, userAccess=None, **kwargs):
+    def process(self, payload,
+                vortexUuid,
+                httpSession,
+                sendResponse: SendVortexMsgResponseCallable,
+                              **kwargs):
         from peek_server.server.auth import AuthValue
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
 
@@ -45,9 +49,8 @@ class __CrudHandler():
             if self._capabilities is None:
                 result = {"success": False,
                           "message": "The license entered is not valid for this server"}
-                vortexSendPayload(Payload(filt=self._payloadFilter,
-                                          result=result),
-                                  vortexUuid=vortexUuid)
+                sendResponse(Payload(filt=self._payloadFilter,
+                                          result=result).toVortexMsg())
                 return
 
             PeekPlatformConfig.config._capabilities = self._capabilities
@@ -59,12 +62,11 @@ class __CrudHandler():
         dataWrapTuple = DataWrapTuple()
         dataWrapTuple.data = PeekPlatformConfig.config.capabilities
 
-        vortexSendPayload(Payload(filt=self._payloadFilter,
+        sendResponse(Payload(filt=self._payloadFilter,
                                   tuples=[dataWrapTuple],
-                                  result=result),
-                          vortexUuid=vortexUuid)
+                                  result=result).toVortexMsg())
 
-        navbarDataHandler.sendModelUpdate(vortexUuid=vortexUuid, userAccess=userAccess)
+        navbarDataHandler.sendModelUpdate(vortexUuid=vortexUuid)
 
 
 __ormCrudHandler = __CrudHandler(capabilitiesDataFiltKey)

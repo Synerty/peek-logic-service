@@ -1,7 +1,8 @@
 import os
 from peek_server.server.sw_upload.PeekSwUploadResource import PeekSwUploadResource
 from txhttputil.site.FileUnderlayResource import FileUnderlayResource
-from vortex.VortexResource import VortexResource
+
+from vortex.VortexFactory import VortexFactory
 
 root = FileUnderlayResource()
 
@@ -23,12 +24,13 @@ def setup():
 
     root.addFileSystemRoot(buildDir)
 
-    # Add the vortex
-    root.putChild(b'vortex', VortexResource())
+    # Create the Admin UI vortex
+    VortexFactory.createServer(PeekPlatformConfig.componentName, root)
 
-    # Add the
+    # Add the platform update upload resource
     root.putChild(b'peek_server.update.platform',
                   PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM))
 
+    # Add the plugin update upload resource
     root.putChild(b'peek_server.update.plugin',
                   PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN))
