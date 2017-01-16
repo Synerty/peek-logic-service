@@ -166,7 +166,7 @@ class Setting(ProxiedDictMixin, Tuple, DeclarativeBase):
     __tablename__ = 'Setting'
     __tupleType__ = 'c.s.p.setting'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String)
 
     properties = relationship("SettingProperty",
@@ -221,7 +221,7 @@ class PropertyKey(object):
 
 def _getSetting(name, propertyDict, key=None, value=None):
     from peek_server.storage import dbConn
-    session = dbConn.ormSession
+    session = dbConn.ormSessionCreator()
     all = session.query(Setting).filter(Setting.name == name).all()
 
     if all:

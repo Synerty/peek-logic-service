@@ -1,4 +1,4 @@
-
+from peek_platform import PeekPlatformConfig
 from peek_plugin_base.PeekPlatformFrontendHookABC import PeekPlatformFrontendHookABC
 from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
 
@@ -13,4 +13,17 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
         return PeekPlatformConfig.config.dbConnectString
 
     def getOtherPluginApi(self, pluginName):
-        return None
+        serverPluginLoader = PeekPlatformConfig.pluginLoader
+
+        otherPlugin = serverPluginLoader.pluginEntryHook(pluginName)
+        if not otherPlugin:
+            return None
+
+        from peek_plugin_base.server.PluginServerEntryHookABC import \
+            PluginServerEntryHookABC
+
+        assert isinstance(otherPlugin, PluginServerEntryHookABC), (
+            "Not an instance of PluginServerEntryHookABC")
+
+
+        return otherPlugin.publishedServerApi

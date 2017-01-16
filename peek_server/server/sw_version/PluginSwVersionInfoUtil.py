@@ -18,7 +18,7 @@ def getLatestPluginVersionInfos(name: Optional[str] = None) -> [PeekPluginInfo]:
     :return: An array of c{PeekPluginInfo} objects
     """
     from peek_server.storage import dbConn
-    session = dbConn.ormSession
+    session = dbConn.ormSessionCreator()
 
     maxGroupedIds = (session
                      .query(func.max(PeekPluginInfo.id).label('maxId'))
@@ -43,5 +43,8 @@ def getLatestPluginVersionInfos(name: Optional[str] = None) -> [PeekPluginInfo]:
     except Exception as e:
         logger.info("There are no plugin updates")
         # logger.exception(e)
+
+    finally:
+        session.close()
 
     return tuples
