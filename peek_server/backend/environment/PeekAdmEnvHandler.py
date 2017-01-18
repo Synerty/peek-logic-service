@@ -6,7 +6,7 @@ Created on 09/07/2014
 from peek_server.storage import dbConn
 from peek_server.storage.PeekEnv import PeekEnvServer, PeekEnvAgent, PeekEnvWorker, \
     PeekEnvClient
-from vortex.handler.OrmCrudHandler import OrmCrudHandler, OrmCrudHandlerExtension
+from vortex.sqla_orm.OrmCrudHandler import OrmCrudHandler, OrmCrudHandlerExtension
 
 # -----------------------------------------------------------------------------
 # Servers
@@ -20,7 +20,7 @@ class EnvServerListHandler(OrmCrudHandler):
     pass
 
 
-envServerListHandler = EnvServerListHandler(dbConn.ormSession,
+envServerListHandler = EnvServerListHandler(dbConn.ormSessionCreator,
                                             PeekEnvServer,
                                             serverListDataKey,
                                             retreiveAll=True)
@@ -46,7 +46,7 @@ class EnvWorkerListHandler(OrmCrudHandler):
     pass
 
 
-envWorkerListHandler = EnvWorkerListHandler(dbConn.ormSession,
+envWorkerListHandler = EnvWorkerListHandler(dbConn.ormSessionCreator,
                                             PeekEnvWorker,
                                             workerListDataKey,
                                             retreiveAll=True)
@@ -69,7 +69,7 @@ agentListDataKey = {
 class EnvAgentListHandler(OrmCrudHandler):
     pass
 
-envAgentListHandler = EnvAgentListHandler(dbConn.ormSession,
+envAgentListHandler = EnvAgentListHandler(dbConn.ormSessionCreator,
                                           PeekEnvAgent,
                                           agentListDataKey,
                                           retreiveAll=True)
@@ -91,7 +91,7 @@ class EnvClientListHandler(OrmCrudHandler):
     pass
 
 
-envClientListHandler = EnvClientListHandler(dbConn.ormSession,
+envClientListHandler = EnvClientListHandler(dbConn.ormSessionCreator,
                                           PeekEnvClient,
                                            clientListDataKey,
                                           retreiveAll=True)

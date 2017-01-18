@@ -23,7 +23,7 @@ class DashboardListHandler(ModelHandler):
         qryItems = []
 
         from peek_server.storage import dbConn
-        session = dbConn.ormSession
+        session = dbConn.ormSessionCreator()
 
         def rowsQuick(Declarative):
             sql = '''
