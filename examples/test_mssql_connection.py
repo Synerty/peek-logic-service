@@ -27,7 +27,6 @@ mssqlDbName = 'peek'
 
 sqlaEngineUrl = 'mssql+pymssql://%(user)s:%(pass)s@%(host)s/%(db)s' % {
     'host': mssqlHost,
-    'port': mssqlPort,
     'user': mssqlUser,
     'pass': mssqlPass,
     'db': mssqlDbName
@@ -53,7 +52,7 @@ def testPymssqlConnection():
 
 
 def testSqlalchemyConnection():
-    logging.DEBUG("Testing SQLAlchemy connection to %s", sqlaEngineUrl)
+    logging.debug("Testing SQLAlchemy connection to %s", sqlaEngineUrl)
 
     engine = create_engine(sqlaEngineUrl, **sqlaEngineArgs)
 
