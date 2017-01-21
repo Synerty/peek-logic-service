@@ -60,7 +60,7 @@ def testSqlalchemyConnection():
 
     result = engine.execute("SELECT 1")
 
-    logger.debug("Test SQL executed, result : %s", result)
+    logger.debug("Test SQL executed, result : %s", list(result)[0])
 
 
 if __name__ == '__main__':
