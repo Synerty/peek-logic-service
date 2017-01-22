@@ -27,7 +27,7 @@ class __CrudHandler():
                 httpSession,
                 sendResponse: SendVortexMsgResponseCallable,
                               **kwargs):
-        from peek_server.server.auth import AuthValue
+        # from peek_server.server.auth import AuthValue
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
 
         result = None
@@ -42,10 +42,10 @@ class __CrudHandler():
             dataWrapTuple = payload.tuples[0]
             self._capabilities = None
 
-            try:
-                AuthValue.loadCapabilities(self, dataWrapTuple.data)
-            except Exception as e:
-                pass
+            # try:
+            #     AuthValue.loadCapabilities(self, dataWrapTuple.data)
+            # except Exception as e:
+            #     pass
             if self._capabilities is None:
                 result = {"success": False,
                           "message": "The license entered is not valid for this server"}
