@@ -25,4 +25,4 @@ class __CrudHandler(OrmCrudHandler):
             txhttputil.TITLE = settings[Setting.SYSTEM_NAME]
 
 
-__ormCrudHandler = __CrudHandler(lambda: dbConn.ormSession, Setting, filtKey)
+__ormCrudHandler = __CrudHandler(lambda: dbConn.ormSessionCreator, Setting, filtKey)
