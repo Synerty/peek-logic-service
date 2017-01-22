@@ -22,8 +22,8 @@ def upgrade():
     op.create_table('PeekPluginInfo',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(), nullable=False),
-    sa.Column('name', sa.String(), nullable=False),
-    sa.Column('version', sa.String(), nullable=False),
+    sa.Column('name', sa.String(50), nullable=False),
+    sa.Column('version', sa.String(40), nullable=False),
     sa.Column('creator', sa.String(), nullable=True),
     sa.Column('website', sa.String(), nullable=True),
     sa.Column('buildNumber', sa.String(), nullable=True),
@@ -34,14 +34,14 @@ def upgrade():
     op.create_index('idx_PeekPluginInfo_NameVersion', 'PeekPluginInfo', ['name', 'version'], unique=True, schema='peek_server')
     op.create_table('Setting',
     sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
-    sa.Column('name', sa.String(), nullable=True),
+    sa.Column('name', sa.String(50), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     schema='peek_server'
     )
     op.create_table('SettingProperty',
     sa.Column('id', sa.Integer(), nullable=False, autoincrement=True),
     sa.Column('settingId', sa.Integer(), nullable=False),
-    sa.Column('key', sa.String(), nullable=False),
+    sa.Column('key', sa.String(60), nullable=False),
     sa.Column('type', sa.String(length=16), nullable=True),
     sa.Column('int_value', sa.Integer(), nullable=True),
     sa.Column('char_value', sa.String(), nullable=True),

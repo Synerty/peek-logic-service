@@ -34,8 +34,8 @@ class PeekPluginInfo(Tuple, DeclarativeBase):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-    version = Column(String, nullable=False)
+    name = Column(String(50), nullable=False)
+    version = Column(String(40), nullable=False)
     creator = Column(String, nullable=True)
     website = Column(String, nullable=True)
     buildNumber = Column(String, nullable=True)
