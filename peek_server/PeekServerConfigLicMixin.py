@@ -26,19 +26,19 @@ class PeekServerConfigLicMixin:
     @property
     def capabilities(self):
 
-        from peek_server.server.auth import AuthValue
+        # from peek_server.server.auth import AuthValue
         from peek_server.storage.Setting import globalSetting, SYSTEM_NAME
         from peek_server.storage.Setting import internalSetting, CAPABILITIES_KEY
 
         if not hasattr(self, '_capabilities'):
             self._capabilities = None
 
-        if not self._capabilities:
-            data = internalSetting()[CAPABILITIES_KEY]
-            AuthValue.loadCapabilities(self, data)
+        # if not self._capabilities:
+        #     data = internalSetting()[CAPABILITIES_KEY]
+        #     AuthValue.loadCapabilities(self, data)
 
         if not self._capabilities:
-            self._capabilities = {'sid': AuthValue.authKey(),
+            self._capabilities = {'sid': 'SER-VER-ID-01', #AuthValue.authKey(),
                                   'upd': "01-Jan-2014",
 
                                   'lil': 20,
