@@ -1,6 +1,8 @@
 from sqlalchemy import engine_from_config, pool
 
 from alembic import context
+from sqlalchemy.dialects.mssql.base import MSDialect
+from sqlalchemy.dialects.postgresql.base import PGDialect
 from txhttputil.util.LoggingUtil import setupLogging
 
 global config
@@ -47,10 +49,19 @@ def run_migrations_online():
         prefix='sqlalchemy.',
         poolclass=pool.NullPool)
 
-
     with connectable.connect() as connection:
         # Ensure the schema exists
-        connection.execute('CREATE SCHEMA IF NOT EXISTS "%s" ' % target_metadata.schema)
+        if isinstance(connection.dialect, MSDialect):
+            connection.execute("IF(SCHEMA_ID('%s')IS NULL) BEGIN EXEC('CREATE "
+                               "SCHEMA [%s]')END" % (target_metadata.schema,
+                                                     target_metadata.schema))
+
+        elif isinstance(connection.dialect, PGDialect):
+            connection.execute('CREATE SCHEMA IF NOT EXISTS "%s" ' %
+                               target_metadata.schema)
+
+        else:
+            raise Exception('unknown dialect %s' % connection.dialect)
 
         context.configure(
             connection=connection,
