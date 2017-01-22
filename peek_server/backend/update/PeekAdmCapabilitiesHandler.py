@@ -32,7 +32,7 @@ class __CrudHandler():
 
         result = None
         from peek_server.storage import dbConn
-        session = dbConn.ormSession
+        session = dbConn.ormSessionCreator
 
         # Force capabilities reload on page load
         PeekPlatformConfig.config._capabilities = None
