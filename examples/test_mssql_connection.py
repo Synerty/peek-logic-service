@@ -11,7 +11,7 @@
 import logging
 
 from sqlalchemy import create_engine
-from sqlalchemy.dialects.mssql import pymssql
+import pymssql
 
 logging.basicConfig(format='%(asctime)s %(levelname)s %(name)s:%(message)s'
                     , datefmt='%d-%b-%Y %H:%M:%S'
@@ -19,9 +19,9 @@ logging.basicConfig(format='%(asctime)s %(levelname)s %(name)s:%(message)s'
 
 logger = logging.getLogger(__name__)
 
-
 mssqlHost = 'localhost'
-mssqlUser = 'peek'
+mssqlPort = '1433'
+mssqlUser = '.\peek'
 mssqlPass = 'PASSWORD'
 mssqlDbName = 'peek'
 
@@ -36,23 +36,23 @@ sqlaEngineArgs = {"echo": True}
 
 
 def testPymssqlConnection():
-    logging.DEBUG("Testing pymssql connection to host=%s, user=%s, pass=%s, db=%s",
-                  mssqlUser, mssqlUser, mssqlPass, mssqlDbName)
+    logging.debug("Testing pymssql connection to host=%s, port=%s, user=%s, pass=%s, "
+                  "db=%s", mssqlUser, mssqlPort, mssqlUser, mssqlPass, mssqlDbName)
 
-    conn = pymssql.connect(mssqlHost, mssqlUser, mssqlPass, mssqlDbName)
+    conn = pymssql.connect(server=mssqlHost, port=mssqlPort, user=mssqlUser,
+                           password=mssqlPass, database=mssqlDbName)
 
     logger.debug("Created connection, testing execute")
     cursor = conn.cursor()
     cursor.execute("SELECT 1")
     row = cursor.fetchone()
 
-
     logger.debug("Test SQL executed, result : %s", row)
     cursor.close()
 
 
 def testSqlalchemyConnection():
-    logging.DEBUG("Testing SQLAlchemy connection to %s", sqlaEngineUrl)
+    logging.debug("Testing SQLAlchemy connection to %s", sqlaEngineUrl)
 
     engine = create_engine(sqlaEngineUrl, **sqlaEngineArgs)
 
@@ -60,7 +60,7 @@ def testSqlalchemyConnection():
 
     result = engine.execute("SELECT 1")
 
-    logger.debug("Test SQL executed, result : %s", result)
+    logger.debug("Test SQL executed, result : %s", list(result)[0])
 
 
 if __name__ == '__main__':

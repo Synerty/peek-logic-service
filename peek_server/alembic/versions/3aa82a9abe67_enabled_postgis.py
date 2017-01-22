@@ -30,7 +30,7 @@ def upgrade():
           -- commit
           COMMIT;
           '''
-  op.execute(sql)
+  # op.execute(sql)
 
 
 def downgrade():

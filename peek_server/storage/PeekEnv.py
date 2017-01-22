@@ -36,7 +36,7 @@ class PeekEnvServer(Tuple, DeclarativeBase):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     description = Column(String, nullable=True)
-    ip = Column(String, nullable=True, unique=True)
+    ip = Column(String(40), nullable=True, unique=True)
 
     workers = relationship("PeekEnvWorker")
     agent = relationship("PeekEnvAgent")
@@ -53,9 +53,9 @@ class PeekEnvWorker(Tuple, DeclarativeBase):
     __tablename__ = 'PeekEnvWorker'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String(50), nullable=False, unique=True)
     description = Column(String, nullable=True)
-    ip = Column(String, nullable=True, unique=True)
+    ip = Column(String(40), nullable=True, unique=True)
 
     serverId = Column(ForeignKey('peek_server.PeekEnvServer.id'), primary_key=True)
     server = relationship("PeekEnvServer")
@@ -72,9 +72,9 @@ class PeekEnvAgent(Tuple, DeclarativeBase):
     __tablename__ = 'PeekEnvAgent'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String(50), nullable=False, unique=True)
     description = Column(String, nullable=True)
-    ip = Column(String, nullable=True, unique=True)
+    ip = Column(String(40), nullable=True, unique=True)
 
     serverId = Column(ForeignKey('peek_server.PeekEnvServer.id'), primary_key=True)
     server = relationship("PeekEnvServer")
@@ -91,9 +91,9 @@ class PeekEnvClient(Tuple, DeclarativeBase):
     __tablename__ = 'PeekEnvClient'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
+    name = Column(String(50), nullable=False, unique=True)
     description = Column(String, nullable=True)
-    ip = Column(String, nullable=True, unique=True)
+    ip = Column(String(40), nullable=True, unique=True)
 
     serverId = Column(ForeignKey('peek_server.PeekEnvServer.id'), primary_key=True)
     server = relationship("PeekEnvServer")
