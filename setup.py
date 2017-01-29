@@ -11,9 +11,30 @@ egg_info = "%s.egg-info" % package_name
 if os.path.isdir(egg_info):
     shutil.rmtree(egg_info)
 
+def package_files(startDir,
+                  excludeDirs=('__pycache__',),
+                  excludeFiles=('.pyc', '.js', '.js.map')):
+    startDir = os.path.join(package_name, startDir)
+
+    paths = []
+    for (path, directories, filenames) in os.walk(startDir):
+        if [e for e in excludeDirs if e in path]:
+            continue
+
+        for filename in filenames:
+            if [e for e in excludeFiles if e in filename]:
+                continue
+
+            paths.append(os.path.join(path[len(package_name)+1:], filename))
+
+    return paths
+
+package_data = package_files("alembic")
+
 setup(
     name=package_name,
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
+    package_data={'': package_data},
     entry_points={
         'console_scripts': [
             'run_peek_server = peek_server.run_peek_server.main',
