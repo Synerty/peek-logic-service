@@ -77,13 +77,14 @@ def main():
 
     setupPlatform()
     from peek_platform import PeekPlatformConfig
+    import peek_server
 
     # Configure sqlalchemy
     setupDbConn(
         metadata=metadata,
         dbEngineArgs = PeekPlatformConfig.config.dbEngineArgs,
         dbConnectString=PeekPlatformConfig.config.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(__file__), "alembic")
+        alembicDir=os.path.join(os.path.dirname(peek_server.__file__), "alembic")
     )
 
     # Force model migration
