@@ -41,7 +41,7 @@ setup(
     package_data={'': package_files},
     entry_points={
         'console_scripts': [
-            'run_peek_server = peek_server.run_peek_server.main',
+            'run_peek_server = peek_server.run_peek_server:main',
         ],
     },
     install_requires=["peek-platform", "peek-server-fe"],
