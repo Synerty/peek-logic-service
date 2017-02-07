@@ -112,8 +112,11 @@ def main():
 
     setupSite("Peek Platform Data Exchange",
               platformRoot,
-              PeekPlatformConfig.config.platformHttpPort,
+              PeekPlatformConfig.config.peekServerHttpPort,
               enableLogin=False)
+
+    VortexFactory.createTcpServer(name=PeekPlatformConfig.componentName,
+                                  port=PeekPlatformConfig.config.peekServerVortexTcpPort)
 
     reactor.run()
 

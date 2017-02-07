@@ -65,25 +65,11 @@ class PeekServerConfig(PeekFileConfigABC,
 
     ### SERVER SECTION ###
     @property
-    def platformHttpPort(self) -> int:
-        """ Platform HTTP Port
-
-        The port used to communications between the platform services.
-        """
+    def peekServerHttpPort(self):
         with self._cfg as c:
-            return c.server.platformHttpPort(8011, require_integer)
+            return c.peekServer.httpPort(8011, require_integer)
 
-            # @property
-            # def popupMenuScript(self):
-            #     p = os.path
-            #     name = "PopupMenuItemMaker.py"
-            #
-            #     if p.exists(p.join(self._homePath, name)):
-            #         return p.join(self._homePath, name)
-            #
-            #     import run_peek_server
-            #     peekPath = p.dirname(run_peek_server.__file__)
-            #
-            #     return p.join(peekPath, name)
-
-
+    @property
+    def peekServerVortexTcpPort(self):
+        with self._cfg as c:
+            return c.peekServer.tcpVortexPort(8012, require_integer)
