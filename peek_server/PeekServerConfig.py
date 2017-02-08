@@ -63,6 +63,12 @@ class PeekServerConfig(PeekFileConfigABC,
         with self._cfg as c:
             return c.server.sitePort(8010, require_integer)
 
+    @property
+    def webSocketPort(self) -> int:
+        with self._cfg as c:
+            return c.server.webSocketPort(8013, require_integer)
+
+
     ### SERVER SECTION ###
     @property
     def peekServerHttpPort(self):

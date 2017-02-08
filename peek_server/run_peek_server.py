@@ -118,6 +118,10 @@ def main():
     VortexFactory.createTcpServer(name=PeekPlatformConfig.componentName,
                                   port=PeekPlatformConfig.config.peekServerVortexTcpPort)
 
+
+    webSocketPort = PeekPlatformConfig.config.webSocketPort
+    VortexFactory.createWebsocketServer(PeekPlatformConfig.componentName, webSocketPort)
+
     reactor.run()
 
 
