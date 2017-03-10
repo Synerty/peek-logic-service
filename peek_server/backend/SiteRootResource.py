@@ -10,9 +10,9 @@ def setup():
     # Setup properties for serving the site
     root.enableSinglePageApplication()
 
-    # This dist dir is automatically generated, but check it's parent
-    from peek_platform import PeekPlatformConfig
-    buildDir = PeekPlatformConfig.config.feDistDir
+    import peek_server_fe
+    frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
+    buildDir = os.path.join(frontendProjectDir, 'build-web', 'dist')
 
     buildDirParent = os.path.dirname(buildDir)
     if not os.path.isdir(buildDirParent):
@@ -25,6 +25,7 @@ def setup():
     root.addFileSystemRoot(buildDir)
 
     # Create the Admin UI vortex
+    from peek_platform import PeekPlatformConfig
     VortexFactory.createServer(PeekPlatformConfig.componentName, root)
 
     # Add the platform update upload resource

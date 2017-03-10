@@ -1,7 +1,10 @@
 import logging
+import os
+
 from typing import Type, Tuple
 
-from peek_platform.plugin.PluginFrontendInstallerABC import PluginFrontendInstallerABC
+# from peek_platform.plugin.PluginFrontendInstallerABC import PluginFrontendInstallerABC
+from peek_platform.frontend.WebBuilder import WebBuilder
 from peek_platform.plugin.PluginLoaderABC import PluginLoaderABC
 from peek_plugin_base.PluginCommonEntryHookABC import PluginCommonEntryHookABC
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
@@ -14,7 +17,7 @@ from peek_server.plugin.PeekServerPlatformHook import PeekServerPlatformHook
 logger = logging.getLogger(__name__)
 
 
-class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
+class ServerPluginLoader(PluginLoaderABC):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
@@ -24,8 +27,6 @@ class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
 
     def __init__(self, *args, **kwargs):
         PluginLoaderABC.__init__(self, *args, **kwargs)
-        PluginFrontendInstallerABC.__init__(self, *args, platformService="server",
-                                            **kwargs)
 
     @property
     def _entryHookFuncName(self) -> str:
@@ -41,7 +42,18 @@ class ServerPluginLoader(PluginLoaderABC, PluginFrontendInstallerABC):
 
     def loadAllPlugins(self):
         PluginLoaderABC.loadAllPlugins(self)
-        self.buildFrontend()
+
+        import peek_server_fe
+        frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
+
+        from peek_platform import PeekPlatformConfig
+        PeekPlatformConfig.config
+
+        webBuilder = WebBuilder(frontendProjectDir,
+                                PeekPlatformConfig.componentName,
+                                PeekPlatformConfig.config,
+                                self._loadedPlugins)
+        webBuilder.build()
 
     def unloadPlugin(self, pluginName: str):
         PluginLoaderABC.unloadPlugin(self, pluginName)
