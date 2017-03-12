@@ -122,6 +122,9 @@ def main():
     webSocketPort = PeekPlatformConfig.config.webSocketPort
     VortexFactory.createWebsocketServer(PeekPlatformConfig.componentName, webSocketPort)
 
+    reactor.addSystemEventTrigger('before', 'shutdown',
+                                  PeekPlatformConfig.pluginLoader.unloadAllPlugins)
+
     reactor.run()
 
 
