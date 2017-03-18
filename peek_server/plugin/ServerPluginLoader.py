@@ -43,14 +43,14 @@ class ServerPluginLoader(PluginLoaderABC):
     def loadAllPlugins(self):
         PluginLoaderABC.loadAllPlugins(self)
 
-        import peek_server_fe
-        frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
+        import peek_admin
+        frontendProjectDir = os.path.dirname(peek_admin.__file__)
 
         from peek_platform import PeekPlatformConfig
         PeekPlatformConfig.config
 
         webBuilder = WebBuilder(frontendProjectDir,
-                                PeekPlatformConfig.componentName,
+                                "admin",
                                 PeekPlatformConfig.config,
                                 self._loadedPlugins)
         webBuilder.build()

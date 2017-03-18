@@ -39,8 +39,8 @@ class PeekServerConfig(PeekFileConfigABC,
     This class creates a server configuration
     """
 
-    import peek_server_fe
-    _frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
+    import peek_admin
+    _frontendProjectDir = os.path.dirname(peek_admin.__file__)
 
     ### USER SECTION ###
     @property

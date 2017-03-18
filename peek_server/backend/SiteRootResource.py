@@ -10,8 +10,8 @@ def setup():
     # Setup properties for serving the site
     root.enableSinglePageApplication()
 
-    import peek_server_fe
-    frontendProjectDir = os.path.dirname(peek_server_fe.__file__)
+    import peek_admin
+    frontendProjectDir = os.path.dirname(peek_admin.__file__)
     buildDir = os.path.join(frontendProjectDir, 'build-web', 'dist')
 
     buildDirParent = os.path.dirname(buildDir)

@@ -47,7 +47,7 @@ setup(
             'run_peek_server = peek_server.run_peek_server:main',
         ],
     },
-    install_requires=["peek-platform", "peek-server-fe"],
+    install_requires=["peek-platform", "peek-admin"],
     version=package_version,
     description='Peek Platform - Server Service',
     author='Synerty',
