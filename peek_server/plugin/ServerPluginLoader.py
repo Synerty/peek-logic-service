@@ -50,7 +50,7 @@ class ServerPluginLoader(PluginLoaderABC):
         PeekPlatformConfig.config
 
         webBuilder = WebBuilder(frontendProjectDir,
-                                "admin",
+                                "peek-admin",
                                 PeekPlatformConfig.config,
                                 self._loadedPlugins)
         webBuilder.build()
