@@ -1,6 +1,6 @@
 import os
 import shutil
-from distutils.core import setup
+from setuptools import setup
 
 pip_package_name = "peek-server"
 py_package_name = "peek_server"
