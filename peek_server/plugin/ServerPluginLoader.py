@@ -52,7 +52,7 @@ class ServerPluginLoader(PluginLoaderABC):
         webBuilder = WebBuilder(frontendProjectDir,
                                 "peek-admin",
                                 PeekPlatformConfig.config,
-                                self._loadedPlugins)
+                                self._loadedPlugins.values())
         webBuilder.build()
 
     def unloadPlugin(self, pluginName: str):
