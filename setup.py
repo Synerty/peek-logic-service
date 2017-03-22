@@ -48,7 +48,7 @@ setup(
         ],
     },
     install_requires=["peek-platform", "peek-admin"],
-    version=package_version,
+    zip_safe=False,version=package_version,
     description='Peek Platform - Server Service',
     author='Synerty',
     author_email='contact@synerty.com',
