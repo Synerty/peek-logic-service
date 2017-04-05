@@ -94,9 +94,6 @@ def main():
     # Import remaining components
     importPackages()
 
-    # Load all plugins
-    PeekPlatformConfig.pluginLoader.loadAllPlugins()
-
     from peek_server.backend.SiteRootResource import setup as setupSiteRoot
     from peek_server.backend.SiteRootResource import root as siteRoot
     setupSiteRoot()
@@ -124,6 +121,9 @@ def main():
 
     reactor.addSystemEventTrigger('before', 'shutdown',
                                   PeekPlatformConfig.pluginLoader.unloadAllPlugins)
+
+    # Load all plugins
+    PeekPlatformConfig.pluginLoader.loadAllPlugins()
 
     reactor.run()
 
