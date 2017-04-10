@@ -30,7 +30,3 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
     def getOtherPluginApi(self, pluginName):
         otherPlugin = self._getOtherPluginApi(pluginName)
         return otherPlugin.publishedServerApi if otherPlugin else None
-
-    def getOtherPluginStorageApi(self, pluginName):
-        otherPlugin = self._getOtherPluginApi(pluginName)
-        return otherPlugin.publishedStorageApi if otherPlugin else None
