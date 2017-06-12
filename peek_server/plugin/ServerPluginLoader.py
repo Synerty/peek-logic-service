@@ -71,7 +71,7 @@ class ServerPluginLoader(PluginLoaderABC):
                           pluginRootDir: str,
                           requiresService: Tuple[str, ...]) -> None:
         # Everyone gets their own instance of the plugin API
-        platformApi = PeekServerPlatformHook()
+        platformApi = PeekServerPlatformHook(pluginName)
 
         pluginMain = EntryHookClass(pluginName=pluginName,
                                     pluginRootDir=pluginRootDir,
