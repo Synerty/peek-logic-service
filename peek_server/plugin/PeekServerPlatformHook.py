@@ -10,9 +10,6 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
         PeekPlatformFrontendHookABC.__init__(self)
         self._pluginName = pluginName
 
-        # We maintain the same plugin directory, all the tim
-        self._pluginDir = None
-
     @property
     def dbConnectString(self) -> str:
         from peek_platform import PeekPlatformConfig
@@ -22,7 +19,7 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
     def fileStorageDirectory(self) -> Path:
         from peek_platform import PeekPlatformConfig
 
-        return Path(PeekPlatformConfig.config.pluginDataPath)
+        return Path(PeekPlatformConfig.config.pluginDataPath(self._pluginName))
 
     def _getOtherPluginApi(self, pluginName):
         serverPluginLoader = PeekPlatformConfig.pluginLoader
