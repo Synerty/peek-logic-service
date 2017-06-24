@@ -1,15 +1,3 @@
-""" 
- * orm.ExtensionData.py
- *
- *  Copyright Synerty Pty Ltd 2011
- *
- *  This software is proprietary, you are not free to copy
- *  or redistribute this code in any format.
- *
- *  All rights to this software are reserved by 
- *  Synerty Pty Ltd
- *
-"""
 import logging
 
 from sqlalchemy import Column

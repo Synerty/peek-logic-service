@@ -18,7 +18,7 @@ class ServerPluginLoaderTest(unittest.TestCase):
         self.serverPluginLoader = ServerPluginLoader()
 
     def testLoadAll(self):
-        self.serverPluginLoader.loadAllPlugins()
+        self.serverPluginLoader.loadOptionalPlugins()
 
         logger.info(self.serverPluginLoader.listPlugins())
 

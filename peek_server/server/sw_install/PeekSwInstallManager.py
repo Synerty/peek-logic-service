@@ -7,7 +7,8 @@ __author__ = 'synerty'
 class PeekSwInstallManager(PeekSwInstallManagerABC):
 
     def _stopCode(self):
-        PeekPlatformConfig.pluginLoader.unloadAllPlugins()
+        PeekPlatformConfig.pluginLoader.unloadOptionalPlugins()
+        PeekPlatformConfig.pluginLoader.unloadCorePlugins()
 
     def _upgradeCode(self):
         # Ensure the migration succeeds before restarting.
@@ -16,6 +17,7 @@ class PeekSwInstallManager(PeekSwInstallManagerABC):
         dbConn.migratre()
 
     def _startCode(self):
-        PeekPlatformConfig.pluginLoader.loadAllPlugins()
+        PeekPlatformConfig.pluginLoader.loadCorePlugins()
+        PeekPlatformConfig.pluginLoader.loadOptionalPlugins()
 
 

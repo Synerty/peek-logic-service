@@ -1,7 +1,7 @@
 import logging
-import os
-
 from typing import Type, Tuple
+
+import os
 
 # from peek_platform.plugin.PluginFrontendInstallerABC import PluginFrontendInstallerABC
 from peek_platform.frontend.WebBuilder import WebBuilder
@@ -40,14 +40,14 @@ class ServerPluginLoader(PluginLoaderABC):
     def _platformServiceNames(self) -> [str]:
         return ["server", "storage"]
 
-    def loadAllPlugins(self):
-        PluginLoaderABC.loadAllPlugins(self)
+    def loadOptionalPlugins(self):
+        PluginLoaderABC.loadCorePlugins(self)
+        PluginLoaderABC.loadOptionalPlugins(self)
 
         import peek_admin
         frontendProjectDir = os.path.dirname(peek_admin.__file__)
 
         from peek_platform import PeekPlatformConfig
-        PeekPlatformConfig.config
 
         webBuilder = WebBuilder(frontendProjectDir,
                                 "peek-admin",
@@ -95,7 +95,11 @@ class ServerPluginLoader(PluginLoaderABC):
         if isinstance(pluginMain, PluginServerStorageEntryHookABC):
 
             metadata = pluginMain.dbMetadata
-            schemaName = pluginName.replace("peek_plugin_", "pl_")
+            schemaName = (
+                pluginName
+                    .replace("peek_plugin_", "pl_")
+                    .replace("peek_core_", "core_")
+            )
             if metadata.schema != schemaName:
                 raise Exception("Peek plugin %s db schema name is %s, should be %s"
                                 % (pluginName, metadata.schema, schemaName))
@@ -109,14 +113,16 @@ class ServerPluginLoader(PluginLoaderABC):
                             " It must now inherit PluginServerStorageEntryHookMixin"
                             " in its PluginServerEntryHook implementation")
 
-
         # Start the Plugin
         pluginMain.start()
 
         # Add all the resources required to serve the backend site
         # And all the plugin custom resources it may create
 
-        from peek_server.backend.SiteRootResource import root
-        root.putChild(pluginName.encode(), platformApi.rootResource)
+        from peek_server.backend.SiteRootResource import root as siteRoot
+        siteRoot.putChild(pluginName.encode(), platformApi.rootSiteResource)
+
+        from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
+        platformRoot.putChild(pluginName.encode(), platformApi.rootServerResource)
 
         self._loadedPlugins[pluginName] = pluginMain

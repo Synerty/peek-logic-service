@@ -120,10 +120,13 @@ def main():
     VortexFactory.createWebsocketServer(PeekPlatformConfig.componentName, webSocketPort)
 
     reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.unloadAllPlugins)
+                                  PeekPlatformConfig.pluginLoader.unloadOptionalPlugins)
+    reactor.addSystemEventTrigger('before', 'shutdown',
+                                  PeekPlatformConfig.pluginLoader.unloadCorePlugins)
 
     # Load all plugins
-    PeekPlatformConfig.pluginLoader.loadAllPlugins()
+    PeekPlatformConfig.pluginLoader.loadCorePlugins()
+    PeekPlatformConfig.pluginLoader.loadOptionalPlugins()
 
     reactor.run()
 

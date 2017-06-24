@@ -72,10 +72,20 @@ class PeekServerConfig(PeekFileConfigABC,
     ### SERVER SECTION ###
     @property
     def peekServerHttpPort(self):
+        """ Peek Server HTTP Port
+
+        This port serves resources for the plugins, as well as a HTTP vortex.
+        """
         with self._cfg as c:
             return c.peekServer.httpPort(8011, require_integer)
 
     @property
     def peekServerVortexTcpPort(self):
+        """ Peek Server Vortex TCP Port
+
+        This port serves a raw vortex over TCP (No HTTP).
+
+        It remains open perminently until either side disconnects.
+        """
         with self._cfg as c:
             return c.peekServer.tcpVortexPort(8012, require_integer)
