@@ -119,8 +119,8 @@ class ServerPluginLoader(PluginLoaderABC):
         # Add all the resources required to serve the backend site
         # And all the plugin custom resources it may create
 
-        from peek_server.backend.SiteRootResource import root as siteRoot
-        siteRoot.putChild(pluginName.encode(), platformApi.rootSiteResource)
+        from peek_server.backend.SiteRootResource import root as adminSiteRoot
+        adminSiteRoot.putChild(pluginName.encode(), platformApi.rootAdminResource)
 
         from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
         platformRoot.putChild(pluginName.encode(), platformApi.rootServerResource)

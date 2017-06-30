@@ -1,14 +1,14 @@
 from pathlib import Path
 
 from peek_platform import PeekPlatformConfig
-from peek_plugin_base.PeekPlatformServerHttpHookABC import PeekPlatformServerHttpHookABC
-from peek_plugin_base.PeekPlatformSiteHttpHookABC import PeekPlatformSiteHttpHookABC
+from peek_plugin_base.server.PeekPlatformServerHttpHookABC import PeekPlatformServerHttpHookABC
+from peek_plugin_base.server.PeekPlatformAdminHttpHookABC import PeekPlatformAdminHttpHookABC
 from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
 
 
 class PeekServerPlatformHook(PeekServerPlatformHookABC):
     def __init__(self, pluginName: str):
-        PeekPlatformSiteHttpHookABC.__init__(self)
+        PeekPlatformAdminHttpHookABC.__init__(self)
         PeekPlatformServerHttpHookABC.__init__(self)
         self._pluginName = pluginName
 
