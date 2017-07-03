@@ -70,10 +70,6 @@ def setupPlatform():
 
 
 def main():
-    # defer.setDebugging(True)
-    # sys.argv.remove(DEBUG_ARG)
-    # import pydevd
-    # pydevd.settrace(suspend=False)
 
     setupPlatform()
     from peek_platform import PeekPlatformConfig
