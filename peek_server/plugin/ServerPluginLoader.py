@@ -4,6 +4,8 @@ from typing import Type, Tuple
 import os
 
 # from peek_platform.plugin.PluginFrontendInstallerABC import PluginFrontendInstallerABC
+from twisted.internet.defer import inlineCallbacks
+
 from peek_platform.frontend.WebBuilder import WebBuilder
 from peek_platform.plugin.PluginLoaderABC import PluginLoaderABC
 from peek_plugin_base.PluginCommonEntryHookABC import PluginCommonEntryHookABC
@@ -40,9 +42,9 @@ class ServerPluginLoader(PluginLoaderABC):
     def _platformServiceNames(self) -> [str]:
         return ["server", "storage"]
 
+    @inlineCallbacks
     def loadOptionalPlugins(self):
-        PluginLoaderABC.loadCorePlugins(self)
-        PluginLoaderABC.loadOptionalPlugins(self)
+        yield PluginLoaderABC.loadOptionalPlugins(self)
 
         import peek_admin
         frontendProjectDir = os.path.dirname(peek_admin.__file__)
@@ -66,6 +68,7 @@ class ServerPluginLoader(PluginLoaderABC):
         except KeyError:
             pass
 
+    @inlineCallbacks
     def _loadPluginThrows(self, pluginName: str,
                           EntryHookClass: Type[PluginCommonEntryHookABC],
                           pluginRootDir: str,
@@ -78,7 +81,7 @@ class ServerPluginLoader(PluginLoaderABC):
                                     platform=platformApi)
 
         # Load the plugin
-        pluginMain.load()
+        yield pluginMain.load()
 
         if isinstance(pluginMain, PluginServerWorkerEntryHookABC):
             # Configure the celery app in the worker
@@ -114,7 +117,7 @@ class ServerPluginLoader(PluginLoaderABC):
                             " in its PluginServerEntryHook implementation")
 
         # Start the Plugin
-        pluginMain.start()
+        yield pluginMain.start()
 
         # Add all the resources required to serve the backend site
         # And all the plugin custom resources it may create

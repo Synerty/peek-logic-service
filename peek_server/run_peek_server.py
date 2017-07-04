@@ -19,6 +19,7 @@ from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
+from vortex.DeferUtil import vortexLogFailure
 from vortex.VortexFactory import VortexFactory
 
 setupLogging()
@@ -121,8 +122,9 @@ def main():
                                   PeekPlatformConfig.pluginLoader.unloadCorePlugins)
 
     # Load all plugins
-    PeekPlatformConfig.pluginLoader.loadCorePlugins()
-    PeekPlatformConfig.pluginLoader.loadOptionalPlugins()
+    d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
+    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addErrback(vortexLogFailure, logger, consumeError=True)
 
     reactor.run()
 
