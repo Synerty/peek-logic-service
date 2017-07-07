@@ -41,3 +41,8 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
     def getOtherPluginApi(self, pluginName):
         otherPlugin = self._getOtherPluginApi(pluginName)
         return otherPlugin.publishedServerApi if otherPlugin else None
+
+    @property
+    def serviceId(self) -> str:
+        import socket
+        return "server|" + socket.gethostname()
