@@ -24,6 +24,7 @@ from peek_platform.file_config.PeekFileConfigOsMixin import PeekFileConfigOsMixi
 from peek_platform.file_config.PeekFileConfigPlatformMixin import PeekFileConfigPlatformMixin
 from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import \
     PeekFileConfigSqlAlchemyMixin
+from peek_platform.file_config.PeekFileConfigWorkerMixin import PeekFileConfigWorkerMixin
 from peek_server.PeekServerConfigLicMixin import PeekServerConfigLicMixin
 
 logger = logging.getLogger(__name__)
@@ -34,7 +35,8 @@ class PeekServerConfig(PeekFileConfigABC,
                        PeekFileConfigPlatformMixin,
                        PeekFileConfigSqlAlchemyMixin,
                        PeekServerConfigLicMixin,
-                       PeekFileConfigFrontendDirMixin):
+                       PeekFileConfigFrontendDirMixin,
+                       PeekFileConfigWorkerMixin):
     """
     This class creates a server configuration
     """
