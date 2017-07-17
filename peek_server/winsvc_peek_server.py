@@ -36,5 +36,9 @@ class PeekSvc(win32serviceutil.ServiceFramework):
         run_peek_server.main()
 
 
-if __name__ == '__main__':
+def main():
     win32serviceutil.HandleCommandLine(PeekSvc)
+
+
+if __name__ == '__main__':
+    main()
