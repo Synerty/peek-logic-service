@@ -124,6 +124,8 @@ def main():
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
     d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.startCorePlugins())
+    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.startOptionalPlugins())
     d.addErrback(vortexLogFailure, logger, consumeError=True)
 
     reactor.run()
