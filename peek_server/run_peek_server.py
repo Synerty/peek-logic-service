@@ -69,27 +69,8 @@ def setupPlatform():
     DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
     FileUploadRequest.tmpFilePath = PeekPlatformConfig.config.tmpPath
 
-
-def main():
-
-    setupPlatform()
+def startListening():
     from peek_platform import PeekPlatformConfig
-    import peek_server
-
-    # Configure sqlalchemy
-    setupDbConn(
-        metadata=metadata,
-        dbEngineArgs = PeekPlatformConfig.config.dbEngineArgs,
-        dbConnectString=PeekPlatformConfig.config.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(peek_server.__file__), "alembic")
-    )
-
-    # Force model migration
-    from peek_server.storage import dbConn
-    dbConn.migrate()
-
-    # Import remaining components
-    importPackages()
 
     from peek_server.backend.SiteRootResource import setup as setupSiteRoot
     from peek_server.backend.SiteRootResource import root as siteRoot
@@ -116,6 +97,32 @@ def main():
     webSocketPort = PeekPlatformConfig.config.webSocketPort
     VortexFactory.createWebsocketServer(PeekPlatformConfig.componentName, webSocketPort)
 
+def main():
+
+    setupPlatform()
+    from peek_platform import PeekPlatformConfig
+    import peek_server
+
+    # Configure sqlalchemy
+    setupDbConn(
+        metadata=metadata,
+        dbEngineArgs = PeekPlatformConfig.config.dbEngineArgs,
+        dbConnectString=PeekPlatformConfig.config.dbConnectString,
+        alembicDir=os.path.join(os.path.dirname(peek_server.__file__), "alembic")
+    )
+
+    # Force model migration
+    from peek_server.storage import dbConn
+    dbConn.migrate()
+
+    # Import remaining components
+    importPackages()
+
+    reactor.addSystemEventTrigger('before', 'shutdown',
+                                  PeekPlatformConfig.pluginLoader.stopOptionalPlugins)
+    reactor.addSystemEventTrigger('before', 'shutdown',
+                                  PeekPlatformConfig.pluginLoader.stopCorePlugins)
+
     reactor.addSystemEventTrigger('before', 'shutdown',
                                   PeekPlatformConfig.pluginLoader.unloadOptionalPlugins)
     reactor.addSystemEventTrigger('before', 'shutdown',
@@ -124,6 +131,7 @@ def main():
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
     d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addCallback(lambda _ : startListening())
     d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.startCorePlugins())
     d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.startOptionalPlugins())
     d.addErrback(vortexLogFailure, logger, consumeError=True)

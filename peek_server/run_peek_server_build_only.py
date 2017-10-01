@@ -12,24 +12,21 @@
  *
 """
 from pytmpdir.Directory import DirSettings
-from txhttputil.site.FileUploadRequest import FileUploadRequest
-from txhttputil.util.LoggingUtil import setupLogging
 
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
+from txhttputil.site.FileUploadRequest import FileUploadRequest
+from txhttputil.util.LoggingUtil import setupLogging
 from vortex.DeferUtil import vortexLogFailure
-from vortex.VortexFactory import VortexFactory
 
 setupLogging()
 
 import logging
 import os
 
-from twisted.internet import reactor, defer
-
-from txhttputil.site.SiteUtil import setupSite
+from twisted.internet import reactor
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +53,6 @@ def setupPlatform():
 
 
 def main():
-
     setupPlatform()
     from peek_platform import PeekPlatformConfig
     import peek_server
@@ -64,7 +60,7 @@ def main():
     # Configure sqlalchemy
     setupDbConn(
         metadata=metadata,
-        dbEngineArgs = PeekPlatformConfig.config.dbEngineArgs,
+        dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
         dbConnectString=PeekPlatformConfig.config.dbConnectString,
         alembicDir=os.path.join(os.path.dirname(peek_server.__file__), "alembic")
     )
@@ -76,12 +72,6 @@ def main():
     # Import remaining components
     importPackages()
 
-    from peek_server.backend.SiteRootResource import setup as setupSiteRoot
-    from peek_server.backend.SiteRootResource import root as siteRoot
-
-    from peek_server.server.PeekServerPlatformRootResource import setup as setupPlatRoot
-    from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
-
     reactor.addSystemEventTrigger('before', 'shutdown',
                                   PeekPlatformConfig.pluginLoader.unloadOptionalPlugins)
     reactor.addSystemEventTrigger('before', 'shutdown',
@@ -89,7 +79,7 @@ def main():
 
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
-    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
     d.addErrback(vortexLogFailure, logger, consumeError=True)
 
     reactor.run()

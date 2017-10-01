@@ -7,6 +7,9 @@ __author__ = 'synerty'
 class PeekSwInstallManager(PeekSwInstallManagerABC):
 
     def _stopCode(self):
+        PeekPlatformConfig.pluginLoader.stopOptionalPlugins()
+        PeekPlatformConfig.pluginLoader.stopCorePlugins()
+
         PeekPlatformConfig.pluginLoader.unloadOptionalPlugins()
         PeekPlatformConfig.pluginLoader.unloadCorePlugins()
 
