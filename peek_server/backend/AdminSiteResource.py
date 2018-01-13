@@ -4,11 +4,11 @@ from txhttputil.site.FileUnderlayResource import FileUnderlayResource
 
 from vortex.VortexFactory import VortexFactory
 
-root = FileUnderlayResource()
+adminSiteRoot = FileUnderlayResource()
 
-def setup():
+def setupAdminSite():
     # Setup properties for serving the site
-    root.enableSinglePageApplication()
+    adminSiteRoot.enableSinglePageApplication()
 
     import peek_admin
     frontendProjectDir = os.path.dirname(peek_admin.__file__)
@@ -22,16 +22,16 @@ def setup():
     # It rebuilds at a later date
     os.makedirs(buildDir, exist_ok=True)
 
-    root.addFileSystemRoot(buildDir)
+    adminSiteRoot.addFileSystemRoot(buildDir)
 
     # Create the Admin UI vortex
     from peek_platform import PeekPlatformConfig
-    VortexFactory.createServer(PeekPlatformConfig.componentName, root)
+    VortexFactory.createServer(PeekPlatformConfig.componentName, adminSiteRoot)
 
     # Add the platform update upload resource
-    root.putChild(b'peek_server.update.platform',
-                  PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM))
+    adminSiteRoot.putChild(b'peek_server.update.platform',
+                           PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM))
 
     # Add the plugin update upload resource
-    root.putChild(b'peek_server.update.plugin',
-                  PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN))
+    adminSiteRoot.putChild(b'peek_server.update.plugin',
+                           PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN))

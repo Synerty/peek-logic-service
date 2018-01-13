@@ -61,18 +61,27 @@ class PeekServerConfig(PeekFileConfigABC,
 
     ### SERVER SECTION ###
     @property
-    def sitePort(self) -> int:
+    def adminSitePort(self) -> int:
         """ Site Port
 
         The port used to serve the admin web page on
         """
         with self._cfg as c:
-            return c.server.sitePort(8010, require_integer)
+            return c.server.adminSitePort(8010, require_integer)
 
     @property
     def webSocketPort(self) -> int:
         with self._cfg as c:
             return c.server.webSocketPort(8013, require_integer)
+
+    @property
+    def docSitePort(self) -> int:
+        """ Admin Documentation Site Port
+
+        The port used to serve the admin documentation
+        """
+        with self._cfg as c:
+            return c.server.docSitePort(8015, require_integer)
 
     ### SERVER SECTION ###
     @property

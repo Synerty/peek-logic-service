@@ -40,13 +40,13 @@ reactor.suggestThreadPoolSize(10)
 defer.setDebugging(True)
 
 
-
 def setupPlatform():
     from peek_platform import PeekPlatformConfig
     PeekPlatformConfig.componentName = peekServerName
 
     # Tell the platform classes about our instance of the pluginSwInstallManager
-    from peek_server.server.sw_install.PluginSwInstallManager import PluginSwInstallManager
+    from peek_server.server.sw_install.PluginSwInstallManager import \
+        PluginSwInstallManager
     PeekPlatformConfig.pluginSwInstallManager = PluginSwInstallManager()
 
     # Tell the platform classes about our instance of the PeekSwInstallManager
@@ -69,36 +69,44 @@ def setupPlatform():
     DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
     FileUploadRequest.tmpFilePath = PeekPlatformConfig.config.tmpPath
 
+
 def startListening():
     from peek_platform import PeekPlatformConfig
 
-    from peek_server.backend.SiteRootResource import setup as setupSiteRoot
-    from peek_server.backend.SiteRootResource import root as siteRoot
-    setupSiteRoot()
+    from peek_server.backend.AdminSiteResource import setupAdminSite, adminSiteRoot
+    from peek_server.backend.DocSiteResource import setupDocSite, docSiteRoot
+
+    setupAdminSite()
+    setupDocSite()
 
     setupSite("Peek Admin",
-              siteRoot,
-              PeekPlatformConfig.config.sitePort,
+              adminSiteRoot,
+              PeekPlatformConfig.config.adminSitePort,
               enableLogin=False)
 
-    from peek_server.server.PeekServerPlatformRootResource import setup as setupPlatRoot
-    from peek_server.server.PeekServerPlatformRootResource import root as platformRoot
-    setupPlatRoot()
+    setupSite("Peek Admin Docs",
+              docSiteRoot,
+              PeekPlatformConfig.config.docSitePort,
+              enableLogin=False)
+
+    from peek_server.server.PlatformSiteResource import setupPlatformSite
+    from peek_server.server.PlatformSiteResource import platformSiteRoot
+
+    setupPlatformSite()
 
     setupSite("Peek Platform Data Exchange",
-              platformRoot,
+              platformSiteRoot,
               PeekPlatformConfig.config.peekServerHttpPort,
               enableLogin=False)
 
     VortexFactory.createTcpServer(name=PeekPlatformConfig.componentName,
                                   port=PeekPlatformConfig.config.peekServerVortexTcpPort)
 
-
     webSocketPort = PeekPlatformConfig.config.webSocketPort
     VortexFactory.createWebsocketServer(PeekPlatformConfig.componentName, webSocketPort)
 
-def main():
 
+def main():
     setupPlatform()
     from peek_platform import PeekPlatformConfig
     import peek_server
@@ -106,7 +114,7 @@ def main():
     # Configure sqlalchemy
     setupDbConn(
         metadata=metadata,
-        dbEngineArgs = PeekPlatformConfig.config.dbEngineArgs,
+        dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
         dbConnectString=PeekPlatformConfig.config.dbConnectString,
         alembicDir=os.path.join(os.path.dirname(peek_server.__file__), "alembic")
     )
@@ -130,10 +138,10 @@ def main():
 
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
-    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
-    d.addCallback(lambda _ : startListening())
-    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.startCorePlugins())
-    d.addCallback(lambda _ : PeekPlatformConfig.pluginLoader.startOptionalPlugins())
+    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addCallback(lambda _: startListening())
+    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startCorePlugins())
+    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins())
     d.addErrback(vortexLogFailure, logger, consumeError=True)
 
     reactor.run()
