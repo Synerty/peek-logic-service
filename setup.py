@@ -48,7 +48,7 @@ setup(
             'winsvc_peek_server = peek_server.winsvc_peek_server:main',
         ],
     },
-    install_requires=["peek-platform", "peek-admin"],
+    install_requires=["peek-platform", "peek-admin", "peek-doc-admin"],
     zip_safe=False,version=package_version,
     description='Peek Platform - Server Service',
     author='Synerty',
