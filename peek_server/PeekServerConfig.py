@@ -18,10 +18,13 @@ import os
 from jsoncfg.value_mappers import require_string, require_integer
 
 from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
+from peek_platform.file_config.PeekFileConfigDocBuildMixin import \
+    PeekFileConfigDocBuildMixin
 from peek_platform.file_config.PeekFileConfigFrontendDirMixin import \
     PeekFileConfigFrontendDirMixin
 from peek_platform.file_config.PeekFileConfigOsMixin import PeekFileConfigOsMixin
-from peek_platform.file_config.PeekFileConfigPlatformMixin import PeekFileConfigPlatformMixin
+from peek_platform.file_config.PeekFileConfigPlatformMixin import \
+    PeekFileConfigPlatformMixin
 from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import \
     PeekFileConfigSqlAlchemyMixin
 from peek_platform.file_config.PeekFileConfigWorkerMixin import PeekFileConfigWorkerMixin
@@ -36,6 +39,7 @@ class PeekServerConfig(PeekFileConfigABC,
                        PeekFileConfigSqlAlchemyMixin,
                        PeekServerConfigLicMixin,
                        PeekFileConfigFrontendDirMixin,
+                       PeekFileConfigDocBuildMixin,
                        PeekFileConfigWorkerMixin):
     """
     This class creates a server configuration
@@ -69,7 +73,6 @@ class PeekServerConfig(PeekFileConfigABC,
     def webSocketPort(self) -> int:
         with self._cfg as c:
             return c.server.webSocketPort(8013, require_integer)
-
 
     ### SERVER SECTION ###
     @property

@@ -2,7 +2,7 @@ import logging
 from typing import Type, Tuple
 
 import os
-from peek_platform.frontend.WebBuilder import WebBuilder
+from peek_platform.build_frontend.WebBuilder import WebBuilder
 from peek_platform.plugin.PluginLoaderABC import PluginLoaderABC
 from peek_plugin_base.PluginCommonEntryHookABC import PluginCommonEntryHookABC
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
