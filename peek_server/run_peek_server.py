@@ -36,10 +36,6 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------
 # Set the parallelism of the database and reactor
 
-reactor.suggestThreadPoolSize(10)
-defer.setDebugging(True)
-
-
 def setupPlatform():
     from peek_platform import PeekPlatformConfig
     PeekPlatformConfig.componentName = peekServerName
@@ -63,6 +59,11 @@ def setupPlatform():
 
     # Set default logging level
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
+
+    if logging.root.level == logging.DEBUG:
+        defer.setDebugging(True)
+
+    reactor.suggestThreadPoolSize(PeekPlatformConfig.config.twistedThreadPoolSize)
 
     # Set paths for the Directory object
     DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
