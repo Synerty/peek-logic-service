@@ -145,8 +145,9 @@ def main():
     d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins())
     d.addErrback(vortexLogFailure, logger, consumeError=True)
 
-    reactor.run()
+    return d
 
 
 if __name__ == '__main__':
     main()
+    reactor.run()
