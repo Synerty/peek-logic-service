@@ -3,12 +3,13 @@ from sqlalchemy import engine_from_config, pool
 from alembic import context
 from sqlalchemy.dialects.mssql.base import MSDialect
 from sqlalchemy.dialects.postgresql.base import PGDialect
-from txhttputil.util.LoggingUtil import setupLogging
+from peek_platform.util.LogUtil import setupPeekLogger
+from peek_plugin_base.PeekVortexUtil import peekServerName
 
 global config
 config = context.config
 
-setupLogging()
+setupPeekLogger(peekServerName)
 
 from peek_server.storage.DeclarativeBase import metadata
 target_metadata = metadata

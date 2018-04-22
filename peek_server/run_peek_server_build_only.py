@@ -11,6 +11,10 @@
  *  Synerty Pty Ltd
  *
 """
+
+import logging
+import os
+
 from pytmpdir.Directory import DirSettings
 
 from peek_plugin_base.PeekVortexUtil import peekServerName
@@ -18,13 +22,10 @@ from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
 from txhttputil.site.FileUploadRequest import FileUploadRequest
-from txhttputil.util.LoggingUtil import setupLogging
+from peek_platform.util.LogUtil import setupPeekLogger
 from vortex.DeferUtil import vortexLogFailure
 
-setupLogging()
-
-import logging
-import os
+setupPeekLogger(peekServerName)
 
 from twisted.internet import reactor
 
