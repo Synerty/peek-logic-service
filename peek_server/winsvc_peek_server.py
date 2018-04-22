@@ -7,7 +7,7 @@ from twisted.internet import reactor
 logger = logging.getLogger(__name__)
 
 class PeekSvc(win32serviceutil.ServiceFramework):
-    _svc_name_ = "peek_server"
+    _svc_name_ = "peek-server"
     _svc_display_name_ = "Peek Server " #+ peek_server.__version__
 
     def __init__(self, args):
