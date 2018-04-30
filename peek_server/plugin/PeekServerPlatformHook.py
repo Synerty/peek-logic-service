@@ -7,7 +7,7 @@ from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatform
 
 
 class PeekServerPlatformHook(PeekServerPlatformHookABC):
-    def __init__(self, pluginName: str):
+    def __init__(self, pluginName: str) -> None:
         PeekPlatformAdminHttpHookABC.__init__(self)
         PeekPlatformServerHttpHookABC.__init__(self)
         self._pluginName = pluginName

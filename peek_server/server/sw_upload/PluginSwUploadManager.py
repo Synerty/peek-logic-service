@@ -192,11 +192,11 @@ class PluginSwUploadManager(object):
         virtualEnvDir = Directory()
 
         virtExec = os.path.join(os.path.dirname(sys.executable), "virtualenv")
-        virtArgs = [virtExec,
+        virtArgsList = [virtExec,
                     # Give the virtual environment access to the global
                     '--system-site-packages',
                     virtualEnvDir.path]
-        virtArgs = ' '.join(virtArgs)
+        virtArgs = ' '.join(virtArgsList)
 
         try:
             spawnSubprocess(virtArgs)
@@ -204,8 +204,7 @@ class PluginSwUploadManager(object):
 
         except Exception as e:
             logSpawnException(e)
-            e.message = "Failed to create virtualenv for platform test"
-            raise
+            raise Exception("Failed to create virtualenv for platform test")
 
         pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
 
@@ -220,8 +219,7 @@ class PluginSwUploadManager(object):
             logSpawnException(e)
 
             # Update the detail of the exception and raise it
-            e.message = "Test install of updated plugin package failed."
-            raise
+            raise Exception("Test install of updated plugin package failed.")
 
         # CHECK
         # Now try to load the package name

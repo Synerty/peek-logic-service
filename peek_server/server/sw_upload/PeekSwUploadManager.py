@@ -6,12 +6,12 @@ import tarfile
 
 from pytmpdir.Directory import Directory
 from twisted.internet.defer import inlineCallbacks
-from txhttputil.util.DeferUtil import deferToThreadWrap
 
 from peek_platform import PeekPlatformConfig
 from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE, \
     PeekSwInstallManagerABC
 from peek_platform.util.PtyUtil import spawnPty, logSpawnException, spawnSubprocess
+from vortex.DeferUtil import deferToThreadWrapWithLogger
 
 __author__ = 'synerty'
 
@@ -35,7 +35,7 @@ class PeekSwUploadManager(object):
 
         return newVersion
 
-    @deferToThreadWrap
+    @deferToThreadWrapWithLogger(logger)
     def updateToTarFile(self, newSoftwareTar):
         """ Update To Tar File
 
@@ -97,11 +97,11 @@ class PeekSwUploadManager(object):
         virtualEnvDir = Directory()
 
         virtExec = os.path.join(os.path.dirname(sys.executable), "virtualenv")
-        virtArgs = [virtExec,
+        virtArgsList= [virtExec,
                     # Give the virtual environment access to the global
                     '--system-site-packages',
                     virtualEnvDir.path]
-        virtArgs = ' '.join(virtArgs)
+        virtArgs = ' '.join(virtArgsList)
 
         try:
             spawnSubprocess(virtArgs)
@@ -109,8 +109,7 @@ class PeekSwUploadManager(object):
 
         except Exception as e:
             logSpawnException(e)
-            e.message = "Failed to create virtualenv for platform test"
-            raise
+            raise Exception("Failed to create virtualenv for platform test")
 
         # We could use import pip, pip.main(..), except:
         # We want to capture, the output, and:
@@ -129,8 +128,7 @@ class PeekSwUploadManager(object):
             logSpawnException(e)
 
             # Update the detail of the exception and raise it
-            e.message = "Test install of updated package failed."
-            raise
+            raise Exception("Test install of updated package failed.")
 
         # Continue normally if it all succeeded
         logger.debug("Peek update successfully tested.")

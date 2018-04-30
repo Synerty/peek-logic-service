@@ -1,5 +1,5 @@
 import logging
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.sql.functions import func
 
@@ -8,7 +8,7 @@ from peek_server.storage.PeekPluginInfo import PeekPluginInfo
 logger = logging.getLogger(__name__)
 
 
-def getLatestPluginVersionInfos(name: Optional[str] = None) -> [PeekPluginInfo]:
+def getLatestPluginVersionInfos(name: Optional[str] = None) -> List[PeekPluginInfo]:
     """ Get Latest Plugin Version Infos
 
     This method returns the newest c{PeekPluginInfo} object for each plugin we have
@@ -34,7 +34,7 @@ def getLatestPluginVersionInfos(name: Optional[str] = None) -> [PeekPluginInfo]:
     if name:
         qry = qry.filter(PeekPluginInfo.name == name)
 
-    tuples = []
+    tuples: List[PeekPluginInfo] = []
 
     try:
         tuples = qry.all()

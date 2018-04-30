@@ -1,5 +1,5 @@
 import logging
-from typing import Type, Tuple
+from typing import Type, Tuple, List
 
 import os
 from twisted.internet.defer import inlineCallbacks
@@ -39,7 +39,7 @@ class ServerPluginLoader(PluginLoaderABC, ServerFrontendLoadersMixin):
         return PluginServerEntryHookABC
 
     @property
-    def _platformServiceNames(self) -> [str]:
+    def _platformServiceNames(self) -> List[str]:
         return ["server", "storage"]
 
     @inlineCallbacks

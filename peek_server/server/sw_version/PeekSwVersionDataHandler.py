@@ -33,13 +33,13 @@ class PeekSwVersionDataHandler(object):
             data.append(PeekSwVersionTuple(name=pluginVersionInfo.name,
                                            version=pluginVersionInfo.version))
 
-        sendResponse(Payload(filt=peekPlatformVersionFilt, tuples=data).toVortexMsg())
+        sendResponse(Payload(filt=peekPlatformVersionFilt, tuples=data).makePayloadEnvelope().toVortexMsg())
 
     def notifyOfVersion(self, name, version, vortexUuid=None):
         data = [PeekSwVersionTuple(name=name, version=version)]
 
         VortexFactory.sendVortexMsg(
-            Payload(filt=peekPlatformVersionFilt, tuples=data).toVortexMsg(),
+            Payload(filt=peekPlatformVersionFilt, tuples=data).makePayloadEnvelope().toVortexMsg(),
             destVortexUuid=vortexUuid)
 
 

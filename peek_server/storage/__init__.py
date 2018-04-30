@@ -1,6 +1,4 @@
 """
- * SynNOVA.rdbms.__init__.py
- *
  *  Copyright Synerty Pty Ltd 2013
  *
  *  This software is proprietary, you are not free to copy
@@ -10,7 +8,9 @@
  *  Synerty Pty Ltd
  *
 """
+
 import logging
+from typing import Dict
 
 from sqlalchemy import MetaData
 
@@ -22,7 +22,7 @@ dbConn = None
 
 
 def setupDbConn(dbConnectString: str, metadata: MetaData, alembicDir: str,
-                dbEngineArgs: {}):
+                dbEngineArgs: Dict):
     global dbConn
     dbConn = DbConnection(dbConnectString=dbConnectString,
                           metadata=metadata,

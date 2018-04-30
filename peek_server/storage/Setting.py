@@ -8,6 +8,7 @@
  *  Synerty Pty Ltd
  *
 """
+from typing import Optional, Any, Dict
 
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import relationship
@@ -119,7 +120,7 @@ class PolymorphicVerticalProperty(object):
                     cast(getattr(self.cls, attribute), String)
                 ) for attribute, discriminator in pairs
                 if attribute is not None
-                ]
+            ]
             return case(whens, self.cls.type, null())
 
         def __eq__(self, other):
@@ -259,10 +260,10 @@ def _getSetting(name, propertyDict, key=None, value=None):
 # GLOBAL PROPERTIES
 # =============================================================================
 
-globalProperties = {}
+globalProperties: Dict[str, PropertyKey] = {}
 
 
-def globalSetting(key=None, value=None):
+def globalSetting(key: Optional[str] = None, value: Optional[Any] = None):
     return _getSetting("Global", globalProperties, key=key, value=value)
 
 
@@ -287,7 +288,7 @@ SYSTEM_DESCRIPTION = PropertyKey('Server Description',
 # INTERNAL PROPERTIES
 # =============================================================================
 
-internalProperties = {}
+internalProperties: Dict[str, PropertyKey] = {}
 
 
 def internalSetting(key=None, value=None):
@@ -302,10 +303,8 @@ CAPABILITIES_KEY = PropertyKey('capabilities.key',
 # SERVICES PROPERTIES
 # =============================================================================
 
-serviceProperties = {}
+serviceProperties: Dict[str, PropertyKey] = {}
 
 
 def serviceSetting(key=None, value=None):
     return _getSetting("Service", serviceProperties, key=key, value=value)
-
-
