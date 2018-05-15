@@ -13,7 +13,7 @@ class PeekSvc(win32serviceutil.ServiceFramework):
     _svc_name_ = "peek-server"
     _svc_display_name_ = "Peek Server " + peek_server.__version__
     _exe_args_ = IS_WIN_SVC
-    _svc_deps_ = ["RpcSs", "postgresql-10", "Redis", "RabbitMQ"]
+    _svc_deps_ = ["RpcSs", "postgresql-x64-10", "Redis", "RabbitMQ"]
 
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
