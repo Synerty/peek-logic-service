@@ -9,7 +9,8 @@ from peek_plugin_base.PeekVortexUtil import peekServerName
 global config
 config = context.config
 
-setupPeekLogger(peekServerName)
+
+# setupPeekLogger(peekServerName)
 
 from peek_server.storage.DeclarativeBase import metadata
 target_metadata = metadata
