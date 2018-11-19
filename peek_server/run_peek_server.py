@@ -57,6 +57,10 @@ def setupPlatform():
     from peek_server.PeekServerConfig import PeekServerConfig
     PeekPlatformConfig.config = PeekServerConfig()
 
+    # Update the version in the config file
+    from peek_server import __version__
+    PeekPlatformConfig.config.platformVersion = __version__
+
     # Set default logging level
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
 
@@ -143,7 +147,14 @@ def main():
     d.addCallback(lambda _: startListening())
     d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startCorePlugins())
     d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins())
+
+    def startedSuccessfully(_):
+        logger.info('Peek Server is running, version=%s',
+                    PeekPlatformConfig.config.platformVersion)
+        return _
+
     d.addErrback(vortexLogFailure, logger, consumeError=True)
+    d.addCallback(startedSuccessfully)
 
     reactor.run()
 
