@@ -1,5 +1,5 @@
 __author__ = 'synerty'
-__version__ = '1.2.0a3'
+__version__ = '1.2.1'
 
 
 def importPackages():

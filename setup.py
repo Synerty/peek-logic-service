@@ -5,7 +5,7 @@ from setuptools import setup
 pip_package_name = "peek-server"
 py_package_name = "peek_server"
 
-package_version = '1.2.0a3'
+package_version = '1.2.1'
 
 egg_info = "%s.egg-info" % pip_package_name
 if os.path.isdir(egg_info):
