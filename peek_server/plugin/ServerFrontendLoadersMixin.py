@@ -1,6 +1,4 @@
 import logging
-from typing import List
-
 import os
 
 from peek_platform.build_doc.DocBuilder import DocBuilder
@@ -28,7 +26,7 @@ class ServerFrontendLoadersMixin:
                                 loadedPlugins)
         yield webBuilder.build()
 
-    def _buildDocs(self, loadedPlugins):
+    def _buildAdminDocs(self, loadedPlugins):
         # --------------------
         # Prepare the Admin Docs
         from peek_platform import PeekPlatformConfig
@@ -44,6 +42,27 @@ class ServerFrontendLoadersMixin:
 
         docBuilder = DocBuilder(docProjectDir,
                                 "peek-doc-admin",
+                                PeekPlatformConfig.config,
+                                loadedPlugins)
+        yield docBuilder.build()
+
+    def _buildDevDocs(self, loadedPlugins):
+        """
+        # Prepare the Developer Docs
+        """
+        from peek_platform import PeekPlatformConfig
+
+        try:
+            import peek_doc_dev
+            docProjectDir = os.path.dirname(peek_doc_dev.__file__)
+
+        except:
+            logger.warning("Skipping builds of peek_doc_dev"
+                           ", the package can not be imported")
+            return
+
+        docBuilder = DocBuilder(docProjectDir,
+                                "peek-doc-dev",
                                 PeekPlatformConfig.config,
                                 loadedPlugins)
         yield docBuilder.build()
