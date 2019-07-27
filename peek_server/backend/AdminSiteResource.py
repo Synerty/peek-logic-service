@@ -35,3 +35,31 @@ def setupAdminSite():
     # Add the plugin update upload resource
     adminSiteRoot.putChild(b'peek_server.update.plugin',
                            PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN))
+
+    # ---------------
+    # Add the websocket to the site root
+    VortexFactory.createHttpWebsocketServer(
+        PeekPlatformConfig.componentName,
+        adminSiteRoot
+    )
+
+    # ---------------
+    # Setup the documents
+    docSiteRoot = FileUnderlayResource()
+    docSiteRoot.enableSinglePageApplication()
+
+    import peek_doc_admin
+    docProjectDir = os.path.dirname(peek_doc_admin.__file__)
+    distDir = os.path.join(docProjectDir, 'doc_dist')
+
+    buildDirParent = os.path.dirname(distDir)
+    if not os.path.isdir(buildDirParent):
+        raise NotADirectoryError(buildDirParent)
+
+    # Make the dist dir, otherwise addFileSystemRoot throws an exception.
+    # It rebuilds at a later date
+    os.makedirs(distDir, exist_ok=True)
+
+    docSiteRoot.addFileSystemRoot(distDir)
+
+    adminSiteRoot.putChild(b'docs', docSiteRoot)

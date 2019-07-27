@@ -14,14 +14,13 @@
 import logging
 import os
 
-from pytmpdir.Directory import DirSettings
-from txhttputil.site.FileUploadRequest import FileUploadRequest
 from peek_platform.util.LogUtil import setupPeekLogger
-
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
+from pytmpdir.Directory import DirSettings
+from txhttputil.site.FileUploadRequest import FileUploadRequest
 from vortex.DeferUtil import vortexLogFailure
 from vortex.VortexFactory import VortexFactory
 
@@ -32,6 +31,7 @@ from twisted.internet import reactor, defer
 from txhttputil.site.SiteUtil import setupSite
 
 logger = logging.getLogger(__name__)
+
 
 # ------------------------------------------------------------------------------
 # Set the parallelism of the database and reactor
@@ -79,36 +79,34 @@ def startListening():
     from peek_platform import PeekPlatformConfig
 
     from peek_server.backend.AdminSiteResource import setupAdminSite, adminSiteRoot
-    from peek_server.backend.DocSiteResource import setupDocSite, docSiteRoot
 
     setupAdminSite()
-    setupDocSite()
 
+    adminSiteCfg = PeekPlatformConfig.config.adminHttpServer
     setupSite("Peek Admin",
               adminSiteRoot,
-              PeekPlatformConfig.config.adminSitePort,
-              enableLogin=False)
-
-    setupSite("Peek Admin Docs",
-              docSiteRoot,
-              PeekPlatformConfig.config.docSitePort,
-              enableLogin=False)
+              portNum=adminSiteCfg.sitePort,
+              enableLogin=False,
+              redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
+              sslCertFilePath=adminSiteCfg.sslCertFilePath,
+              sslKeyFilePath=adminSiteCfg.sslKeyFilePath)
 
     from peek_server.server.PlatformSiteResource import setupPlatformSite
     from peek_server.server.PlatformSiteResource import platformSiteRoot
 
     setupPlatformSite()
 
+    platformCfg = PeekPlatformConfig.config.platformHttpServer
     setupSite("Peek Platform Data Exchange",
               platformSiteRoot,
-              PeekPlatformConfig.config.peekServerHttpPort,
-              enableLogin=False)
+              portNum=platformCfg.sitePort,
+              enableLogin=False,
+              redirectFromHttpPort=platformCfg.redirectFromHttpPort,
+              sslCertFilePath=platformCfg.sslCertFilePath,
+              sslKeyFilePath=platformCfg.sslKeyFilePath)
 
     VortexFactory.createTcpServer(name=PeekPlatformConfig.componentName,
                                   port=PeekPlatformConfig.config.peekServerVortexTcpPort)
-
-    webSocketPort = PeekPlatformConfig.config.webSocketPort
-    VortexFactory.createWebsocketServer(PeekPlatformConfig.componentName, webSocketPort)
 
 
 def main():

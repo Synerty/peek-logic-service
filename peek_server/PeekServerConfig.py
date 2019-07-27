@@ -16,12 +16,13 @@ import logging
 import os
 
 from jsoncfg.value_mappers import require_string, require_integer
-
 from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
 from peek_platform.file_config.PeekFileConfigDocBuildMixin import \
     PeekFileConfigDocBuildMixin
 from peek_platform.file_config.PeekFileConfigFrontendDirMixin import \
     PeekFileConfigFrontendDirMixin
+from peek_platform.file_config.PeekFileConfigHttpServerMixin import \
+    PeekFileConfigHttpMixin
 from peek_platform.file_config.PeekFileConfigOsMixin import PeekFileConfigOsMixin
 from peek_platform.file_config.PeekFileConfigPlatformMixin import \
     PeekFileConfigPlatformMixin
@@ -45,6 +46,11 @@ class PeekServerConfig(PeekFileConfigABC,
     This class creates a server configuration
     """
 
+    def __init__(self):
+        super().__init__()
+        self.adminHttpServer = PeekFileConfigHttpMixin(self, "admin", 8010)
+        self.platformHttpServer = PeekFileConfigHttpMixin(self, "platform", 8011)
+
     import peek_admin
     _frontendProjectDir = os.path.dirname(peek_admin.__file__)
 
@@ -60,38 +66,6 @@ class PeekServerConfig(PeekFileConfigABC,
             return c.user.admin.user("backend", require_string)
 
     ### SERVER SECTION ###
-    @property
-    def adminSitePort(self) -> int:
-        """ Site Port
-
-        The port used to serve the admin web page on
-        """
-        with self._cfg as c:
-            return c.server.adminSitePort(8010, require_integer)
-
-    @property
-    def webSocketPort(self) -> int:
-        with self._cfg as c:
-            return c.server.webSocketPort(8013, require_integer)
-
-    @property
-    def docSitePort(self) -> int:
-        """ Admin Documentation Site Port
-
-        The port used to serve the admin documentation
-        """
-        with self._cfg as c:
-            return c.server.docSitePort(8015, require_integer)
-
-    ### SERVER SECTION ###
-    @property
-    def peekServerHttpPort(self):
-        """ Peek Server HTTP Port
-
-        This port serves resources for the plugins, as well as a HTTP vortex.
-        """
-        with self._cfg as c:
-            return c.peekServer.httpPort(8011, require_integer)
 
     @property
     def peekServerVortexTcpPort(self):
