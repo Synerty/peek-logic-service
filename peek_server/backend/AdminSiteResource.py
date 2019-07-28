@@ -43,6 +43,9 @@ def setupAdminSite():
         adminSiteRoot
     )
 
+    # Add a HTTP vortex
+    # VortexFactory.createServer(PeekPlatformConfig.componentName, adminSiteRoot)
+
     # ---------------
     # Setup the documents
     docSiteRoot = FileUnderlayResource()
