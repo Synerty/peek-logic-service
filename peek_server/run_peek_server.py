@@ -76,15 +76,21 @@ def setupPlatform():
 
 
 def startListening():
-    from peek_platform import PeekPlatformConfig
-
     from peek_server.backend.AdminSiteResource import setupAdminSite, adminSiteRoot
+    from peek_server.backend.auth.AdminAuthChecker import AdminAuthChecker
+    from peek_server.backend.auth.AdminAuthRealm import AdminAuthRealm
+    from peek_platform import PeekPlatformConfig
+    from peek_server.plugin.PeekServerPlatformHook import PeekServerPlatformHook
+
 
     setupAdminSite()
 
+    adminAuthChecker = AdminAuthChecker()
+    adminAuthRealm = AdminAuthRealm(adminSiteRoot, adminAuthChecker)
+
     adminSiteCfg = PeekPlatformConfig.config.adminHttpServer
     setupSite("Peek Admin",
-              adminSiteRoot,
+              adminAuthRealm,
               portNum=adminSiteCfg.sitePort,
               enableLogin=False,
               redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,

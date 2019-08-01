@@ -14,6 +14,8 @@
 '''
 import logging
 import os
+import random
+import time
 
 from jsoncfg.value_mappers import require_string, require_integer
 from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
@@ -54,16 +56,17 @@ class PeekServerConfig(PeekFileConfigABC,
     import peek_admin
     _frontendProjectDir = os.path.dirname(peek_admin.__file__)
 
-    ### USER SECTION ###
+    ### ADMIN USER SECTION ###
     @property
     def adminPass(self):
+        default = str(random.getrandbits(int(time.time()*10**6 % 100000)))[:32]
         with self._cfg as c:
-            return c.user.admin["pass"]("peeking", require_string)
+            return c.httpServer.admin.recovery_user.password(default, require_string)
 
     @property
     def adminUser(self):
         with self._cfg as c:
-            return c.user.admin.user("backend", require_string)
+            return c.httpServer.admin.recovery_user.username("recovery", require_string)
 
     ### SERVER SECTION ###
 
