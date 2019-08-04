@@ -14,15 +14,16 @@
 import logging
 import os
 
+from pytmpdir.Directory import DirSettings
+from txhttputil.site.FileUploadRequest import FileUploadRequest
+from vortex.DeferUtil import vortexLogFailure
+from vortex.VortexFactory import VortexFactory
+
 from peek_platform.util.LogUtil import setupPeekLogger
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
-from pytmpdir.Directory import DirSettings
-from txhttputil.site.FileUploadRequest import FileUploadRequest
-from vortex.DeferUtil import vortexLogFailure
-from vortex.VortexFactory import VortexFactory
 
 setupPeekLogger(peekServerName)
 
@@ -57,6 +58,10 @@ def setupPlatform():
     from peek_server.PeekServerConfig import PeekServerConfig
     PeekPlatformConfig.config = PeekServerConfig()
 
+    # Initialise the recovery user
+    PeekPlatformConfig.config.adminUser
+    PeekPlatformConfig.config.adminPass
+
     # Update the version in the config file
     from peek_server import __version__
     PeekPlatformConfig.config.platformVersion = __version__
@@ -80,8 +85,6 @@ def startListening():
     from peek_server.backend.auth.AdminAuthChecker import AdminAuthChecker
     from peek_server.backend.auth.AdminAuthRealm import AdminAuthRealm
     from peek_platform import PeekPlatformConfig
-    from peek_server.plugin.PeekServerPlatformHook import PeekServerPlatformHook
-
 
     setupAdminSite()
 
