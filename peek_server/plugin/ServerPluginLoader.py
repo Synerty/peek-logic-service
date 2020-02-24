@@ -1,11 +1,8 @@
 import logging
 from typing import Type, Tuple, List
 
-import os
 from twisted.internet.defer import inlineCallbacks
 
-from peek_platform.build_doc.DocBuilder import DocBuilder
-from peek_platform.build_frontend.WebBuilder import WebBuilder
 from peek_platform.plugin.PluginLoaderABC import PluginLoaderABC
 from peek_plugin_base.PluginCommonEntryHookABC import PluginCommonEntryHookABC
 from peek_plugin_base.server.PluginServerEntryHookABC import PluginServerEntryHookABC
@@ -70,15 +67,8 @@ class ServerPluginLoader(PluginLoaderABC, ServerFrontendLoadersMixin):
         # Load the plugin
         yield pluginMain.load()
 
-        if isinstance(pluginMain, PluginServerWorkerEntryHookABC):
-            # Configure the celery app in the worker
-            # This is not the worker that will be started, it allows the worker to queue tasks
-            from peek_platform.ConfigCeleryApp import configureCeleryApp
-            from peek_platform import PeekPlatformConfig
-            configureCeleryApp(pluginMain.celeryApp, PeekPlatformConfig.config)
-
-        # Check the implementation
-        elif "worker" in requiresService:
+        if not isinstance(pluginMain, PluginServerWorkerEntryHookABC) \
+                and "worker" in requiresService:
             raise Exception("Plugin %s requires 'worker' service."
                             " It must now inherit PluginServerWorkerEntryHookABC"
                             " in its PluginServerEntryHook implementation")

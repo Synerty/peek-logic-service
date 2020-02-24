@@ -74,10 +74,18 @@ def setupPlatform():
 
     reactor.suggestThreadPoolSize(PeekPlatformConfig.config.twistedThreadPoolSize)
 
+    from txcelery.defer import _DeferredTask
+    _DeferredTask.startCeleryThreads(PeekPlatformConfig.config.celeryCallThreadPoolSize)
+
     # Set paths for the Directory object
     DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
     DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
     FileUploadRequest.tmpFilePath = PeekPlatformConfig.config.tmpPath
+
+    # Configure the celery app
+    from peek_platform.ConfigCeleryApp import configureCeleryApp
+    from peek_plugin_base.worker.CeleryApp import celeryApp
+    configureCeleryApp(celeryApp, PeekPlatformConfig.config)
 
 
 def startListening():
