@@ -69,11 +69,19 @@ def setupPlatform():
     # Set default logging level
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
 
+    # Enable deferred debugging if DEBUG is on.
     if logging.root.level == logging.DEBUG:
         defer.setDebugging(True)
 
+    # If we need to enable memory debugging, turn that on.
+    if PeekPlatformConfig.config.loggingDumpMemory:
+        from peek_platform.util.MemUtil import setupMemoryDebugging
+        setupMemoryDebugging(peekServerName)
+
+    # Set the reactor thread count
     reactor.suggestThreadPoolSize(PeekPlatformConfig.config.twistedThreadPoolSize)
 
+    # Setup TX Celery
     from txcelery.defer import _DeferredTask
     _DeferredTask.startCeleryThreads(PeekPlatformConfig.config.celeryCallThreadPoolSize)
 
