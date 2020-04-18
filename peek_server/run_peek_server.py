@@ -84,7 +84,8 @@ def setupPlatform():
 
     # Setup TX Celery
     from txcelery.defer import _DeferredTask
-    _DeferredTask.startCeleryThreads(PeekPlatformConfig.config.celeryCallThreadPoolSize)
+    _DeferredTask.startCeleryThreads(PeekPlatformConfig.config.celeryConnectionPoolSize,
+                                     PeekPlatformConfig.config.celeryConnectionRecycleTime)
 
     # Set paths for the Directory object
     DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
@@ -94,7 +95,7 @@ def setupPlatform():
     # Configure the celery app
     from peek_platform.ConfigCeleryApp import configureCeleryApp
     from peek_plugin_base.worker.CeleryApp import celeryApp
-    configureCeleryApp(celeryApp, PeekPlatformConfig.config)
+    configureCeleryApp(celeryApp, PeekPlatformConfig.config, forCaller=True)
 
 
 def startListening():
