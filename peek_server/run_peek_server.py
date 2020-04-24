@@ -12,16 +12,16 @@
 import logging
 import os
 
-from pytmpdir.Directory import DirSettings
-from txhttputil.site.FileUploadRequest import FileUploadRequest
-from vortex.DeferUtil import vortexLogFailure
-from vortex.VortexFactory import VortexFactory
-
-from peek_platform.util.LogUtil import setupPeekLogger
+from peek_platform.util.LogUtil import setupPeekLogger, updatePeekLoggerHandlers, \
+    setupLoggingToSysloyServer
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_server import importPackages
 from peek_server.storage import setupDbConn
 from peek_server.storage.DeclarativeBase import metadata
+from pytmpdir.Directory import DirSettings
+from txhttputil.site.FileUploadRequest import FileUploadRequest
+from vortex.DeferUtil import vortexLogFailure
+from vortex.VortexFactory import VortexFactory
 
 setupPeekLogger(peekServerName)
 
@@ -68,6 +68,14 @@ def setupPlatform():
 
     # Set default logging level
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
+    updatePeekLoggerHandlers(PeekPlatformConfig.componentName,
+                             PeekPlatformConfig.config.loggingRotateSizeMb,
+                             PeekPlatformConfig.config.loggingRotationsToKeep)
+
+    if PeekPlatformConfig.config.loggingLogToSyslogHost:
+        setupLoggingToSysloyServer(PeekPlatformConfig.config.loggingLogToSyslogHost,
+                                   PeekPlatformConfig.config.loggingLogToSyslogPort,
+                                   PeekPlatformConfig.config.loggingLogToSyslogFacility)
 
     # Enable deferred debugging if DEBUG is on.
     if logging.root.level == logging.DEBUG:
