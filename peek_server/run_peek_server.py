@@ -161,14 +161,14 @@ def main():
     # Force model migration
 
     from peek_storage._private.storage import setupDbConn as storage_setupDbConn
-    import peek_storage
+    from peek_storage import _private as storage_private
 
     from peek_storage._private.storage.DeclarativeBase import metadata as storage_metadata
     storage_setupDbConn(
         metadata=storage_metadata,
         dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
         dbConnectString=PeekPlatformConfig.config.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(peek_storage.__file__), "alembic"))
+        alembicDir=os.path.join(os.path.dirname(storage_private.__file__), "alembic"))
 
     from peek_storage._private.storage import dbConn as storage_dbConn
     storage_dbConn.migrate()
