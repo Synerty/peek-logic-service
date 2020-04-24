@@ -156,6 +156,26 @@ def main():
     # Import remaining components
     importPackages()
 
+    ###########################################################################
+    # BEGIN - INTERIM STORAGE SETUP
+    # Force model migration
+
+    from peek_storage._private.storage import setupDbConn as storage_setupDbConn
+    import peek_storage
+
+    from peek_storage._private.storage.DeclarativeBase import metadata as storage_metadata
+    storage_setupDbConn(
+        metadata=storage_metadata,
+        dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
+        dbConnectString=PeekPlatformConfig.config.dbConnectString,
+        alembicDir=os.path.join(os.path.dirname(peek_storage.__file__), "alembic"))
+
+    from peek_storage._private.storage import dbConn as storage_dbConn
+    storage_dbConn.migrate()
+
+    # END - INTERIM STORAGE SETUP
+    ###########################################################################
+
     reactor.addSystemEventTrigger('before', 'shutdown',
                                   PeekPlatformConfig.pluginLoader.stopOptionalPlugins)
     reactor.addSystemEventTrigger('before', 'shutdown',
