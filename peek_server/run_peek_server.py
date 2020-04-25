@@ -70,7 +70,8 @@ def setupPlatform():
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
     updatePeekLoggerHandlers(PeekPlatformConfig.componentName,
                              PeekPlatformConfig.config.loggingRotateSizeMb,
-                             PeekPlatformConfig.config.loggingRotationsToKeep)
+                             PeekPlatformConfig.config.loggingRotationsToKeep,
+                             PeekPlatformConfig.config.logToStdout)
 
     if PeekPlatformConfig.config.loggingLogToSyslogHost:
         setupLoggingToSysloyServer(PeekPlatformConfig.config.loggingLogToSyslogHost,
