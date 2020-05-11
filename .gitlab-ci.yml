@@ -21,6 +21,15 @@ unit_tests_linux:
         - pip install subunitreporter junitxml
         - pip install -e .
         - trial --reporter=subunit `find peek_* -name "*Test.py"` | subunit-1to2 | subunit2junitxml -o report.xml 1> /dev/null
+        - echo "Tests have succeeded, this package will be uploaded to nexus as 0.0.0"
+        - echo "This will only happen in the peek group project and master branch"
+        - rm -rf dist
+        - sed -i "s/0.0.0/0.0.0+b${CI_PIPELINE_ID}/g" setup.py
+        - export TWINE_REPOSITORY_URL=http://${NEXUS_URL}/repository/pypi-internal/
+        - export TWINE_USERNAME=${NEXUS_USER}
+        - export TWINE_PASSWORD=${NEXUS_PASSWORD}
+        - if [ ${CI_PROJECT_NAMESPACE} == 'peek' -a ${CI_COMMIT_REF_NAME} == 'master' ];
+            then python setup.py sdist && twine upload dist/*.gz; fi
     stage: test
     artifacts:
         reports:
