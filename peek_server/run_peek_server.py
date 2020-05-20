@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" 
+"""
  *  Copyright Synerty Pty Ltd 2020
  *
  *  This sw_upload is proprietary, you are not free to copy
@@ -9,6 +9,7 @@
  *  Synerty Pty Ltd
  *
 """
+
 import logging
 import os
 
@@ -91,11 +92,6 @@ def setupPlatform():
     # Set the reactor thread count
     reactor.suggestThreadPoolSize(PeekPlatformConfig.config.twistedThreadPoolSize)
 
-    # Setup TX Celery
-    from txcelery.defer import _DeferredTask
-    _DeferredTask.startCeleryThreads(PeekPlatformConfig.config.celeryConnectionPoolSize,
-                                     PeekPlatformConfig.config.celeryConnectionRecycleTime)
-
     # Set paths for the Directory object
     DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
     DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
@@ -150,11 +146,13 @@ def main():
     from peek_platform import PeekPlatformConfig
     import peek_server
 
+    cfg = PeekPlatformConfig.config
+
     # Configure sqlalchemy
     setupDbConn(
         metadata=metadata,
-        dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
-        dbConnectString=PeekPlatformConfig.config.dbConnectString,
+        dbEngineArgs=cfg.dbEngineArgs,
+        dbConnectString=cfg.dbConnectString,
         alembicDir=os.path.join(os.path.dirname(peek_server.__file__), "alembic")
     )
 
@@ -175,14 +173,35 @@ def main():
     from peek_storage._private.storage.DeclarativeBase import metadata as storage_metadata
     storage_setupDbConn(
         metadata=storage_metadata,
-        dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
-        dbConnectString=PeekPlatformConfig.config.dbConnectString,
+        dbEngineArgs=cfg.dbEngineArgs,
+        dbConnectString=cfg.dbConnectString,
         alembicDir=os.path.join(os.path.dirname(storage_private.__file__), "alembic"))
 
     from peek_storage._private.storage import dbConn as storage_dbConn
     storage_dbConn.migrate()
 
     # END - INTERIM STORAGE SETUP
+    ###########################################################################
+
+    ###########################################################################
+    # BEGIN - PATCH CELERY TASKS TO RUN IN PostGreSQL
+
+    # Setup TX Celery
+    if cfg.celeryPlPythonEnablePatch:
+        from peek_platform.CeleryPatchToPlPython import _DeferredTaskPatch
+
+        _DeferredTaskPatch \
+            .setupPostGreSQLConnection(storage_dbConn.ormSessionCreator,
+                                       cfg.dbConnectString,
+                                       parallelism=cfg.celeryPlPythonWorkerCount)
+
+    else:
+        from txcelery.defer import _DeferredTask
+        _DeferredTask.startCeleryThreads(
+            cfg.celeryConnectionPoolSize,
+            cfg.celeryConnectionRecycleTime)
+
+    # END - PATCH CELERY TASKS TO RUN IN PostGreSQL
     ###########################################################################
 
     reactor.addSystemEventTrigger('before', 'shutdown',
@@ -204,7 +223,7 @@ def main():
 
     def startedSuccessfully(_):
         logger.info('Peek Server is running, version=%s',
-                    PeekPlatformConfig.config.platformVersion)
+                    cfg.platformVersion)
         return _
 
     d.addErrback(vortexLogFailure, logger, consumeError=True)
