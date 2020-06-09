@@ -177,8 +177,15 @@ def main():
         dbConnectString=cfg.dbConnectString,
         alembicDir=os.path.join(os.path.dirname(storage_private.__file__), "alembic"))
 
+    # Perform any storage initialisation after the migration is done.
     from peek_storage._private.storage import dbConn as storage_dbConn
+    from peek_storage._private.StorageInit import StorageInit
+    storageInit = StorageInit(storage_dbConn)
+
+    # Perform the migration, including and pre and post migration inits.
+    storageInit.runPreMigrate()
     storage_dbConn.migrate()
+    storageInit.runPostMigrate()
 
     # END - INTERIM STORAGE SETUP
     ###########################################################################
