@@ -8,7 +8,7 @@ stages:
 
 unit_tests_linux:
     allow_failure: false
-    image: nexus.synerty.com:5000/peek-linux
+    image: nexus.synerty.com:5000/peek-linux-test
     only:
         - pushes
         - web
@@ -18,7 +18,6 @@ unit_tests_linux:
         - export PIP_INDEX=http://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/pypi-all/pypi
         - export PIP_INDEX_URL=http://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/pypi-all/simple
         - export PIP_TRUSTED_HOST=${NEXUS_URL}
-        - pip install subunitreporter junitxml
         - pip install -e .
         - trial --reporter=subunit `find peek_* -name "*Test.py"` | subunit-1to2 | subunit2junitxml -o report.xml 1> /dev/null
         - echo "Tests have succeeded, this package will be uploaded to nexus as 0.0.0"
@@ -40,7 +39,7 @@ unit_tests_linux:
 
 sonar:
     allow_failure: false
-    image: nexus.synerty.com:5000/peek-linux
+    image: nexus.synerty.com:5000/peek-linux-sonar
     only:
         - pushes
         - web
