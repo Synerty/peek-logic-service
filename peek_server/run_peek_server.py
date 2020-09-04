@@ -30,6 +30,8 @@ from twisted.internet import reactor, defer
 
 from txhttputil.site.SiteUtil import setupSite
 
+from txhttputil.site.BasicResource import BasicResource
+
 logger = logging.getLogger(__name__)
 
 
@@ -102,6 +104,32 @@ def setupPlatform():
     from peek_plugin_base.worker.CeleryApp import celeryApp
     configureCeleryApp(celeryApp, PeekPlatformConfig.config, forCaller=True)
 
+class HACK_AllowJsFilesUnauthed(BasicResource):
+    def __init__(self, fileUnderlayResource, adminAuthRealm):
+        self._fileUnderlayResource = fileUnderlayResource
+        self._adminAuthRealm = adminAuthRealm
+
+    def getChildWithDefault(self, path, request):
+        """ Get Child With Default
+
+        Allow .js files to bypass the authentication
+
+        """
+        if path.lower().endswith(b'.js'):
+           return self._fileUnderlayResource.getChildWithDefault(path, request)
+
+        return self._adminAuthRealm.getChildWithDefault(path, request)
+
+    def getChild(self, path, request):
+        """ Get Child
+
+        Allow .js files to bypass the authentication
+
+        """
+        if path.lower().endswith(b'.js'):
+            return self._fileUnderlayResource.getChildWithDefault(path, request)
+
+        return self._adminAuthRealm.getChildWithDefault(path, request)
 
 def startListening():
     from peek_server.backend.AdminSiteResource import setupAdminSite, adminSiteRoot
@@ -113,10 +141,12 @@ def startListening():
 
     adminAuthChecker = AdminAuthChecker()
     adminAuthRealm = AdminAuthRealm(adminSiteRoot, adminAuthChecker)
+    hackMixedAuthRealm = HACK_AllowJsFilesUnauthed(adminSiteRoot,
+                                                   adminAuthRealm)
 
     adminSiteCfg = PeekPlatformConfig.config.adminHttpServer
     setupSite("Peek Admin",
-              adminAuthRealm,
+              hackMixedAuthRealm,
               portNum=adminSiteCfg.sitePort,
               enableLogin=False,
               redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
