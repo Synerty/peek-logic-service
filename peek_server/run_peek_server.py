@@ -105,6 +105,14 @@ def setupPlatform():
     configureCeleryApp(celeryApp, PeekPlatformConfig.config, forCaller=True)
 
 class HACK_AllowJsFilesUnauthed(BasicResource):
+    """ HACK Allow JS Files Un-Authenticated
+
+    This class is a temporary class that must be cleaned up when
+    PEEK-666 is resolved.
+
+    It solves an issue caused by old browsers and angular9.
+
+    """
     def __init__(self, fileUnderlayResource, adminAuthRealm):
         self._fileUnderlayResource = fileUnderlayResource
         self._adminAuthRealm = adminAuthRealm
