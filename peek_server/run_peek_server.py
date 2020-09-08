@@ -158,8 +158,7 @@ def startListening():
               portNum=adminSiteCfg.sitePort,
               enableLogin=False,
               redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
-              sslCertFilePath=adminSiteCfg.sslCertFilePath,
-              sslKeyFilePath=adminSiteCfg.sslKeyFilePath)
+              sslBundleFilePath=adminSiteCfg.sslBundleFilePath)
 
     from peek_server.server.PlatformSiteResource import setupPlatformSite
     from peek_server.server.PlatformSiteResource import platformSiteRoot
@@ -172,8 +171,7 @@ def startListening():
               portNum=platformCfg.sitePort,
               enableLogin=False,
               redirectFromHttpPort=platformCfg.redirectFromHttpPort,
-              sslCertFilePath=platformCfg.sslCertFilePath,
-              sslKeyFilePath=platformCfg.sslKeyFilePath)
+              sslBundleFilePath=platformCfg.sslBundleFilePath)
 
     VortexFactory.createTcpServer(name=PeekPlatformConfig.componentName,
                                   port=PeekPlatformConfig.config.peekServerVortexTcpPort)
