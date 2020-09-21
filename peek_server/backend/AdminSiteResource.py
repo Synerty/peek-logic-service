@@ -12,7 +12,7 @@ def setupAdminSite():
 
     import peek_admin
     frontendProjectDir = os.path.dirname(peek_admin.__file__)
-    buildDir = os.path.join(frontendProjectDir, 'build-web', 'dist')
+    buildDir = os.path.join(frontendProjectDir, 'dist')
 
     buildDirParent = os.path.dirname(buildDir)
     if not os.path.isdir(buildDirParent):
