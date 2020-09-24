@@ -51,7 +51,7 @@ sonar:
         - source $NVM_DIR/nvm.sh
         - nvm use $LATEST_NODE_VERSION
         - export NODE_PATH=`npm root -g`
-        - npm install -g typescript@3.7.5
+        - npm install -g typescript@3.8.3
         - sonar-scanner
     tags:
         - linux
