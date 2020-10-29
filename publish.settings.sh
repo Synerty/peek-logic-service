@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PY_PACKAGE="peek_server"
+PY_PACKAGE="peek_logic_service"
 PYPI_PUBLISH="1"
 
 

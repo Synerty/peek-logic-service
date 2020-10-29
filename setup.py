@@ -2,8 +2,8 @@ import os
 import shutil
 from setuptools import setup
 
-pip_package_name = "peek-server"
-py_package_name = "peek_server"
+pip_package_name = "peek-logic-service"
+py_package_name = "peek_logic_service"
 
 package_version = '0.0.0'
 
@@ -44,12 +44,12 @@ setup(
     package_data={'': package_files},
     entry_points={
         'console_scripts': [
-            'run_peek_server = peek_server.run_peek_server:main',
-            'run_peek_server_build_only = peek_server.run_peek_server_build_only:main',
-            'winsvc_peek_server = peek_server.winsvc_peek_server:main',
+            'run_peek_logic_service = peek_logic_service.run_peek_logic_service:main',
+            'run_peek_logic_service_build_only = peek_logic_service.run_peek_logic_service_build_only:main',
+            'winsvc_peek_logic_service = peek_logic_service.winsvc_peek_logic_service:main',
         ],
     },
-    install_requires=["peek-platform", "peek-admin", "peek-doc-admin"],
+    install_requires=["peek-platform", "peek-admin-app", "peek-doc-admin"],
     zip_safe=False,version=package_version,
     description='Peek Platform - Server Service',
     author='Synerty',
