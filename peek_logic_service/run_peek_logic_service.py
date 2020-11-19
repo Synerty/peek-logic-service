@@ -265,7 +265,7 @@ def main():
     d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins())
 
     def startedSuccessfully(_):
-        logger.info('Peek Server is running, version=%s',
+        logger.info('Peek Logic is running, version=%s',
                     cfg.platformVersion)
         return _
 
