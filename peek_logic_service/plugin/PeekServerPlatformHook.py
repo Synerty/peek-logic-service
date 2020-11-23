@@ -30,11 +30,11 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
         if not otherPlugin:
             return None
 
-        from peek_plugin_base.server.PluginServerEntryHookABC import \
-            PluginServerEntryHookABC
+        from peek_plugin_base.server.PluginLogicEntryHookABC import \
+            PluginLogicEntryHookABC
 
-        assert isinstance(otherPlugin, PluginServerEntryHookABC), (
-            "Not an instance of PluginServerEntryHookABC")
+        assert isinstance(otherPlugin, PluginLogicEntryHookABC), (
+            "Not an instance of PluginLogicEntryHookABC")
 
         return otherPlugin
 
