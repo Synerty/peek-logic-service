@@ -45,7 +45,6 @@ class ServerPluginLoader(PluginLoaderABC, ServerFrontendLoadersMixin):
 
         yield from self._buildAdminSite(self._loadedPlugins.values())
         yield from self._buildAdminDocs(self._loadedPlugins.values())
-        yield from self._buildDevDocs(self._loadedPlugins.values())
 
     def unloadPlugin(self, pluginName: str):
         PluginLoaderABC.unloadPlugin(self, pluginName)

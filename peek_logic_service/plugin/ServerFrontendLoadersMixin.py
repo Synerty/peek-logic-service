@@ -32,37 +32,16 @@ class ServerFrontendLoadersMixin:
         from peek_platform import PeekPlatformConfig
 
         try:
-            import peek_doc_admin
-            docProjectDir = os.path.dirname(peek_doc_admin.__file__)
+            import peek_admin_doc
+            docProjectDir = os.path.dirname(peek_admin_doc.__file__)
 
         except:
-            logger.warning("Skipping builds of peek_doc_admin"
+            logger.warning("Skipping builds of peek_admin_doc"
                            ", the package can not be imported")
             return
 
         docBuilder = DocBuilder(docProjectDir,
-                                "peek-doc-admin",
-                                PeekPlatformConfig.config,
-                                loadedPlugins)
-        yield docBuilder.build()
-
-    def _buildDevDocs(self, loadedPlugins):
-        """
-        # Prepare the Developer Docs
-        """
-        from peek_platform import PeekPlatformConfig
-
-        try:
-            import peek_doc_dev
-            docProjectDir = os.path.dirname(peek_doc_dev.__file__)
-
-        except:
-            logger.warning("Skipping builds of peek_doc_dev"
-                           ", the package can not be imported")
-            return
-
-        docBuilder = DocBuilder(docProjectDir,
-                                "peek-doc-dev",
+                                "peek-admin-doc",
                                 PeekPlatformConfig.config,
                                 loadedPlugins)
         yield docBuilder.build()

@@ -51,8 +51,8 @@ def setupAdminSite():
     docSiteRoot = FileUnderlayResource()
     docSiteRoot.enableSinglePageApplication()
 
-    import peek_doc_admin
-    docProjectDir = os.path.dirname(peek_doc_admin.__file__)
+    import peek_admin_doc
+    docProjectDir = os.path.dirname(peek_admin_doc.__file__)
     distDir = os.path.join(docProjectDir, 'doc_dist')
 
     buildDirParent = os.path.dirname(distDir)
