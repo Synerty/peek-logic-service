@@ -1,10 +1,5 @@
-variables:
-    LATEST_NODE_VERSION: v12.16.1
-    NVM_DIR: /usr/local/nvm
-
 stages:
     - test
-
 
 unit_tests_linux:
     allow_failure: false
@@ -48,10 +43,6 @@ sonar:
     stage: test
     script:
         - echo "Run sonar-scanner"
-        - source $NVM_DIR/nvm.sh
-        - nvm use $LATEST_NODE_VERSION
-        - export NODE_PATH=`npm root -g`
-        - npm install -g typescript@3.8.3
         - sonar-scanner
     tags:
         - linux
