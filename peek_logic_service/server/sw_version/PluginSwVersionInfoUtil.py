@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def getLatestPluginVersionInfos(name: Optional[str] = None) -> List[PeekPluginInfo]:
-    """ Get Latest Plugin Version Infos
+    """Get Latest Plugin Version Infos
 
     This method returns the newest c{PeekPluginInfo} object for each plugin we have
     data for.
@@ -18,18 +18,20 @@ def getLatestPluginVersionInfos(name: Optional[str] = None) -> List[PeekPluginIn
     :return: An array of c{PeekPluginInfo} objects
     """
     from peek_logic_service.storage import dbConn
+
     session = dbConn.ormSessionCreator()
 
-    maxGroupedIds = (session
-                     .query(func.max(PeekPluginInfo.id).label('maxId'))
-                     .group_by(PeekPluginInfo.name)
-                     .subquery('maxGroupedIds'))
+    maxGroupedIds = (
+        session.query(func.max(PeekPluginInfo.id).label("maxId"))
+        .group_by(PeekPluginInfo.name)
+        .subquery("maxGroupedIds")
+    )
 
-    qry = (session
-           .query(PeekPluginInfo)
-           .filter(PeekPluginInfo.id == maxGroupedIds.c.maxId)
-           .order_by(PeekPluginInfo.name, PeekPluginInfo.id)
-           )
+    qry = (
+        session.query(PeekPluginInfo)
+        .filter(PeekPluginInfo.id == maxGroupedIds.c.maxId)
+        .order_by(PeekPluginInfo.name, PeekPluginInfo.id)
+    )
 
     if name:
         qry = qry.filter(PeekPluginInfo.name == name)

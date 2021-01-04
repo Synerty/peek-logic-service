@@ -4,16 +4,19 @@ from txhttputil.site.AuthCredentials import AuthCredentials
 
 
 class AdminAuthChecker(AuthCredentials):
-
     @inlineCallbacks
     def check(self, username, password) -> Deferred:
 
         from peek_platform import PeekPlatformConfig
-        from peek_logic_service.plugin.PeekServerPlatformHook import PeekServerPlatformHook
+        from peek_logic_service.plugin.PeekServerPlatformHook import (
+            PeekServerPlatformHook,
+        )
 
-        coreUserAuthAdmin = PeekServerPlatformHook(PeekPlatformConfig.pluginLoader) \
-            .getOtherPluginApi("peek_core_user") \
+        coreUserAuthAdmin = (
+            PeekServerPlatformHook(PeekPlatformConfig.pluginLoader)
+            .getOtherPluginApi("peek_core_user")
             .adminAuth
+        )
 
         if username == PeekPlatformConfig.config.adminUser:
             if password != PeekPlatformConfig.config.adminPass:

@@ -1,4 +1,4 @@
-'''
+"""
  *
  *  Copyright Synerty Pty Ltd 2013
  *
@@ -11,7 +11,7 @@
  * Website : http://www.synerty.com
  * Support : support@synerty.com
  *
-'''
+"""
 import logging
 import os
 import random
@@ -19,29 +19,38 @@ import time
 
 from jsoncfg.value_mappers import require_string, require_integer
 from peek_platform.file_config.PeekFileConfigABC import PeekFileConfigABC
-from peek_platform.file_config.PeekFileConfigDocBuildMixin import \
-    PeekFileConfigDocBuildMixin
-from peek_platform.file_config.PeekFileConfigFrontendDirMixin import \
-    PeekFileConfigFrontendDirMixin
-from peek_platform.file_config.PeekFileConfigHttpServerMixin import \
-    PeekFileConfigHttpMixin
+from peek_platform.file_config.PeekFileConfigDocBuildMixin import (
+    PeekFileConfigDocBuildMixin,
+)
+from peek_platform.file_config.PeekFileConfigFrontendDirMixin import (
+    PeekFileConfigFrontendDirMixin,
+)
+from peek_platform.file_config.PeekFileConfigHttpServerMixin import (
+    PeekFileConfigHttpMixin,
+)
 from peek_platform.file_config.PeekFileConfigOsMixin import PeekFileConfigOsMixin
-from peek_platform.file_config.PeekFileConfigPlatformMixin import \
-    PeekFileConfigPlatformMixin
-from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import \
-    PeekFileConfigSqlAlchemyMixin
-from peek_platform.file_config.PeekFileConfigWorkerMixin import PeekFileConfigWorkerMixin
+from peek_platform.file_config.PeekFileConfigPlatformMixin import (
+    PeekFileConfigPlatformMixin,
+)
+from peek_platform.file_config.PeekFileConfigSqlAlchemyMixin import (
+    PeekFileConfigSqlAlchemyMixin,
+)
+from peek_platform.file_config.PeekFileConfigWorkerMixin import (
+    PeekFileConfigWorkerMixin,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class PeekServerConfig(PeekFileConfigABC,
-                       PeekFileConfigOsMixin,
-                       PeekFileConfigPlatformMixin,
-                       PeekFileConfigSqlAlchemyMixin,
-                       PeekFileConfigFrontendDirMixin,
-                       PeekFileConfigDocBuildMixin,
-                       PeekFileConfigWorkerMixin):
+class PeekServerConfig(
+    PeekFileConfigABC,
+    PeekFileConfigOsMixin,
+    PeekFileConfigPlatformMixin,
+    PeekFileConfigSqlAlchemyMixin,
+    PeekFileConfigFrontendDirMixin,
+    PeekFileConfigDocBuildMixin,
+    PeekFileConfigWorkerMixin,
+):
     """
     This class creates a server configuration
     """
@@ -52,12 +61,13 @@ class PeekServerConfig(PeekFileConfigABC,
         self.platformHttpServer = PeekFileConfigHttpMixin(self, "platform", 8011)
 
     import peek_admin_app
+
     _frontendProjectDir = os.path.dirname(peek_admin_app.__file__)
 
     ### ADMIN USER SECTION ###
     @property
     def adminPass(self):
-        default = str(random.getrandbits(int(time.time()*10**6 % 100000)))[:32]
+        default = str(random.getrandbits(int(time.time() * 10 ** 6 % 100000)))[:32]
         with self._cfg as c:
             return c.httpServer.admin.recovery_user.password(default, require_string)
 
@@ -70,7 +80,7 @@ class PeekServerConfig(PeekFileConfigABC,
 
     @property
     def peekServerVortexTcpPort(self):
-        """ Peek Server Vortex TCP Port
+        """Peek Server Vortex TCP Port
 
         This port serves a raw vortex over TCP (No HTTP).
 

@@ -27,8 +27,8 @@ class PeekSwUpdateDownloadResource(BasicResource):
     isGzipped = True
 
     def render_GET(self, request):
-        componentName = request.args.get(b'name', [None])[0]
-        version = request.args.get(b'version', [None])[0]
+        componentName = request.args.get(b"name", [None])[0]
+        version = request.args.get(b"version", [None])[0]
 
         if not componentName and not version:
             msg = "Download requires name and version, Name=%s, Version=%s"
@@ -41,15 +41,17 @@ class PeekSwUpdateDownloadResource(BasicResource):
         componentName = componentName.decode()
         version = version.decode()
 
-        logger.debug("Peek Platform Download Resource GET, name=%s, version=%s",
-                     componentName, version)
+        logger.debug(
+            "Peek Platform Download Resource GET, name=%s, version=%s",
+            componentName,
+            version,
+        )
 
         newSoftwareTar = PeekSwInstallManagerABC.makeReleaseFileName(version)
 
-        request.responseHeaders.setRawHeaders(b'content-type',
-                                              [b'application/octet-stream'])
+        request.responseHeaders.setRawHeaders(
+            b"content-type", [b"application/octet-stream"]
+        )
 
         resource = StaticFileResource(newSoftwareTar)
         return resource.render_GET(request)
-
-

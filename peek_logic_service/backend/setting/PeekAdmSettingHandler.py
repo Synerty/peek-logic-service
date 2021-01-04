@@ -1,16 +1,15 @@
-'''
+"""
 Created on 09/07/2014
 
 @author: synerty
-'''
+"""
 import txhttputil
 
 from peek_logic_service.storage import Setting, dbConn
 from peek_logic_service.storage.Setting import globalSetting
 from vortex.sqla_orm.OrmCrudHandler import OrmCrudHandler
 
-filtKey = {"plugin": "peek_logic_service",
-           "key": "server.setting.data"}
+filtKey = {"plugin": "peek_logic_service", "key": "server.setting.data"}
 
 
 # HANDLER

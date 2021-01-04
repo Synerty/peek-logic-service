@@ -1,8 +1,8 @@
-'''
+"""
 Created on 09/07/2014
 
 @author: synerty
-'''
+"""
 
 # import logging
 # from vortex.DeferUtil import deferToThreadWrapWithLogger
@@ -10,8 +10,8 @@ Created on 09/07/2014
 # logger = logging.getLogger(__name__)
 
 pluginVersionInfoHandlerKey = {
-    'plugin': 'peek_logic_service',
-    'key': "peek_logic_service.plugin.version.info"
+    "plugin": "peek_logic_service",
+    "key": "peek_logic_service.plugin.version.info",
 }
 
 #

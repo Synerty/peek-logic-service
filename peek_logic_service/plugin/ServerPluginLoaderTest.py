@@ -5,7 +5,6 @@ from twisted.internet import reactor
 from twisted.internet.defer import Deferred
 from twisted.trial import unittest
 
-
 logger = logging.getLogger(__name__)
 
 PLUGIN_NOOP = "plugin_noop"
@@ -15,6 +14,7 @@ class ServerPluginLoaderTest(unittest.TestCase):
     def setUp(self):
 
         from .ServerPluginLoader import ServerPluginLoader
+
         self.serverPluginLoader = ServerPluginLoader()
 
     def testLoadAll(self):

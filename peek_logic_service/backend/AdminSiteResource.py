@@ -1,18 +1,22 @@
 import os
-from peek_logic_service.server.sw_upload.PeekSwUploadResource import PeekSwUploadResource
+from peek_logic_service.server.sw_upload.PeekSwUploadResource import (
+    PeekSwUploadResource,
+)
 from txhttputil.site.FileUnderlayResource import FileUnderlayResource
 
 from vortex.VortexFactory import VortexFactory
 
 adminSiteRoot = FileUnderlayResource()
 
+
 def setupAdminSite():
     # Setup properties for serving the site
     adminSiteRoot.enableSinglePageApplication()
 
     import peek_admin_app
+
     frontendProjectDir = os.path.dirname(peek_admin_app.__file__)
-    buildDir = os.path.join(frontendProjectDir, 'dist')
+    buildDir = os.path.join(frontendProjectDir, "dist")
 
     buildDirParent = os.path.dirname(buildDir)
     if not os.path.isdir(buildDirParent):
@@ -26,21 +30,25 @@ def setupAdminSite():
 
     # Create the Admin UI vortex
     from peek_platform import PeekPlatformConfig
+
     VortexFactory.createServer(PeekPlatformConfig.componentName, adminSiteRoot)
 
     # Add the platform update upload resource
-    adminSiteRoot.putChild(b'peek_logic_service.update.platform',
-                           PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM))
+    adminSiteRoot.putChild(
+        b"peek_logic_service.update.platform",
+        PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLATFORM),
+    )
 
     # Add the plugin update upload resource
-    adminSiteRoot.putChild(b'peek_logic_service.update.plugin',
-                           PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN))
+    adminSiteRoot.putChild(
+        b"peek_logic_service.update.plugin",
+        PeekSwUploadResource(PeekSwUploadResource.UPDATE_TYPE_PLUGIN),
+    )
 
     # ---------------
     # Add the websocket to the site root
     VortexFactory.createHttpWebsocketServer(
-        PeekPlatformConfig.componentName,
-        adminSiteRoot
+        PeekPlatformConfig.componentName, adminSiteRoot
     )
 
     # Add a HTTP vortex
@@ -52,8 +60,9 @@ def setupAdminSite():
     docSiteRoot.enableSinglePageApplication()
 
     import peek_admin_doc
+
     docProjectDir = os.path.dirname(peek_admin_doc.__file__)
-    distDir = os.path.join(docProjectDir, 'doc_dist')
+    distDir = os.path.join(docProjectDir, "doc_dist")
 
     buildDirParent = os.path.dirname(distDir)
     if not os.path.isdir(buildDirParent):
@@ -65,4 +74,4 @@ def setupAdminSite():
 
     docSiteRoot.addFileSystemRoot(distDir)
 
-    adminSiteRoot.putChild(b'docs', docSiteRoot)
+    adminSiteRoot.putChild(b"docs", docSiteRoot)

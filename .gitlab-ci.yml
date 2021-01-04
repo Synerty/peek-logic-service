@@ -1,15 +1,15 @@
-stages:
+stages :
     - test
 
-unit_tests_linux:
-    allow_failure: false
-    image: nexus.synerty.com:5000/peek-linux-test
-    only:
+unit_tests_linux :
+    allow_failure : false
+    image : nexus.synerty.com:5000/peek-linux-test
+    only :
         - pushes
         - web
         - triggers
         - merge_requests
-    script:
+    script :
         - export PIP_INDEX=http://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/pypi-all/pypi
         - export PIP_INDEX_URL=http://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/pypi-all/simple
         - export PIP_TRUSTED_HOST=${NEXUS_URL}
@@ -24,25 +24,25 @@ unit_tests_linux:
         - export TWINE_PASSWORD=${NEXUS_PASSWORD}
         - if [[ ${CI_PROJECT_NAMESPACE} == peek/* ]] && [[ ${CI_COMMIT_REF_NAME} == 'master' ]];
             then python setup.py sdist && twine upload dist/*.gz; fi
-    stage: test
-    artifacts:
-        reports:
-            junit: report.xml
-    tags:
+    stage : test
+    artifacts :
+        reports :
+            junit : report.xml
+    tags :
         - linux
 
 
-sonar:
-    allow_failure: false
-    image: nexus.synerty.com:5000/peek-linux-sonar
-    only:
+sonar :
+    allow_failure : false
+    image : nexus.synerty.com:5000/peek-linux-sonar
+    only :
         - pushes
         - web
         - triggers
         - merge_requests
-    stage: test
-    script:
+    stage : test
+    script :
         - echo "Run sonar-scanner"
         - sonar-scanner
-    tags:
+    tags :
         - linux

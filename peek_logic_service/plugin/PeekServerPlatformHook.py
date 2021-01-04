@@ -1,8 +1,12 @@
 from pathlib import Path
 
 from peek_platform import PeekPlatformConfig
-from peek_plugin_base.server.PeekPlatformServerHttpHookABC import PeekPlatformServerHttpHookABC
-from peek_plugin_base.server.PeekPlatformAdminHttpHookABC import PeekPlatformAdminHttpHookABC
+from peek_plugin_base.server.PeekPlatformServerHttpHookABC import (
+    PeekPlatformServerHttpHookABC,
+)
+from peek_plugin_base.server.PeekPlatformAdminHttpHookABC import (
+    PeekPlatformAdminHttpHookABC,
+)
 from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
 
 
@@ -15,6 +19,7 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
     @property
     def dbConnectString(self) -> str:
         from peek_platform import PeekPlatformConfig
+
         return PeekPlatformConfig.config.dbConnectString
 
     @property
@@ -30,11 +35,13 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
         if not otherPlugin:
             return None
 
-        from peek_plugin_base.server.PluginLogicEntryHookABC import \
-            PluginLogicEntryHookABC
+        from peek_plugin_base.server.PluginLogicEntryHookABC import (
+            PluginLogicEntryHookABC,
+        )
 
-        assert isinstance(otherPlugin, PluginLogicEntryHookABC), (
-            "Not an instance of PluginLogicEntryHookABC")
+        assert isinstance(
+            otherPlugin, PluginLogicEntryHookABC
+        ), "Not an instance of PluginLogicEntryHookABC"
 
         return otherPlugin
 
@@ -45,4 +52,5 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
     @property
     def serviceId(self) -> str:
         import socket
+
         return "server|" + socket.gethostname()

@@ -11,14 +11,17 @@ from pytmpdir.Directory import Directory, File
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 from peek_platform import PeekPlatformConfig
-from peek_platform.sw_install.PluginSwInstallManagerABC import PLUGIN_PACKAGE_JSON, \
-    PluginSwInstallManagerABC
+from peek_platform.sw_install.PluginSwInstallManagerABC import (
+    PLUGIN_PACKAGE_JSON,
+    PluginSwInstallManagerABC,
+)
 from peek_platform.util.PtyUtil import spawnSubprocess, logSpawnException, spawnPty
-from peek_logic_service.server.sw_version.PeekSwVersionDataHandler import \
-    peekSwVersionDataHandler
+from peek_logic_service.server.sw_version.PeekSwVersionDataHandler import (
+    peekSwVersionDataHandler,
+)
 from peek_logic_service.storage.PeekPluginInfo import PeekPluginInfo
 
-__author__ = 'synerty'
+__author__ = "synerty"
 
 logger = logging.getLogger(__name__)
 
@@ -36,16 +39,19 @@ class PluginSwUploadManager(object):
         # We need the file to end in .tar.gz
         # PIP doesn't like it otherwise
         namedTempTarGzFile = NamedTemporaryFile(
-            dir=PeekPlatformConfig.config.tmpPath, suffix=".tar.gz")
+            dir=PeekPlatformConfig.config.tmpPath, suffix=".tar.gz"
+        )
         shutil.copy(namedTempFile.name, namedTempTarGzFile.name)
         del namedTempFile
 
         pluginName, pluginVersion, fullNewTarPath = yield self.updateToTarFile(
-            namedTempTarGzFile)
+            namedTempTarGzFile
+        )
 
         # Cascade this update to all the other Peek environment components
         yield PeekPlatformConfig.pluginSwInstallManager.installAndReload(
-            pluginName, pluginVersion, fullNewTarPath)
+            pluginName, pluginVersion, fullNewTarPath
+        )
 
         # Cascade this update to all the other Peek environment components
         yield peekSwVersionDataHandler.notifyOfVersion(pluginName, pluginVersion)
@@ -100,17 +106,20 @@ class PluginSwUploadManager(object):
         # CHECK
         # Ensure that the python package name starts with "peek_plugin_"
         if not packageName.startswith("peek_plugin_"):
-            raise Exception("papp_package.json plugin.packageName must start with"
-                            " 'peek_plugin_',"
-                            " It's '%s'" % packageName)
+            raise Exception(
+                "papp_package.json plugin.packageName must start with"
+                " 'peek_plugin_',"
+                " It's '%s'" % packageName
+            )
 
         # CHECK
         if packageName.replace("_", "-") != pgkName:
-            raise Exception("PyPI package name VS papp_package.json plugin.packageName"
-                            " mismatch, python package name underscores are replaced"
-                            " with hyphens to match the PyPI package name"
-                            " %s(%s) VS %s"
-                            % (packageName.replace("_", "-"), packageName, pgkName))
+            raise Exception(
+                "PyPI package name VS papp_package.json plugin.packageName"
+                " mismatch, python package name underscores are replaced"
+                " with hyphens to match the PyPI package name"
+                " %s(%s) VS %s" % (packageName.replace("_", "-"), packageName, pgkName)
+            )
 
         self._testPackageUpdate(namedTempTarGzFile.name, packageName)
 
@@ -121,27 +130,36 @@ class PluginSwUploadManager(object):
 
         # CHECK
         if not dirName.startswith(pgkName):
-            raise Exception("Peek app name '%s' does not match peek root dir name '%s"
-                            % (packageName, dirName))
+            raise Exception(
+                "Peek app name '%s' does not match peek root dir name '%s"
+                % (packageName, dirName)
+            )
 
         # CHECK
         if peekAppInfo.version != pkgVersion:
-            raise Exception("PyPI package version VS papp_package.json plugin.version"
-                            " mismatch. %s VS %s"
-                            % (peekAppInfo.version, pkgVersion))
+            raise Exception(
+                "PyPI package version VS papp_package.json plugin.version"
+                " mismatch. %s VS %s" % (peekAppInfo.version, pkgVersion)
+            )
 
         # Install the TAR file
-        fullNewTarPath = os.path.join(PeekPlatformConfig.config.pluginSoftwarePath,
-                                      peekAppInfo.fileName)
+        fullNewTarPath = os.path.join(
+            PeekPlatformConfig.config.pluginSoftwarePath, peekAppInfo.fileName
+        )
 
         shutil.copy(namedTempTarGzFile.name, fullNewTarPath)
 
         from peek_logic_service.storage import dbConn
+
         session = dbConn.ormSession
-        existing = (session.query(PeekPluginInfo)
-                    .filter(PeekPluginInfo.name == peekAppInfo.name,
-                            PeekPluginInfo.version == peekAppInfo.version)
-                    .all())
+        existing = (
+            session.query(PeekPluginInfo)
+            .filter(
+                PeekPluginInfo.name == peekAppInfo.name,
+                PeekPluginInfo.version == peekAppInfo.version,
+            )
+            .all()
+        )
         if existing:
             peekAppInfo.id = existing[0].id
             session.merge(peekAppInfo)
@@ -155,7 +173,7 @@ class PluginSwUploadManager(object):
         return packageName, pkgVersion, fullNewTarPath
 
     def _getFileForFileName(self, fileName: str, directory: Directory) -> File:
-        """ Get File For FileName
+        """Get File For FileName
 
         Get the file from the directory that matches the fileName, this directory
          contains the extracted package.
@@ -168,13 +186,15 @@ class PluginSwUploadManager(object):
         files = [f for f in directory.files if f.name == fileName]
 
         if len(files) != 1:
-            raise Exception("Uploaded package does not contain exatly 1 %s file, found %s"
-                            % (fileName, len(files)))
+            raise Exception(
+                "Uploaded package does not contain exatly 1 %s file, found %s"
+                % (fileName, len(files))
+            )
 
         return files[0]
 
     def _testPackageUpdate(self, fileName: str, packageName: str) -> None:
-        """ Test Package Update
+        """Test Package Update
 
         :param fileName: The full path to the package file to test install
         :param packageName: The name of the python package to try loading.
@@ -192,11 +212,13 @@ class PluginSwUploadManager(object):
         virtualEnvDir = Directory()
 
         virtExec = os.path.join(os.path.dirname(sys.executable), "virtualenv")
-        virtArgsList = [virtExec,
-                    # Give the virtual environment access to the global
-                    '--system-site-packages',
-                    virtualEnvDir.path]
-        virtArgs = ' '.join(virtArgsList)
+        virtArgsList = [
+            virtExec,
+            # Give the virtual environment access to the global
+            "--system-site-packages",
+            virtualEnvDir.path,
+        ]
+        virtArgs = " ".join(virtArgsList)
 
         try:
             spawnSubprocess(virtArgs)
@@ -206,11 +228,11 @@ class PluginSwUploadManager(object):
             logSpawnException(e)
             raise Exception("Failed to create virtualenv for platform test")
 
-        pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
+        pipExec = os.path.join(virtualEnvDir.path, "bin", "pip")
 
         # Install all the packages from the directory
         pipArgs = [pipExec] + PluginSwInstallManagerABC.makePipArgs(fileName)
-        pipArgs = ' '.join(pipArgs)
+        pipArgs = " ".join(pipArgs)
 
         try:
             spawnPty(pipArgs)

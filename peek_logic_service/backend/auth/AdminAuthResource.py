@@ -18,7 +18,7 @@ from twisted.web.server import NOT_DONE_YET
 from twisted.web.util import redirectTo
 
 
-class ElementRenderedCallback():
+class ElementRenderedCallback:
     def __init__(self, request):
         self.request = request
 
@@ -54,10 +54,11 @@ class LoginResource(Resource):
 
         callback = ElementRenderedCallback(request).elementRenderedCallback
 
-        request.write(b'<!DOCTYPE html>\n')
+        request.write(b"<!DOCTYPE html>\n")
 
-        d = flattenString(request, AdminAuthElement(failed=failed,
-                                                    failureMsg=self._failureMsg))
+        d = flattenString(
+            request, AdminAuthElement(failed=failed, failureMsg=self._failureMsg)
+        )
         d.addBoth(callback)
         return NOT_DONE_YET
 
@@ -72,4 +73,4 @@ class LoginSucceededResource(Resource):
         return self._render(request)
 
     def _render(self, request):
-        return redirectTo(b'/', request)
+        return redirectTo(b"/", request)

@@ -13,8 +13,11 @@
 import logging
 import os
 
-from peek_platform.util.LogUtil import setupPeekLogger, updatePeekLoggerHandlers, \
-    setupLoggingToSysloyServer
+from peek_platform.util.LogUtil import (
+    setupPeekLogger,
+    updatePeekLoggerHandlers,
+    setupLoggingToSysloyServer,
+)
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_logic_service import importPackages
 from peek_logic_service.storage import setupDbConn
@@ -38,25 +41,34 @@ logger = logging.getLogger(__name__)
 # ------------------------------------------------------------------------------
 # Set the parallelism of the database and reactor
 
+
 def setupPlatform():
     from peek_platform import PeekPlatformConfig
+
     PeekPlatformConfig.componentName = peekServerName
 
     # Tell the platform classes about our instance of the pluginSwInstallManager
-    from peek_logic_service.server.sw_install.PluginSwInstallManager import \
-        PluginSwInstallManager
+    from peek_logic_service.server.sw_install.PluginSwInstallManager import (
+        PluginSwInstallManager,
+    )
+
     PeekPlatformConfig.pluginSwInstallManager = PluginSwInstallManager()
 
     # Tell the platform classes about our instance of the PeekSwInstallManager
-    from peek_logic_service.server.sw_install.PeekSwInstallManager import PeekSwInstallManager
+    from peek_logic_service.server.sw_install.PeekSwInstallManager import (
+        PeekSwInstallManager,
+    )
+
     PeekPlatformConfig.peekSwInstallManager = PeekSwInstallManager()
 
     # Tell the platform classes about our instance of the PeekLoaderBase
     from peek_logic_service.plugin.ServerPluginLoader import ServerPluginLoader
+
     PeekPlatformConfig.pluginLoader = ServerPluginLoader()
 
     # The config depends on the componentName, order is important
     from peek_logic_service.PeekServerConfig import PeekServerConfig
+
     PeekPlatformConfig.config = PeekServerConfig()
 
     # Initialise the recovery user
@@ -67,19 +79,24 @@ def setupPlatform():
 
     # Update the version in the config file
     from peek_logic_service import __version__
+
     PeekPlatformConfig.config.platformVersion = __version__
 
     # Set default logging level
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
-    updatePeekLoggerHandlers(PeekPlatformConfig.componentName,
-                             PeekPlatformConfig.config.loggingRotateSizeMb,
-                             PeekPlatformConfig.config.loggingRotationsToKeep,
-                             PeekPlatformConfig.config.logToStdout)
+    updatePeekLoggerHandlers(
+        PeekPlatformConfig.componentName,
+        PeekPlatformConfig.config.loggingRotateSizeMb,
+        PeekPlatformConfig.config.loggingRotationsToKeep,
+        PeekPlatformConfig.config.logToStdout,
+    )
 
     if PeekPlatformConfig.config.loggingLogToSyslogHost:
-        setupLoggingToSysloyServer(PeekPlatformConfig.config.loggingLogToSyslogHost,
-                                   PeekPlatformConfig.config.loggingLogToSyslogPort,
-                                   PeekPlatformConfig.config.loggingLogToSyslogFacility)
+        setupLoggingToSysloyServer(
+            PeekPlatformConfig.config.loggingLogToSyslogHost,
+            PeekPlatformConfig.config.loggingLogToSyslogPort,
+            PeekPlatformConfig.config.loggingLogToSyslogFacility,
+        )
 
     # Enable deferred debugging if DEBUG is on.
     if logging.root.level == logging.DEBUG:
@@ -88,8 +105,11 @@ def setupPlatform():
     # If we need to enable memory debugging, turn that on.
     if PeekPlatformConfig.config.loggingDebugMemoryMask:
         from peek_platform.util.MemUtil import setupMemoryDebugging
-        setupMemoryDebugging(PeekPlatformConfig.componentName,
-                             PeekPlatformConfig.config.loggingDebugMemoryMask)
+
+        setupMemoryDebugging(
+            PeekPlatformConfig.componentName,
+            PeekPlatformConfig.config.loggingDebugMemoryMask,
+        )
 
     # Set the reactor thread count
     reactor.suggestThreadPoolSize(PeekPlatformConfig.config.twistedThreadPoolSize)
@@ -102,10 +122,12 @@ def setupPlatform():
     # Configure the celery app
     from peek_platform.ConfigCeleryApp import configureCeleryApp
     from peek_plugin_base.worker.CeleryApp import celeryApp
+
     configureCeleryApp(celeryApp, PeekPlatformConfig.config, forCaller=True)
 
+
 class HACK_AllowJsFilesUnauthed(BasicResource):
-    """ HACK Allow JS Files Un-Authenticated
+    """HACK Allow JS Files Un-Authenticated
 
     This class is a temporary class that must be cleaned up when
     PEEK-666 is resolved.
@@ -113,34 +135,39 @@ class HACK_AllowJsFilesUnauthed(BasicResource):
     It solves an issue caused by old browsers and angular9.
 
     """
+
     def __init__(self, fileUnderlayResource, adminAuthRealm):
         self._fileUnderlayResource = fileUnderlayResource
         self._adminAuthRealm = adminAuthRealm
 
     def getChildWithDefault(self, path, request):
-        """ Get Child With Default
+        """Get Child With Default
 
         Allow .js files to bypass the authentication
 
         """
-        if path.lower().endswith(b'.js'):
-           return self._fileUnderlayResource.getChildWithDefault(path, request)
-
-        return self._adminAuthRealm.getChildWithDefault(path, request)
-
-    def getChild(self, path, request):
-        """ Get Child
-
-        Allow .js files to bypass the authentication
-
-        """
-        if path.lower().endswith(b'.js'):
+        if path.lower().endswith(b".js"):
             return self._fileUnderlayResource.getChildWithDefault(path, request)
 
         return self._adminAuthRealm.getChildWithDefault(path, request)
 
+    def getChild(self, path, request):
+        """Get Child
+
+        Allow .js files to bypass the authentication
+
+        """
+        if path.lower().endswith(b".js"):
+            return self._fileUnderlayResource.getChildWithDefault(path, request)
+
+        return self._adminAuthRealm.getChildWithDefault(path, request)
+
+
 def startListening():
-    from peek_logic_service.backend.AdminSiteResource import setupAdminSite, adminSiteRoot
+    from peek_logic_service.backend.AdminSiteResource import (
+        setupAdminSite,
+        adminSiteRoot,
+    )
     from peek_logic_service.backend.auth.AdminAuthChecker import AdminAuthChecker
     from peek_logic_service.backend.auth.AdminAuthRealm import AdminAuthRealm
     from peek_platform import PeekPlatformConfig
@@ -149,16 +176,17 @@ def startListening():
 
     adminAuthChecker = AdminAuthChecker()
     adminAuthRealm = AdminAuthRealm(adminSiteRoot, adminAuthChecker)
-    hackMixedAuthRealm = HACK_AllowJsFilesUnauthed(adminSiteRoot,
-                                                   adminAuthRealm)
+    hackMixedAuthRealm = HACK_AllowJsFilesUnauthed(adminSiteRoot, adminAuthRealm)
 
     adminSiteCfg = PeekPlatformConfig.config.adminHttpServer
-    setupSite("Peek Admin",
-              hackMixedAuthRealm,
-              portNum=adminSiteCfg.sitePort,
-              enableLogin=False,
-              redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
-              sslBundleFilePath=adminSiteCfg.sslBundleFilePath)
+    setupSite(
+        "Peek Admin",
+        hackMixedAuthRealm,
+        portNum=adminSiteCfg.sitePort,
+        enableLogin=False,
+        redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
+        sslBundleFilePath=adminSiteCfg.sslBundleFilePath,
+    )
 
     from peek_logic_service.server.PlatformSiteResource import setupPlatformSite
     from peek_logic_service.server.PlatformSiteResource import platformSiteRoot
@@ -166,15 +194,19 @@ def startListening():
     setupPlatformSite()
 
     platformCfg = PeekPlatformConfig.config.platformHttpServer
-    setupSite("Peek Platform Data Exchange",
-              platformSiteRoot,
-              portNum=platformCfg.sitePort,
-              enableLogin=False,
-              redirectFromHttpPort=platformCfg.redirectFromHttpPort,
-              sslBundleFilePath=platformCfg.sslBundleFilePath)
+    setupSite(
+        "Peek Platform Data Exchange",
+        platformSiteRoot,
+        portNum=platformCfg.sitePort,
+        enableLogin=False,
+        redirectFromHttpPort=platformCfg.redirectFromHttpPort,
+        sslBundleFilePath=platformCfg.sslBundleFilePath,
+    )
 
-    VortexFactory.createTcpServer(name=PeekPlatformConfig.componentName,
-                                  port=PeekPlatformConfig.config.peekServerVortexTcpPort)
+    VortexFactory.createTcpServer(
+        name=PeekPlatformConfig.componentName,
+        port=PeekPlatformConfig.config.peekServerVortexTcpPort,
+    )
 
 
 def main():
@@ -189,11 +221,14 @@ def main():
         metadata=metadata,
         dbEngineArgs=cfg.dbEngineArgs,
         dbConnectString=cfg.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(peek_logic_service.__file__), "alembic")
+        alembicDir=os.path.join(
+            os.path.dirname(peek_logic_service.__file__), "alembic"
+        ),
     )
 
     # Force model migration
     from peek_logic_service.storage import dbConn
+
     dbConn.migrate()
 
     # Import remaining components
@@ -206,16 +241,21 @@ def main():
     from peek_storage_service._private.storage import setupDbConn as storage_setupDbConn
     from peek_storage_service import _private as storage_private
 
-    from peek_storage_service._private.storage.DeclarativeBase import metadata as storage_metadata
+    from peek_storage_service._private.storage.DeclarativeBase import (
+        metadata as storage_metadata,
+    )
+
     storage_setupDbConn(
         metadata=storage_metadata,
         dbEngineArgs=cfg.dbEngineArgs,
         dbConnectString=cfg.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(storage_private.__file__), "alembic"))
+        alembicDir=os.path.join(os.path.dirname(storage_private.__file__), "alembic"),
+    )
 
     # Perform any storage initialisation after the migration is done.
     from peek_storage_service._private.storage import dbConn as storage_dbConn
     from peek_storage_service._private.StorageInit import StorageInit
+
     storageInit = StorageInit(storage_dbConn)
 
     # Perform the migration, including and pre and post migration inits.
@@ -233,29 +273,35 @@ def main():
     if cfg.celeryPlPythonEnablePatch:
         from peek_platform.CeleryPatchToPlPython import _DeferredTaskPatch
 
-        _DeferredTaskPatch \
-            .setupPostGreSQLConnection(storage_dbConn.ormSessionCreator,
-                                       cfg.dbConnectString,
-                                       parallelism=cfg.celeryPlPythonWorkerCount)
+        _DeferredTaskPatch.setupPostGreSQLConnection(
+            storage_dbConn.ormSessionCreator,
+            cfg.dbConnectString,
+            parallelism=cfg.celeryPlPythonWorkerCount,
+        )
 
     else:
         from txcelery.defer import _DeferredTask
+
         _DeferredTask.startCeleryThreads(
-            cfg.celeryConnectionPoolSize,
-            cfg.celeryConnectionRecycleTime)
+            cfg.celeryConnectionPoolSize, cfg.celeryConnectionRecycleTime
+        )
 
     # END - PATCH CELERY TASKS TO RUN IN PostGreSQL
     ###########################################################################
 
-    reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.stopOptionalPlugins)
-    reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.stopCorePlugins)
+    reactor.addSystemEventTrigger(
+        "before", "shutdown", PeekPlatformConfig.pluginLoader.stopOptionalPlugins
+    )
+    reactor.addSystemEventTrigger(
+        "before", "shutdown", PeekPlatformConfig.pluginLoader.stopCorePlugins
+    )
 
-    reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.unloadOptionalPlugins)
-    reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.unloadCorePlugins)
+    reactor.addSystemEventTrigger(
+        "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadOptionalPlugins
+    )
+    reactor.addSystemEventTrigger(
+        "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadCorePlugins
+    )
 
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
@@ -265,8 +311,7 @@ def main():
     d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins())
 
     def startedSuccessfully(_):
-        logger.info('Peek Logic is running, version=%s',
-                    cfg.platformVersion)
+        logger.info("Peek Logic is running, version=%s", cfg.platformVersion)
         return _
 
     d.addErrback(vortexLogFailure, logger, consumeError=True)
@@ -275,5 +320,5 @@ def main():
     reactor.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

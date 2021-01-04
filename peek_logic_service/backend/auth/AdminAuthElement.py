@@ -1,4 +1,3 @@
-
 import logging
 import os
 
@@ -10,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class AdminAuthElement(Element):
-    xmlFileName = 'AdminAuthTemplate.xml'
+    xmlFileName = "AdminAuthTemplate.xml"
     loader = XMLFile(os.path.join(os.path.dirname(__file__), xmlFileName))
 
     def __init__(self, failed, failureMsg):
@@ -31,6 +30,6 @@ class AdminAuthElement(Element):
     def errorPanel(self, request, tag):
         if self._failed:
             if self._failureMsg:
-                return tag(b"Failed to login : %s" % self._failureMsg.encode('utf-8'))
+                return tag(b"Failed to login : %s" % self._failureMsg.encode("utf-8"))
             return tag(b"Failed to login")
         return b""

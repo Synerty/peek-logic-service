@@ -7,8 +7,8 @@ Create Date: 2015-06-02 22:09:51.824555
 """
 
 # revision identifiers, used by Alembic.
-revision = '3aa82a9abe67'
-down_revision = '5ad8b58df646'
+revision = "3aa82a9abe67"
+down_revision = "5ad8b58df646"
 branch_labels = None
 depends_on = None
 
@@ -17,8 +17,7 @@ import sqlalchemy as sa
 
 
 def upgrade():
-
-  sql = '''
+    sql = """
           -- Enable PostGIS (includes raster)
           CREATE EXTENSION postgis;
           -- Enable Topology
@@ -29,8 +28,8 @@ def upgrade():
           CREATE EXTENSION postgis_tiger_geocoder;
           -- commit
           COMMIT;
-          '''
-  # op.execute(sql)
+          """
+    # op.execute(sql)
 
 
 def downgrade():

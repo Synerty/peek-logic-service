@@ -10,14 +10,15 @@ Create Date: 2017-07-17 10:48:07.127510
 from sqlalchemy.dialects.mssql.base import MSDialect
 from sqlalchemy.dialects.postgresql.base import PGDialect
 
-revision = 'c2a3b93e178d'
-down_revision = '05cf60a0fd22'
+revision = "c2a3b93e178d"
+down_revision = "05cf60a0fd22"
 branch_labels = None
 depends_on = None
 
 from alembic import op
 import sqlalchemy as sa
 import geoalchemy2
+
 
 def isMssqlDialect():
     return isinstance(op.get_bind().engine.dialect, MSDialect)
@@ -28,7 +29,7 @@ def isPostGreSQLDialect():
 
 
 def upgrade():
-    msSqlForVarchar = '''
+    msSqlForVarchar = """
         CREATE FUNCTION [dbo].[peekCsvVarcharToTable](@input AS Varchar(max) )
         RETURNS
               @Result TABLE(Value varchar(100))
@@ -51,9 +52,9 @@ def upgrade():
               END
               RETURN
         END
-    '''
+    """
 
-    msSqlForInt = '''
+    msSqlForInt = """
         CREATE FUNCTION [dbo].[peekCsvIntToTable](@input AS Varchar(max) )
         RETURNS
               @Result TABLE(Value bigint)
@@ -76,7 +77,7 @@ def upgrade():
               END
               RETURN
         END
-    '''
+    """
 
     if isMssqlDialect():
         op.execute(msSqlForVarchar)

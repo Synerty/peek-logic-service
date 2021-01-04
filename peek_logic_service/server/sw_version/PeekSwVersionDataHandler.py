@@ -3,8 +3,9 @@ import logging
 from peek_platform import PeekPlatformConfig
 from peek_platform.sw_version.PeekSwVersionPollHandler import peekPlatformVersionFilt
 from peek_platform.sw_version.PeekSwVersionTuple import PeekSwVersionTuple
-from peek_logic_service.server.sw_version.PluginSwVersionInfoUtil import \
-    getLatestPluginVersionInfos
+from peek_logic_service.server.sw_version.PluginSwVersionInfoUtil import (
+    getLatestPluginVersionInfos,
+)
 from vortex.Payload import Payload
 from vortex.PayloadEndpoint import PayloadEndpoint
 from vortex.VortexABC import SendVortexMsgResponseCallable
@@ -18,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 # The filter we listen on
 
+
 class PeekSwVersionDataHandler(object):
     def __init__(self, payloadFilter):
         self._ep = PayloadEndpoint(payloadFilter, self._process)
@@ -26,21 +28,34 @@ class PeekSwVersionDataHandler(object):
         data = list()
 
         # First, name the platform version
-        data.append(PeekSwVersionTuple(name="peek_platform",
-                                       version=PeekPlatformConfig.config.platformVersion))
+        data.append(
+            PeekSwVersionTuple(
+                name="peek_platform", version=PeekPlatformConfig.config.platformVersion
+            )
+        )
 
         for pluginVersionInfo in getLatestPluginVersionInfos():
-            data.append(PeekSwVersionTuple(name=pluginVersionInfo.name,
-                                           version=pluginVersionInfo.version))
+            data.append(
+                PeekSwVersionTuple(
+                    name=pluginVersionInfo.name, version=pluginVersionInfo.version
+                )
+            )
 
-        sendResponse(Payload(filt=peekPlatformVersionFilt, tuples=data).makePayloadEnvelope().toVortexMsg())
+        sendResponse(
+            Payload(filt=peekPlatformVersionFilt, tuples=data)
+            .makePayloadEnvelope()
+            .toVortexMsg()
+        )
 
     def notifyOfVersion(self, name, version, vortexUuid=None):
         data = [PeekSwVersionTuple(name=name, version=version)]
 
         VortexFactory.sendVortexMsg(
-            Payload(filt=peekPlatformVersionFilt, tuples=data).makePayloadEnvelope().toVortexMsg(),
-            destVortexUuid=vortexUuid)
+            Payload(filt=peekPlatformVersionFilt, tuples=data)
+            .makePayloadEnvelope()
+            .toVortexMsg(),
+            destVortexUuid=vortexUuid,
+        )
 
 
 peekSwVersionDataHandler = PeekSwVersionDataHandler(peekPlatformVersionFilt)

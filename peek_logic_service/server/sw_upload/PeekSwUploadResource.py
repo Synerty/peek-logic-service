@@ -17,7 +17,9 @@ from twisted.web.server import NOT_DONE_YET
 from txhttputil.site.BasicResource import BasicResource
 
 from peek_platform import PeekPlatformConfig
-from peek_logic_service.server.sw_upload.PluginSwUploadManager import PluginSwUploadManager
+from peek_logic_service.server.sw_upload.PluginSwUploadManager import (
+    PluginSwUploadManager,
+)
 from peek_logic_service.server.sw_upload.PeekSwUploadManager import PeekSwUploadManager
 
 logger = logging.getLogger(name=__name__)
@@ -34,31 +36,33 @@ class PeekSwUploadResource(BasicResource):
         BasicResource.__init__(self, *args)
 
         self._updateType = updateType
-        self._desc = {self.UPDATE_TYPE_PLATFORM: "Peek Platform",
-                      self.UPDATE_TYPE_PLUGIN: "Peek App",
-                      }[self._updateType]
+        self._desc = {
+            self.UPDATE_TYPE_PLATFORM: "Peek Platform",
+            self.UPDATE_TYPE_PLUGIN: "Peek App",
+        }[self._updateType]
 
     def render_GET(self, request):
         # TODO, This is where the platform gets it's lates download from
         raise Exception("Updates must be done via the UI")
 
     def render_POST(self, request):
-        request.responseHeaders.setRawHeaders('content-type', ['text/plain'])
+        request.responseHeaders.setRawHeaders("content-type", ["text/plain"])
         logger.info("received %s sw_upload update request" % self._desc)
 
         try:
-            if PeekPlatformConfig.config.capabilities['supportExceeded']:
-                return json.dumps({'error': "License has expired, Updates not allowed"})
+            if PeekPlatformConfig.config.capabilities["supportExceeded"]:
+                return json.dumps({"error": "License has expired, Updates not allowed"})
 
         except Exception as e:
-            return json.dumps({'error': str(e.message)})
+            return json.dumps({"error": str(e.message)})
 
-        updateManager = {self.UPDATE_TYPE_PLATFORM: PeekSwUploadManager,
-                         self.UPDATE_TYPE_PLUGIN: PluginSwUploadManager,
-                         }[self._updateType]()
+        updateManager = {
+            self.UPDATE_TYPE_PLATFORM: PeekSwUploadManager,
+            self.UPDATE_TYPE_PLUGIN: PluginSwUploadManager,
+        }[self._updateType]()
 
         def good(data):
-            request.write(json.dumps({'message': str(data)}).encode())
+            request.write(json.dumps({"message": str(data)}).encode())
             request.finish()
             logger.info("Finished updating %s sw_upload" % self._desc)
 
@@ -66,10 +70,15 @@ class PeekSwUploadResource(BasicResource):
             e = failure.value
             logger.exception(e)
 
-            request.write(json.dumps(
-                {'error': str(failure.value),
-                 'stdout': e.stdout if hasattr(e, 'stdout') else None,
-                 'stderr': e.stderr if hasattr(e, 'stderr') else None}).encode())
+            request.write(
+                json.dumps(
+                    {
+                        "error": str(failure.value),
+                        "stdout": e.stdout if hasattr(e, "stdout") else None,
+                        "stderr": e.stderr if hasattr(e, "stderr") else None,
+                    }
+                ).encode()
+            )
 
             request.finish()
 

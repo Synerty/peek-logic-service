@@ -9,6 +9,7 @@ from peek_platform.sw_install.PeekSwInstallManagerABC import IS_WIN_SVC
 
 logger = logging.getLogger(__name__)
 
+
 class PeekSvc(win32serviceutil.ServiceFramework):
     _svc_name_ = "peek-logic-service"
     _svc_display_name_ = "Peek Server " + peek_logic_service.__version__
@@ -18,7 +19,7 @@ class PeekSvc(win32serviceutil.ServiceFramework):
     def __init__(self, args):
         win32serviceutil.ServiceFramework.__init__(self, args)
 
-        reactor.addSystemEventTrigger('after', 'shutdown', self._notifyOfStop)
+        reactor.addSystemEventTrigger("after", "shutdown", self._notifyOfStop)
 
     def _notifyOfStop(self):
         self.ReportServiceStatus(win32service.SERVICE_STOPPED)
@@ -37,6 +38,7 @@ class PeekSvc(win32serviceutil.ServiceFramework):
             reactor.callLater(1, self._notifyOfStart)
 
             from peek_logic_service import run_peek_logic_service
+
             run_peek_logic_service.main()
 
         except Exception as e:
@@ -48,5 +50,5 @@ def main():
     win32serviceutil.HandleCommandLine(PeekSvc)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

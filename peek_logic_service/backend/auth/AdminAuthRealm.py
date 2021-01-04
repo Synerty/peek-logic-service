@@ -1,8 +1,10 @@
 import logging
 
 from peek_logic_service.backend.auth.AdminAuthChecker import AdminAuthChecker
-from peek_logic_service.backend.auth.AdminAuthResource import LoginSucceededResource, \
-    LoginResource
+from peek_logic_service.backend.auth.AdminAuthResource import (
+    LoginSucceededResource,
+    LoginResource,
+)
 from peek_logic_service.backend.auth.AdminUserAccess import AdminUserAccess
 from twisted.python.components import registerAdapter
 from twisted.web.resource import IResource
@@ -12,7 +14,7 @@ from zope.interface import Interface, Attribute, implementer
 
 logger = logging.getLogger(name="AuthRealm")
 
-__author__ = 'synerty'
+__author__ = "synerty"
 
 
 class IAuth(Interface):
@@ -21,7 +23,6 @@ class IAuth(Interface):
 
 @implementer(IAuth)
 class Auth:
-
     def __init__(self, session):
         self.userAccess = AdminUserAccess()
         self.userAccess.loggedIn = False
@@ -60,7 +61,7 @@ class AdminAuthRealm:
         a = request.args
         if request.method == b"POST":
             if b"username" in a and b"password" in a:
-                user = a[b'username'][0].decode()
+                user = a[b"username"][0].decode()
                 pass_ = a[b"password"][0].decode()
 
                 def loginCb(_):

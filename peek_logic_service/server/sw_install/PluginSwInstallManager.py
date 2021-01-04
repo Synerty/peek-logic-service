@@ -6,4 +6,3 @@ class PluginSwInstallManager(PluginSwInstallManagerABC):
     def notifyOfPluginVersionUpdate(self, pluginName, targetVersion):
         PeekPlatformConfig.pluginLoader.loadPlugin(pluginName)
         PeekPlatformConfig.pluginLoader.buildFrontend()
-

@@ -8,12 +8,14 @@ from pytmpdir.Directory import Directory
 from twisted.internet.defer import inlineCallbacks
 
 from peek_platform import PeekPlatformConfig
-from peek_platform.sw_install.PeekSwInstallManagerABC import PEEK_PLATFORM_STAMP_FILE, \
-    PeekSwInstallManagerABC
+from peek_platform.sw_install.PeekSwInstallManagerABC import (
+    PEEK_PLATFORM_STAMP_FILE,
+    PeekSwInstallManagerABC,
+)
 from peek_platform.util.PtyUtil import spawnPty, logSpawnException, spawnSubprocess
 from vortex.DeferUtil import deferToThreadWrapWithLogger
 
-__author__ = 'synerty'
+__author__ = "synerty"
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +39,7 @@ class PeekSwUploadManager(object):
 
     @deferToThreadWrapWithLogger(logger)
     def updateToTarFile(self, newSoftwareTar):
-        """ Update To Tar File
+        """Update To Tar File
 
         This method inspects the tar file and finally extracts it to the platform
         path.
@@ -50,18 +52,23 @@ class PeekSwUploadManager(object):
 
         self._testPackageUpdate(directory)
 
-        platformVersionFile = [f for f in directory.files if
-                               f.name == PEEK_PLATFORM_STAMP_FILE]
+        platformVersionFile = [
+            f for f in directory.files if f.name == PEEK_PLATFORM_STAMP_FILE
+        ]
         if len(platformVersionFile) != 1:
-            raise Exception("Uploaded archive does not contain a Peek Platform update"
-                            ", Expected 1 %s file, got %s"
-                            % (PEEK_PLATFORM_STAMP_FILE, len(platformVersionFile)))
+            raise Exception(
+                "Uploaded archive does not contain a Peek Platform update"
+                ", Expected 1 %s file, got %s"
+                % (PEEK_PLATFORM_STAMP_FILE, len(platformVersionFile))
+            )
 
         platformVersionFile = platformVersionFile[0]
 
-        if '/' in platformVersionFile.path:
-            raise Exception("Expected %s to be one level down, it's at %s"
-                            % (PEEK_PLATFORM_STAMP_FILE, platformVersionFile.path))
+        if "/" in platformVersionFile.path:
+            raise Exception(
+                "Expected %s to be one level down, it's at %s"
+                % (PEEK_PLATFORM_STAMP_FILE, platformVersionFile.path)
+            )
 
         with platformVersionFile.open() as f:
             newVersion = f.read().strip()
@@ -80,7 +87,7 @@ class PeekSwUploadManager(object):
         return newVersion, newPath
 
     def _testPackageUpdate(self, directory: Directory) -> None:
-        """ Test Package Update
+        """Test Package Update
 
         :param directory: The directory where the packages are extracted
 
@@ -97,11 +104,13 @@ class PeekSwUploadManager(object):
         virtualEnvDir = Directory()
 
         virtExec = os.path.join(os.path.dirname(sys.executable), "virtualenv")
-        virtArgsList= [virtExec,
-                    # Give the virtual environment access to the global
-                    '--system-site-packages',
-                    virtualEnvDir.path]
-        virtArgs = ' '.join(virtArgsList)
+        virtArgsList = [
+            virtExec,
+            # Give the virtual environment access to the global
+            "--system-site-packages",
+            virtualEnvDir.path,
+        ]
+        virtArgs = " ".join(virtArgsList)
 
         try:
             spawnSubprocess(virtArgs)
@@ -115,11 +124,11 @@ class PeekSwUploadManager(object):
         # We want to capture, the output, and:
         # we can't tell it to use the virtualenv
 
-        pipExec = os.path.join(virtualEnvDir.path, 'bin', 'pip')
+        pipExec = os.path.join(virtualEnvDir.path, "bin", "pip")
 
         # Install all the packages from the directory
         pipArgs = [pipExec] + PeekSwInstallManagerABC.makePipArgs(directory)
-        pipArgs = ' '.join(pipArgs)
+        pipArgs = " ".join(pipArgs)
 
         try:
             spawnPty(pipArgs)

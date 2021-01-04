@@ -34,14 +34,17 @@ logger = logging.getLogger(__name__)
 
 def setupPlatform():
     from peek_platform import PeekPlatformConfig
+
     PeekPlatformConfig.componentName = peekServerName
 
     # Tell the platform classes about our instance of the PeekLoaderBase
     from peek_logic_service.plugin.ServerPluginLoader import ServerPluginLoader
+
     PeekPlatformConfig.pluginLoader = ServerPluginLoader()
 
     # The config depends on the componentName, order is important
     from peek_logic_service.PeekServerConfig import PeekServerConfig
+
     PeekPlatformConfig.config = PeekServerConfig()
 
     # Set default logging level
@@ -63,20 +66,25 @@ def main():
         metadata=metadata,
         dbEngineArgs=PeekPlatformConfig.config.dbEngineArgs,
         dbConnectString=PeekPlatformConfig.config.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(peek_logic_service.__file__), "alembic")
+        alembicDir=os.path.join(
+            os.path.dirname(peek_logic_service.__file__), "alembic"
+        ),
     )
 
     # Force model migration
     from peek_logic_service.storage import dbConn
+
     dbConn.migrate()
 
     # Import remaining components
     importPackages()
 
-    reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.unloadOptionalPlugins)
-    reactor.addSystemEventTrigger('before', 'shutdown',
-                                  PeekPlatformConfig.pluginLoader.unloadCorePlugins)
+    reactor.addSystemEventTrigger(
+        "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadOptionalPlugins
+    )
+    reactor.addSystemEventTrigger(
+        "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadCorePlugins
+    )
 
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
@@ -86,5 +94,5 @@ def main():
     reactor.run()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

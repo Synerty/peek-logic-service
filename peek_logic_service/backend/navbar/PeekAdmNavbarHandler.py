@@ -1,14 +1,13 @@
 from peek_logic_service.backend.auth.AdminAuthRealm import IAuth
-from peek_logic_service.backend.navbar.PeekAdmNavbarUserTuple import PeekAdmNavbarUserTuple
+from peek_logic_service.backend.navbar.PeekAdmNavbarUserTuple import (
+    PeekAdmNavbarUserTuple,
+)
 from twisted.internet.defer import inlineCallbacks
 from vortex.Payload import Payload
 from vortex.PayloadEndpoint import PayloadEndpoint
 from vortex.PayloadEnvelope import PayloadEnvelope
 
-navbarDataFiltKey = {
-    'plugin': 'peek_logic_service',
-    'key': "nav.adm.user.data"
-}
+navbarDataFiltKey = {"plugin": "peek_logic_service", "key": "nav.adm.user.data"}
 
 
 # HANDLER
@@ -20,11 +19,12 @@ class __NavbarHandler:
         self._ep.shutdown()
 
     @inlineCallbacks
-    def _process(self, payloadEnvelope: PayloadEnvelope,
-                 httpSession, sendResponse, **kwargs):
+    def _process(
+        self, payloadEnvelope: PayloadEnvelope, httpSession, sendResponse, **kwargs
+    ):
         userAccess = IAuth(httpSession).userAccess
 
-        if payloadEnvelope.filt.get('logout'):
+        if payloadEnvelope.filt.get("logout"):
             httpSession.expire()
             userAccess.loggedIn = False
             return
@@ -32,8 +32,9 @@ class __NavbarHandler:
         navbarTuple = PeekAdmNavbarUserTuple()
         navbarTuple.username = userAccess.username
 
-        encodedPayload = yield Payload(navbarDataFiltKey, [navbarTuple]) \
-            .toEncodedPayloadDefer()
+        encodedPayload = yield Payload(
+            navbarDataFiltKey, [navbarTuple]
+        ).toEncodedPayloadDefer()
 
         payloadEnvelope = PayloadEnvelope(navbarDataFiltKey, encodedPayload)
         vortexMsg = yield payloadEnvelope.toVortexMsgDefer()

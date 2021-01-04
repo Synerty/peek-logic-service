@@ -8,22 +8,25 @@ logger = logging.getLogger(__name__)
 
 
 class ServerFrontendLoadersMixin:
-
     def _buildAdminSite(self, loadedPlugins):
         from peek_platform import PeekPlatformConfig
 
         try:
             import peek_admin_app
+
             frontendProjectDir = os.path.dirname(peek_admin_app.__file__)
         except:
-            logger.warning("Skipping builds of peek-admin-app"
-                           ", the package can not be imported")
+            logger.warning(
+                "Skipping builds of peek-admin-app" ", the package can not be imported"
+            )
             return
 
-        webBuilder = WebBuilder(frontendProjectDir,
-                                "peek-admin-app",
-                                PeekPlatformConfig.config,
-                                loadedPlugins)
+        webBuilder = WebBuilder(
+            frontendProjectDir,
+            "peek-admin-app",
+            PeekPlatformConfig.config,
+            loadedPlugins,
+        )
         yield webBuilder.build()
 
     def _buildAdminDocs(self, loadedPlugins):
@@ -33,17 +36,18 @@ class ServerFrontendLoadersMixin:
 
         try:
             import peek_admin_doc
+
             docProjectDir = os.path.dirname(peek_admin_doc.__file__)
 
         except:
-            logger.warning("Skipping builds of peek_admin_doc"
-                           ", the package can not be imported")
+            logger.warning(
+                "Skipping builds of peek_admin_doc" ", the package can not be imported"
+            )
             return
 
-        docBuilder = DocBuilder(docProjectDir,
-                                "peek-admin-doc",
-                                PeekPlatformConfig.config,
-                                loadedPlugins)
+        docBuilder = DocBuilder(
+            docProjectDir, "peek-admin-doc", PeekPlatformConfig.config, loadedPlugins
+        )
         yield docBuilder.build()
 
     def _unloadPluginFromAdminSite(self, pluginName):
