@@ -69,7 +69,7 @@ reqVer = ".".join(package_version.split(".")[0:2]) + ".*"
 
 # >=2.0.*,>=2.0.6
 requirements = [
-    "%s==%s,>=%s" % (pkg, reqVer, package_version) if pkg.startswith("peek") else pkg
+    "%s==%s,>=%s" % (pkg, reqVer, package_version.split("+")[0]) if pkg.startswith("peek") else pkg
     for pkg in requirements
 ]
 
