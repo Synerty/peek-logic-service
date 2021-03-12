@@ -23,7 +23,12 @@ unit_tests_linux :
         - export TWINE_USERNAME=${NEXUS_USER}
         - export TWINE_PASSWORD=${NEXUS_PASSWORD}
         - if [[ ${CI_PROJECT_NAMESPACE} == peek/* ]] && [[ ${CI_COMMIT_REF_NAME} == 'master' ]];
-            then python setup.py sdist && twine upload dist/*.gz; fi
+            then
+            wget https://gitlab.synerty.com/peek/community/synerty-peek/-/raw/master/gitlab/scripts/rm-from-nexux.py
+            && python setup.py sdist
+            && python rm-from-nexux.py "http://${NEXUS_URL}" "${NEXUS_USER}" "${NEXUS_PASSWORD}" "${CI_PROJECT_NAME}"
+            && twine upload dist/*.gz;
+            fi
     stage : test
     artifacts :
         reports :
