@@ -15,7 +15,7 @@
 import logging
 import os
 
-from pytmpdir.Directory import DirSettings
+from pytmpdir.dir_setting import DirSetting
 
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_logic_service import importPackages
@@ -51,8 +51,8 @@ def setupPlatform():
     logging.root.setLevel(PeekPlatformConfig.config.loggingLevel)
 
     # Set paths for the Directory object
-    DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
-    DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
+    DirSetting.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
+    DirSetting.tmpDirPath = PeekPlatformConfig.config.tmpPath
     FileUploadRequest.tmpFilePath = PeekPlatformConfig.config.tmpPath
 
 
@@ -80,7 +80,9 @@ def main():
     importPackages()
 
     reactor.addSystemEventTrigger(
-        "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadOptionalPlugins
+        "before",
+        "shutdown",
+        PeekPlatformConfig.pluginLoader.unloadOptionalPlugins,
     )
     reactor.addSystemEventTrigger(
         "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadCorePlugins
@@ -88,7 +90,9 @@ def main():
 
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
-    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addCallback(
+        lambda _: PeekPlatformConfig.pluginLoader.loadOptionalPlugins()
+    )
     d.addErrback(vortexLogFailure, logger, consumeError=True)
 
     reactor.run()

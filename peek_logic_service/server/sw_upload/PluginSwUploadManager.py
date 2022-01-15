@@ -7,7 +7,8 @@ from tempfile import NamedTemporaryFile
 
 import jsoncfg
 from jsoncfg.value_mappers import require_string
-from pytmpdir.Directory import Directory, File
+from pytmpdir.directory_ import Directory
+from pytmpdir.file_ import File
 from twisted.internet.defer import inlineCallbacks, returnValue
 
 from peek_platform import PeekPlatformConfig
@@ -15,7 +16,11 @@ from peek_platform.sw_install.PluginSwInstallManagerABC import (
     PLUGIN_PACKAGE_JSON,
     PluginSwInstallManagerABC,
 )
-from peek_platform.util.PtyUtil import spawnSubprocess, logSpawnException, spawnPty
+from peek_platform.util.PtyUtil import (
+    spawnSubprocess,
+    logSpawnException,
+    spawnPty,
+)
 from peek_logic_service.server.sw_version.PeekSwVersionDataHandler import (
     peekSwVersionDataHandler,
 )
@@ -54,7 +59,9 @@ class PluginSwUploadManager(object):
         )
 
         # Cascade this update to all the other Peek environment components
-        yield peekSwVersionDataHandler.notifyOfVersion(pluginName, pluginVersion)
+        yield peekSwVersionDataHandler.notifyOfVersion(
+            pluginName, pluginVersion
+        )
 
         returnValue("%s, %s" % (pluginName, pluginVersion))
 
@@ -67,10 +74,14 @@ class PluginSwUploadManager(object):
         directory.scan()
 
         # CHECK
-        pgkName, pkgVersion = PluginSwInstallManagerABC.getPackageInfo(directory)
+        pgkName, pkgVersion = PluginSwInstallManagerABC.getPackageInfo(
+            directory
+        )
 
         # CHECK
-        pluginPackageFile = self._getFileForFileName(PLUGIN_PACKAGE_JSON, directory)
+        pluginPackageFile = self._getFileForFileName(
+            PLUGIN_PACKAGE_JSON, directory
+        )
 
         # Example
         """
@@ -118,7 +129,8 @@ class PluginSwUploadManager(object):
                 "PyPI package name VS papp_package.json plugin.packageName"
                 " mismatch, python package name underscores are replaced"
                 " with hyphens to match the PyPI package name"
-                " %s(%s) VS %s" % (packageName.replace("_", "-"), packageName, pgkName)
+                " %s(%s) VS %s"
+                % (packageName.replace("_", "-"), packageName, pgkName)
             )
 
         self._testPackageUpdate(namedTempTarGzFile.name, packageName)

@@ -22,7 +22,7 @@ from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_logic_service import importPackages
 from peek_logic_service.storage import setupDbConn
 from peek_logic_service.storage.DeclarativeBase import metadata
-from pytmpdir.Directory import DirSettings
+from pytmpdir.dir_setting import DirSetting
 from txhttputil.site.FileUploadRequest import FileUploadRequest
 from vortex.DeferUtil import vortexLogFailure
 from vortex.VortexFactory import VortexFactory
@@ -112,11 +112,13 @@ def setupPlatform():
         )
 
     # Set the reactor thread count
-    reactor.suggestThreadPoolSize(PeekPlatformConfig.config.twistedThreadPoolSize)
+    reactor.suggestThreadPoolSize(
+        PeekPlatformConfig.config.twistedThreadPoolSize
+    )
 
     # Set paths for the Directory object
-    DirSettings.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
-    DirSettings.tmpDirPath = PeekPlatformConfig.config.tmpPath
+    DirSetting.defaultDirChmod = PeekPlatformConfig.config.DEFAULT_DIR_CHMOD
+    DirSetting.tmpDirPath = PeekPlatformConfig.config.tmpPath
     FileUploadRequest.tmpFilePath = PeekPlatformConfig.config.tmpPath
 
     # Configure the celery app
@@ -168,7 +170,9 @@ def startListening():
         setupAdminSite,
         adminSiteRoot,
     )
-    from peek_logic_service.backend.auth.AdminAuthChecker import AdminAuthChecker
+    from peek_logic_service.backend.auth.AdminAuthChecker import (
+        AdminAuthChecker,
+    )
     from peek_logic_service.backend.auth.AdminAuthRealm import AdminAuthRealm
     from peek_platform import PeekPlatformConfig
 
@@ -176,7 +180,9 @@ def startListening():
 
     adminAuthChecker = AdminAuthChecker()
     adminAuthRealm = AdminAuthRealm(adminSiteRoot, adminAuthChecker)
-    hackMixedAuthRealm = HACK_AllowJsFilesUnauthed(adminSiteRoot, adminAuthRealm)
+    hackMixedAuthRealm = HACK_AllowJsFilesUnauthed(
+        adminSiteRoot, adminAuthRealm
+    )
 
     adminSiteCfg = PeekPlatformConfig.config.adminHttpServer
     setupSite(
@@ -238,7 +244,9 @@ def main():
     # BEGIN - INTERIM STORAGE SETUP
     # Force model migration
 
-    from peek_storage_service._private.storage import setupDbConn as storage_setupDbConn
+    from peek_storage_service._private.storage import (
+        setupDbConn as storage_setupDbConn,
+    )
     from peek_storage_service import _private as storage_private
 
     from peek_storage_service._private.storage.DeclarativeBase import (
@@ -249,7 +257,9 @@ def main():
         metadata=storage_metadata,
         dbEngineArgs=cfg.dbEngineArgs,
         dbConnectString=cfg.dbConnectString,
-        alembicDir=os.path.join(os.path.dirname(storage_private.__file__), "alembic"),
+        alembicDir=os.path.join(
+            os.path.dirname(storage_private.__file__), "alembic"
+        ),
     )
 
     # Perform any storage initialisation after the migration is done.
@@ -290,14 +300,18 @@ def main():
     ###########################################################################
 
     reactor.addSystemEventTrigger(
-        "before", "shutdown", PeekPlatformConfig.pluginLoader.stopOptionalPlugins
+        "before",
+        "shutdown",
+        PeekPlatformConfig.pluginLoader.stopOptionalPlugins,
     )
     reactor.addSystemEventTrigger(
         "before", "shutdown", PeekPlatformConfig.pluginLoader.stopCorePlugins
     )
 
     reactor.addSystemEventTrigger(
-        "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadOptionalPlugins
+        "before",
+        "shutdown",
+        PeekPlatformConfig.pluginLoader.unloadOptionalPlugins,
     )
     reactor.addSystemEventTrigger(
         "before", "shutdown", PeekPlatformConfig.pluginLoader.unloadCorePlugins
@@ -305,10 +319,14 @@ def main():
 
     # Load all plugins
     d = PeekPlatformConfig.pluginLoader.loadCorePlugins()
-    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.loadOptionalPlugins())
+    d.addCallback(
+        lambda _: PeekPlatformConfig.pluginLoader.loadOptionalPlugins()
+    )
     d.addCallback(lambda _: startListening())
     d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startCorePlugins())
-    d.addCallback(lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins())
+    d.addCallback(
+        lambda _: PeekPlatformConfig.pluginLoader.startOptionalPlugins()
+    )
 
     def startedSuccessfully(_):
         logger.info("Peek Logic is running, version=%s", cfg.platformVersion)

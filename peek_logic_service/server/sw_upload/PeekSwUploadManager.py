@@ -4,7 +4,7 @@ import shutil
 import sys
 import tarfile
 
-from pytmpdir.Directory import Directory
+from pytmpdir.directory_ import Directory
 from twisted.internet.defer import inlineCallbacks
 
 from peek_platform import PeekPlatformConfig
@@ -12,7 +12,11 @@ from peek_platform.sw_install.PeekSwInstallManagerABC import (
     PEEK_PLATFORM_STAMP_FILE,
     PeekSwInstallManagerABC,
 )
-from peek_platform.util.PtyUtil import spawnPty, logSpawnException, spawnSubprocess
+from peek_platform.util.PtyUtil import (
+    spawnPty,
+    logSpawnException,
+    spawnSubprocess,
+)
 from vortex.DeferUtil import deferToThreadWrapWithLogger
 
 __author__ = "synerty"
@@ -33,7 +37,9 @@ class PeekSwUploadManager(object):
         newVersion, newPath = yield self.updateToTarFile(namedTempFile.name)
 
         # Tell the peek server to install and restart
-        yield PeekPlatformConfig.peekSwInstallManager.installAndRestart(newVersion)
+        yield PeekPlatformConfig.peekSwInstallManager.installAndRestart(
+            newVersion
+        )
 
         return newVersion
 
