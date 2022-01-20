@@ -1,15 +1,15 @@
-stages :
+stages:
     - test
 
-unit_tests_linux :
-    allow_failure : false
-    image : nexus.synerty.com:5000/peek-linux-test
-    only :
+unit_tests_linux:
+    allow_failure: false
+    image: nexus.synerty.com:5000/peek-linux-test
+    only:
         - pushes
         - web
         - triggers
         - merge_requests
-    script :
+    script:
         - export PIP_INDEX=http://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/pypi-all/pypi
         - export PIP_INDEX_URL=http://${NEXUS_USER}:${NEXUS_PASSWORD}@${NEXUS_URL}/repository/pypi-all/simple
         - export PIP_TRUSTED_HOST=${NEXUS_URL}
@@ -23,31 +23,30 @@ unit_tests_linux :
         - export TWINE_USERNAME=${NEXUS_USER}
         - export TWINE_PASSWORD=${NEXUS_PASSWORD}
         - if [[ ${CI_PROJECT_NAMESPACE} == peek/* ]] && [[ ${CI_COMMIT_REF_NAME} == 'master' ]];
-            then
-            wget https://gitlab.synerty.com/peek/community/synerty-peek/-/raw/master/gitlab/scripts/rm-from-nexux.py
-            && python setup.py sdist
-            && python rm-from-nexux.py "http://${NEXUS_URL}" "${NEXUS_USER}" "${NEXUS_PASSWORD}" "${CI_PROJECT_NAME}"
-            && twine upload dist/*.gz;
-            fi
-    stage : test
-    artifacts :
-        reports :
-            junit : report.xml
-    tags :
+          then
+          wget https://gitlab.synerty.com/peek/community/synerty-peek/-/raw/master/gitlab/scripts/rm-from-nexux.py
+          && python setup.py sdist
+          && python rm-from-nexux.py "http://${NEXUS_URL}" "${NEXUS_USER}" "${NEXUS_PASSWORD}" "${CI_PROJECT_NAME}"
+          && twine upload dist/*.gz;
+          fi
+    stage: test
+    artifacts:
+        reports:
+            junit: report.xml
+    tags:
         - linux
 
-
-sonar :
-    allow_failure : false
-    image : nexus.synerty.com:5000/peek-linux-sonar
-    only :
+sonar:
+    allow_failure: false
+    image: nexus.synerty.com:5000/peek-linux-sonar
+    only:
         - pushes
         - web
         - triggers
         - merge_requests
-    stage : test
-    script :
+    stage: test
+    script:
         - echo "Run sonar-scanner"
         - sonar-scanner
-    tags :
+    tags:
         - linux
