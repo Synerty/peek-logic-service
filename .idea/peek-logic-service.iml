@@ -8,5 +8,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="peek-platform" />
     <orderEntry type="module" module-name="peek-plugin-base" />
+    <orderEntry type="module" module-name="peek-storage-service" />
   </component>
 </module>
