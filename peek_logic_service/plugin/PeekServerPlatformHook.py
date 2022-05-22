@@ -1,4 +1,7 @@
 from pathlib import Path
+from typing import Dict
+from typing import Optional
+from typing import Union
 
 from peek_platform import PeekPlatformConfig
 from peek_plugin_base.server.PeekPlatformServerHttpHookABC import (
@@ -7,7 +10,9 @@ from peek_plugin_base.server.PeekPlatformServerHttpHookABC import (
 from peek_plugin_base.server.PeekPlatformAdminHttpHookABC import (
     PeekPlatformAdminHttpHookABC,
 )
-from peek_plugin_base.server.PeekServerPlatformHookABC import PeekServerPlatformHookABC
+from peek_plugin_base.server.PeekServerPlatformHookABC import (
+    PeekServerPlatformHookABC,
+)
 
 
 class PeekServerPlatformHook(PeekServerPlatformHookABC):
@@ -21,6 +26,12 @@ class PeekServerPlatformHook(PeekServerPlatformHookABC):
         from peek_platform import PeekPlatformConfig
 
         return PeekPlatformConfig.config.dbConnectString
+
+    @property
+    def dbEngineArgs(self) -> Optional[Dict[str, Union[str, int]]]:
+        from peek_platform import PeekPlatformConfig
+
+        return PeekPlatformConfig.config.dbEngineArgs
 
     @property
     def fileStorageDirectory(self) -> Path:
