@@ -1,8 +1,8 @@
 import logging
 import os
 
-from peek_platform.build_doc.DocBuilder import DocBuilder
-from peek_platform.build_frontend.WebBuilder import WebBuilder
+from peek_plugin_base.util.build_doc.DocBuilder import DocBuilder
+from peek_plugin_base.util.build_frontend.WebBuilder import WebBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -17,7 +17,8 @@ class ServerFrontendLoadersMixin:
             frontendProjectDir = os.path.dirname(peek_admin_app.__file__)
         except:
             logger.warning(
-                "Skipping builds of peek-admin-app" ", the package can not be imported"
+                "Skipping builds of peek-admin-app"
+                ", the package can not be imported"
             )
             return
 
@@ -41,12 +42,16 @@ class ServerFrontendLoadersMixin:
 
         except:
             logger.warning(
-                "Skipping builds of peek_admin_doc" ", the package can not be imported"
+                "Skipping builds of peek_admin_doc"
+                ", the package can not be imported"
             )
             return
 
         docBuilder = DocBuilder(
-            docProjectDir, "peek-admin-doc", PeekPlatformConfig.config, loadedPlugins
+            docProjectDir,
+            "peek-admin-doc",
+            PeekPlatformConfig.config,
+            loadedPlugins,
         )
         yield docBuilder.build()
 
