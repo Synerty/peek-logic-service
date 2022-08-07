@@ -216,6 +216,7 @@ def startListening():
         enableLogin=False,
         redirectFromHttpPort=platformCfg.redirectFromHttpPort,
         sslBundleFilePath=platformCfg.sslBundleFilePath,
+        sslTrustedPeerCertificateAuthorityBundleFilePath=platformCfg.sslTrustedPeerCertificateAuthorityBundleFilePath,
     )
 
     VortexFactory.createTcpServer(
