@@ -200,7 +200,10 @@ def startListening():
         portNum=adminSiteCfg.sitePort,
         enableLogin=False,
         redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
+        ssl=adminSiteCfg.ssl,
+        sslEnableMutualTLS=adminSiteCfg.sslEnableMutualTLS,
         sslBundleFilePath=adminSiteCfg.sslBundleFilePath,
+        sslMutualTLSCertificateAuthorityBundleFilePath=adminSiteCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
     )
 
     from peek_logic_service.server.PlatformSiteResource import setupPlatformSite
@@ -215,7 +218,10 @@ def startListening():
         portNum=platformCfg.sitePort,
         enableLogin=False,
         redirectFromHttpPort=platformCfg.redirectFromHttpPort,
+        ssl=platformCfg.ssl,
+        sslEnableMutualTLS=platformCfg.sslEnableMutualTLS,
         sslBundleFilePath=platformCfg.sslBundleFilePath,
+        sslMutualTLSCertificateAuthorityBundleFilePath=platformCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
     )
 
     VortexFactory.createTcpServer(
