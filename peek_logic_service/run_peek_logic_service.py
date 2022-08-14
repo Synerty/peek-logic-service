@@ -224,9 +224,15 @@ def startListening():
         sslMutualTLSCertificateAuthorityBundleFilePath=platformCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
     )
 
-    VortexFactory.createTcpServer(
+    VortexFactory.createWebsocketServer(
         name=PeekPlatformConfig.componentName,
         port=PeekPlatformConfig.config.peekServerVortexTcpPort,
+        # TODO: use configs from platform http server for now
+        # combine platform http server and vortex websocket server into one
+        ssl=platformCfg.ssl,
+        sslEnableMutualTLS=platformCfg.sslEnableMutualTLS,
+        sslBundleFilePath=platformCfg.sslBundleFilePath,
+        sslMutualTLSCertificateAuthorityBundleFilePath=platformCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
     )
 
 
