@@ -200,10 +200,8 @@ def startListening():
         portNum=adminSiteCfg.sitePort,
         enableLogin=False,
         redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
-        ssl=adminSiteCfg.ssl,
-        sslEnableMutualTLS=adminSiteCfg.sslEnableMutualTLS,
-        sslBundleFilePath=adminSiteCfg.sslBundleFilePath,
-        sslMutualTLSCertificateAuthorityBundleFilePath=adminSiteCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
+        enableSsl=adminSiteCfg.useSsl,
+        sslEnableMutualTLS=False,
     )
 
     from peek_logic_service.server.PlatformSiteResource import setupPlatformSite
@@ -211,28 +209,17 @@ def startListening():
 
     setupPlatformSite()
 
-    platformCfg = PeekPlatformConfig.config.platformHttpServer
+    dataExchangeCfg = PeekPlatformConfig.config.dataExchangeHttpServer
     setupSite(
         "Peek Platform Data Exchange",
         platformSiteRoot,
-        portNum=platformCfg.sitePort,
+        portNum=dataExchangeCfg.sitePort,
         enableLogin=False,
-        redirectFromHttpPort=platformCfg.redirectFromHttpPort,
-        ssl=platformCfg.ssl,
-        sslEnableMutualTLS=platformCfg.sslEnableMutualTLS,
-        sslBundleFilePath=platformCfg.sslBundleFilePath,
-        sslMutualTLSCertificateAuthorityBundleFilePath=platformCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
-    )
-
-    VortexFactory.createWebsocketServer(
-        name=PeekPlatformConfig.componentName,
-        port=PeekPlatformConfig.config.peekServerVortexTcpPort,
-        # TODO: use configs from platform http server for now
-        # combine platform http server and vortex websocket server into one
-        ssl=platformCfg.ssl,
-        sslEnableMutualTLS=platformCfg.sslEnableMutualTLS,
-        sslBundleFilePath=platformCfg.sslBundleFilePath,
-        sslMutualTLSCertificateAuthorityBundleFilePath=platformCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
+        enableSsl=dataExchangeCfg.sitePort,
+        sslBundleFilePath=dataExchangeCfg.sslBundleFilePath,
+        sslEnableMutualTLS=dataExchangeCfg.sslEnableMutualTLS,
+        sslMutualTLSCertificateAuthorityBundleFilePath=dataExchangeCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
+        sslMutualTLSTrustedPeerCertificateBundleFilePath=dataExchangeCfg.sslMutualTLSTrustedPeerCertificateBundleFilePath,
     )
 
 
