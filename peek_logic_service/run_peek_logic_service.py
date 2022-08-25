@@ -12,6 +12,9 @@
 
 import logging
 import os
+from pathlib import Path
+
+from txhttputil.util.PemUtil import generateDiffieHellmanParameterBytes
 
 from peek_platform.util.LogUtil import (
     setupPeekLogger,
@@ -26,7 +29,6 @@ from peek_logic_service.storage.DeclarativeBase import metadata
 from pytmpdir.dir_setting import DirSetting
 from txhttputil.site.FileUploadRequest import FileUploadRequest
 from vortex.DeferUtil import vortexLogFailure
-from vortex.VortexFactory import VortexFactory
 
 setupPeekLogger(peekServerName)
 
@@ -185,6 +187,39 @@ def startListening():
     from peek_logic_service.backend.auth.AdminAuthRealm import AdminAuthRealm
     from peek_platform import PeekPlatformConfig
 
+    from peek_logic_service.server.PlatformSiteResource import setupPlatformSite
+    from peek_logic_service.server.PlatformSiteResource import platformSiteRoot
+
+    setupPlatformSite()
+
+    dataExchangeCfg = PeekPlatformConfig.config.dataExchangeHttpServer
+
+    # generate diffie-hellman parameter for tls v1.2 if not exists
+    dhPemFile = Path(PeekPlatformConfig.config._homePath) / Path(
+        "./dhparam.pem"
+    )
+    dhPemFilePath = str(dhPemFile.absolute())
+
+    if dataExchangeCfg.useSsl and not dhPemFile.exists():
+        logger.info(
+            "generating diffie-hellman parameter - this is one-off and "
+            "may take a while"
+        )
+        generateDiffieHellmanParameterBytes(dhPemFilePath)
+
+    setupSite(
+        "Peek Platform Data Exchange",
+        platformSiteRoot,
+        portNum=dataExchangeCfg.sitePort,
+        enableLogin=False,
+        enableSsl=dataExchangeCfg.useSsl,
+        sslBundleFilePath=dataExchangeCfg.sslBundleFilePath,
+        sslEnableMutualTLS=dataExchangeCfg.sslEnableMutualTLS,
+        sslMutualTLSCertificateAuthorityBundleFilePath=dataExchangeCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
+        sslMutualTLSTrustedPeerCertificateBundleFilePath=dataExchangeCfg.sslMutualTLSTrustedPeerCertificateBundleFilePath,
+        dhParamPemFilePath=dhPemFilePath,
+    )
+
     setupAdminSite()
 
     adminAuthChecker = AdminAuthChecker()
@@ -202,24 +237,6 @@ def startListening():
         redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
         enableSsl=adminSiteCfg.useSsl,
         sslEnableMutualTLS=False,
-    )
-
-    from peek_logic_service.server.PlatformSiteResource import setupPlatformSite
-    from peek_logic_service.server.PlatformSiteResource import platformSiteRoot
-
-    setupPlatformSite()
-
-    dataExchangeCfg = PeekPlatformConfig.config.dataExchangeHttpServer
-    setupSite(
-        "Peek Platform Data Exchange",
-        platformSiteRoot,
-        portNum=dataExchangeCfg.sitePort,
-        enableLogin=False,
-        enableSsl=dataExchangeCfg.sitePort,
-        sslBundleFilePath=dataExchangeCfg.sslBundleFilePath,
-        sslEnableMutualTLS=dataExchangeCfg.sslEnableMutualTLS,
-        sslMutualTLSCertificateAuthorityBundleFilePath=dataExchangeCfg.sslMutualTLSCertificateAuthorityBundleFilePath,
-        sslMutualTLSTrustedPeerCertificateBundleFilePath=dataExchangeCfg.sslMutualTLSTrustedPeerCertificateBundleFilePath,
     )
 
 
