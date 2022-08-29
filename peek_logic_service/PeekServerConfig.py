@@ -28,7 +28,12 @@ from peek_platform.file_config.PeekFileConfigFrontendDirMixin import (
 from peek_platform.file_config.PeekFileConfigHttpServerMixin import (
     PeekFileConfigHttpMixin,
 )
-from peek_platform.file_config.PeekFileConfigOsMixin import PeekFileConfigOsMixin
+from peek_platform.file_config.PeekFileConfigOsMixin import (
+    PeekFileConfigOsMixin,
+)
+from peek_platform.file_config.PeekFileConfigDataExchangeServerMixin import (
+    PeekFileConfigDataExchangeServerMixin,
+)
 from peek_platform.file_config.PeekFileConfigPlatformMixin import (
     PeekFileConfigPlatformMixin,
 )
@@ -58,7 +63,9 @@ class PeekServerConfig(
     def __init__(self):
         super().__init__()
         self.adminHttpServer = PeekFileConfigHttpMixin(self, "admin", 8010)
-        self.platformHttpServer = PeekFileConfigHttpMixin(self, "platform", 8011)
+        self.dataExchangeHttpServer = PeekFileConfigDataExchangeServerMixin(
+            self, "dataExchange", 8011
+        )
 
     import peek_admin_app
 
@@ -67,24 +74,17 @@ class PeekServerConfig(
     ### ADMIN USER SECTION ###
     @property
     def adminPass(self):
-        default = str(random.getrandbits(int(time.time() * 10 ** 6 % 100000)))[:32]
+        default = str(random.getrandbits(int(time.time() * 10**6 % 100000)))[
+            :32
+        ]
         with self._cfg as c:
-            return c.httpServer.admin.recovery_user.password(default, require_string)
+            return c.httpServer.admin.recovery_user.password(
+                default, require_string
+            )
 
     @property
     def adminUser(self):
         with self._cfg as c:
-            return c.httpServer.admin.recovery_user.username("recovery", require_string)
-
-    ### SERVER SECTION ###
-
-    @property
-    def peekServerVortexTcpPort(self):
-        """Peek Server Vortex TCP Port
-
-        This port serves a raw vortex over TCP (No HTTP).
-
-        It remains open perminently until either side disconnects.
-        """
-        with self._cfg as c:
-            return c.peekServer.tcpVortexPort(8012, require_integer)
+            return c.httpServer.admin.recovery_user.username(
+                "recovery", require_string
+            )
