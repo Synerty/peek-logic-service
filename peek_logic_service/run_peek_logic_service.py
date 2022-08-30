@@ -237,6 +237,7 @@ def startListening():
         redirectFromHttpPort=adminSiteCfg.redirectFromHttpPort,
         enableSsl=adminSiteCfg.useSsl,
         sslEnableMutualTLS=False,
+        sslBundleFilePath=adminSiteCfg.sslBundleFilePath,
     )
 
 
