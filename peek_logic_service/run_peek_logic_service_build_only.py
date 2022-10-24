@@ -16,6 +16,7 @@ import logging
 import os
 
 from pytmpdir.dir_setting import DirSetting
+from setproctitle import setproctitle
 
 from peek_plugin_base.PeekVortexUtil import peekServerName
 from peek_logic_service import importPackages
@@ -36,6 +37,7 @@ def setupPlatform():
     from peek_platform import PeekPlatformConfig
 
     PeekPlatformConfig.componentName = peekServerName
+    setproctitle(PeekPlatformConfig.componentName + " build_only")
 
     # Tell the platform classes about our instance of the PeekLoaderBase
     from peek_logic_service.plugin.ServerPluginLoader import ServerPluginLoader

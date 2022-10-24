@@ -14,6 +14,7 @@ import logging
 import os
 from pathlib import Path
 
+from setproctitle import setproctitle
 from txhttputil.util.PemUtil import generateDiffieHellmanParameterBytes
 
 from peek_platform.util.LogUtil import (
@@ -49,6 +50,7 @@ def setupPlatform():
     from peek_platform import PeekPlatformConfig
 
     PeekPlatformConfig.componentName = peekServerName
+    setproctitle(PeekPlatformConfig.componentName)
 
     # Tell the platform classes about our instance of the pluginSwInstallManager
     from peek_logic_service.server.sw_install.PluginSwInstallManager import (
