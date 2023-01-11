@@ -31,8 +31,6 @@ def setupAdminSite():
     # Create the Admin UI vortex
     from peek_platform import PeekPlatformConfig
 
-    VortexFactory.createServer(PeekPlatformConfig.componentName, adminSiteRoot)
-
     # Add the platform update upload resource
     adminSiteRoot.putChild(
         b"peek_logic_service.update.platform",
@@ -50,9 +48,6 @@ def setupAdminSite():
     VortexFactory.createHttpWebsocketServer(
         PeekPlatformConfig.componentName, adminSiteRoot
     )
-
-    # Add a HTTP vortex
-    # VortexFactory.createServer(PeekPlatformConfig.componentName, adminSiteRoot)
 
     # ---------------
     # Setup the documents
