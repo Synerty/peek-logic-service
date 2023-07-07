@@ -1,10 +1,8 @@
-from sqlalchemy import engine_from_config, pool
+from sqlalchemy import engine_from_config, pool, text
 
 from alembic import context
 from sqlalchemy.dialects.mssql.base import MSDialect
 from sqlalchemy.dialects.postgresql.base import PGDialect
-from peek_platform.util.LogUtil import setupPeekLogger
-from peek_plugin_base.PeekVortexUtil import peekServerName
 
 global config
 config = context.config
@@ -54,23 +52,26 @@ def run_migrations_online():
         config.get_section(config.config_ini_section),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        client_encoding="utf8",
     )
 
     with connectable.connect() as connection:
-        # Ensure the schema exists
-        if isinstance(connection.dialect, MSDialect):
-            connection.execute(
-                "IF(SCHEMA_ID('%s')IS NULL) BEGIN EXEC('CREATE "
-                "SCHEMA [%s]')END" % (target_metadata.schema, target_metadata.schema)
-            )
+        with connection.begin():
+            # Ensure the schema exists
+            if isinstance(connection.dialect, MSDialect):
+                connection.execute(
+                    text("IF(SCHEMA_ID('%s')IS NULL) BEGIN EXEC('CREATE "
+                    "SCHEMA [%s]')END" % (target_metadata.schema, target_metadata.schema)
+                ))
 
-        elif isinstance(connection.dialect, PGDialect):
-            connection.execute(
-                'CREATE SCHEMA IF NOT EXISTS "%s" ' % target_metadata.schema
-            )
+            elif isinstance(connection.dialect, PGDialect):
+                connection.execute(
+                    text('CREATE SCHEMA IF NOT EXISTS "%s" ' %
+                         target_metadata.schema
+                ))
 
-        else:
-            raise Exception("unknown dialect %s" % connection.dialect)
+            else:
+                raise Exception("unknown dialect %s" % connection.dialect)
 
         context.configure(
             connection=connection,

@@ -15,6 +15,7 @@
 import logging
 import os
 import random
+import string
 import time
 
 from jsoncfg.value_mappers import require_string, require_integer
@@ -74,9 +75,12 @@ class PeekServerConfig(
     ### ADMIN USER SECTION ###
     @property
     def adminPass(self):
-        default = str(random.getrandbits(int(time.time() * 10**6 % 100000)))[
-            :32
-        ]
+        # Define the characters that can be used in the password
+        characters = string.ascii_letters + string.digits + string.punctuation
+
+        # Generate a random password with 32 characters
+        default = "".join(random.choice(characters) for _ in range(32))
+
         with self._cfg as c:
             return c.httpServer.admin.recovery_user.password(
                 default, require_string
