@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peek-logic-service"
+version = "0.0.0"
+authors = [{name = "Synerty", email = "contact@synerty.com"}]
+description = "Peek Logic Service."
+keywords = ["Peek", "Python", "Platform", "synerty"]
+classifiers = []
+dependencies = [
+    "peek-plugin-base==0.0.*,>=0.0.0",
+    "peek-platform==0.0.*,>=0.0.0",
+    "peek-admin-app==0.0.*,>=0.0.0",
+    "peek-admin-doc==0.0.*,>=0.0.0",
+]
+
+[project.urls]
+Homepage = "https://bitbucket.org/synerty/peek-logic-service"
+Download = "https://bitbucket.org/synerty/peek-logic-service/get/0.0.0.zip"
+
+[project.scripts]
+run_peek_logic_service = "peek_logic_service.run_peek_logic_service:main"
+run_peek_logic_service_build_only = "peek_logic_service.run_peek_logic_service_build_only:main"
+winsvc_peek_logic_service = "peek_logic_service.winsvc_peek_logic_service:main"
+
+[tool.setuptools]
+zip-safe = false
+include-package-data = false
+
+[tool.setuptools.packages.find]
+exclude = ["*.tests"] # *.tests.*; tests.*; tests
+namespaces = false
