@@ -6,10 +6,7 @@ set -o errexit
 #------------------------------------------------------------------------------
 # Prechecks
 
-if ! [ -f "setup.py" ]; then
-    echo "publish.sh must be run in the directory where setup.py is" >&2
-    exit 1
-fi
+
 
 if [ -n "$(git status --porcelain)" ]; then
     echo "There are uncommitted changes, please make sure all changes are committed" >&2
@@ -61,12 +58,12 @@ updateFileVers
 #------------------------------------------------------------------------------
 # Clear out old files
 
-rm -rf dist *.egg-info
+rm -rf build dist *.egg-info
 
 #------------------------------------------------------------------------------
 # Create the package and upload to pypi
 
-python setup.py sdist --format=gztar
+python -m build --sdist
 
 if [ ${PYPI_PUBLISH} == "1" -a ${DEVBUILD} -eq 0 ]; then
     echo "Publishing ${PIP_PACKAGE} to PyPI"
