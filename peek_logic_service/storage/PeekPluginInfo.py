@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 @addTupleType
-class PeekPluginInfo(Tuple, DeclarativeBase):
+class PeekPluginInfo(DeclarativeBase, Tuple):
     """PeekPluginInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.

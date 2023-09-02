@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @addTupleType
-class PeekEnvServer(Tuple, DeclarativeBase):
+class PeekEnvServer(DeclarativeBase, Tuple):
     """PeekPluginInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
@@ -32,7 +32,7 @@ class PeekEnvServer(Tuple, DeclarativeBase):
 
 
 @addTupleType
-class PeekEnvWorker(Tuple, DeclarativeBase):
+class PeekEnvWorker(DeclarativeBase, Tuple):
     """PeekPluginInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
@@ -54,7 +54,7 @@ class PeekEnvWorker(Tuple, DeclarativeBase):
 
 
 @addTupleType
-class PeekEnvAgent(Tuple, DeclarativeBase):
+class PeekEnvAgent(DeclarativeBase, Tuple):
     """PeekPluginInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.
@@ -76,7 +76,7 @@ class PeekEnvAgent(Tuple, DeclarativeBase):
 
 
 @addTupleType
-class PeekEnvClient(Tuple, DeclarativeBase):
+class PeekEnvClient(DeclarativeBase, Tuple):
     """PeekPluginInfo
 
     This table stores information on the version of Peek apps that are stored in Peek.

@@ -1,0 +1,47 @@
+[build-system]
+requires = ["setuptools>=61.2", "setuptools-scm[toml]>=7.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "peek-logic-service"
+version = "0.0.0"
+authors = [{name = "Synerty", email = "contact@synerty.com"}]
+description = "Peek Logic Service."
+keywords = ["Peek", "Python", "Platform", "synerty"]
+classifiers = []
+dependencies = [
+    "peek-plugin-base==0.0.*,>=0.0.0",
+    "peek-platform==0.0.*,>=0.0.0",
+    "peek-admin-app==0.0.*,>=0.0.0",
+    "peek-admin-doc==0.0.*,>=0.0.0",
+]
+
+[project.urls]
+Homepage = "https://bitbucket.org/synerty/peek-logic-service"
+Download = "https://bitbucket.org/synerty/peek-logic-service/get/0.0.0.zip"
+
+[project.scripts]
+run_peek_logic_service = "peek_logic_service.run_peek_logic_service:main"
+run_peek_logic_service_build_only = "peek_logic_service.run_peek_logic_service_build_only:main"
+winsvc_peek_logic_service = "peek_logic_service.winsvc_peek_logic_service:main"
+
+#https://stackoverflow.com/a/75636144
+
+# exclude/include in python packages
+# use from ... import ... for package paths
+[tool.setuptools.packages.find]
+where = ["."]
+namespaces = false
+exclude = ["*.tests", "*.tests.*", "tests.*", "tests",
+    "*.node_modules", "*.node_modules.*", "node_modules.*", "node_modules",
+]
+
+# includes for data files - files outside of python packages
+[tool.setuptools.package-data]
+"*" = ["webpack.config.js", "karma.conf.js", "protractor.conf.js"]
+
+# exludes for data files - files outside of python packages
+[tool.setuptools.exclude-package-data]
+"*" = ["__pycache__", "platforms", "dist",
+    "*.pyc", "*.js", "*.js.map", "*.lastHash"
+]
